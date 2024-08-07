@@ -1,0 +1,209 @@
+import sha256 from "crypto-js/sha256";
+import { produce } from "immer";
+import uuid4 from "uuid4";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import getRawDiseases from "../lib/diseases";
+import { calcStorageSpace } from "../lib/storage";
+import getRawSymptoms from "../lib/symptoms";
+import { AppMode, ChartMode, IDisease, IHistoryItem, ISymptom, Value } from "../types/interfaces";
+
+/**
+ * clear items value and its children
+ * @param arr list of all symptoms
+ * @param id id of the symptom
+ */
+const recursivelyResetItem = (arr: ISymptom[], id: string) => {
+  // populate item
+  let item = arr.find((x) => x.id === id);
+  // reset if found
+  if (item) {
+    console.log("Removing", item.id);
+    // reset self
+    item.value = undefined;
+    item.open = false; // close the item
+    // reset each child recursively
+    if (Array.isArray(item.options)) {
+      item.options.forEach((o) => recursivelyResetItem(arr, o));
+    }
+  } else console.error("Couldn't find option", id);
+};
+
+/**
+ * for enum parents that already have values, update the values
+ * based on the child change
+ * @param arr list of all symptoms
+ * @param id id of the symptom
+ */
+const recursivelyUpdateParents = (arr: ISymptom[], id: string) => {
+  // find a parent which has this id as a child
+  const parent = arr.find((p) => p.options?.includes(id));
+  if (parent) {
+    console.log("Updating Parent", parent.id);
+    parent.value = false;
+    for (const option of parent.options ?? []) {
+      // reset siblings of enum parent
+      if (parent.type === "enum" && option !== id) recursivelyResetItem(arr, option);
+      // set ancestors whom have value
+      // it works: because it fills from inner parents to outer ones
+      const item = arr.find((item) => item.id === option);
+      if (!!item?.value) parent.value = true;
+    }
+    recursivelyUpdateParents(arr, parent.id);
+  }
+};
+
+export interface Store {
+  symptoms: ISymptom[];
+  updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
+  collapsed: boolean;
+  toggleExpanded: (id: string, open?: boolean) => void;
+  collapseAll: () => void;
+  expandAll: () => void;
+  diseases: IDisease[];
+  reset: () => void;
+  history: IHistoryItem[];
+  addHistory: (item: Omit<IHistoryItem, "uuid" | "hash">) => IHistoryItem[] | Error;
+  removeHistory: (index: number) => void;
+  loadHistory: (item: IHistoryItem) => void;
+  // app ui
+  initialized: boolean;
+  setInitialized: () => void;
+  snackbar: { message: string; color?: string } | null;
+  showSnackbar: (message: string, color?: string) => void;
+  hideSnackbar: () => void;
+  // app settings
+  autoBackup: boolean;
+  mode: AppMode;
+  setMode: (mode: AppMode) => void;
+  chartMode: ChartMode;
+  setChartMode: (mode: ChartMode) => void;
+}
+
+export const useStore = create(
+  persist<Store>(
+    (set, get) => ({
+      symptoms: getRawSymptoms(),
+      updateSymptom: (id, value) => {
+        let result = undefined;
+        set(
+          produce((s: Store) => {
+            let arr: ISymptom[] = s.symptoms;
+            let item = arr.find((i) => i.id === id);
+            if (item) {
+              // if unset occured and has options -> reset item -r
+              // TODO Quick fix: I excluded inputs from reseting - the reason why we did this is that, input items don't have children.
+              const hasInput = item.type === "string" || item.type === "number" || item.type === "range";
+              if (!value && !hasInput) recursivelyResetItem(arr, item.id);
+              // update/reset value
+              console.log("Updating", id, value);
+              item.value = value;
+              recursivelyUpdateParents(arr, item.id);
+              result = arr;
+            } else {
+              console.error("Couldnt find item", id);
+            }
+            result = arr;
+          })
+        );
+        return result;
+      },
+      reset: () => {
+        set({
+          symptoms: getRawSymptoms(),
+          diseases: getRawDiseases(),
+        });
+      },
+      collapsed: false,
+      toggleExpanded: (id, open) => {
+        // for single item
+        set(
+          produce((s: Store) => {
+            const item = s.symptoms.find((item) => item.id === id);
+            if (!item) return; // TODO handle
+            if (typeof open !== "undefined") {
+              item.open = open;
+            } else {
+              item.open = !item.open;
+            }
+          })
+        );
+      },
+      collapseAll: () => {
+        set(
+          produce((s: Store) => {
+            s.collapsed = true;
+            s.symptoms.forEach((item) => {
+              if (!item.value) item.open = false;
+            });
+          })
+        );
+      },
+      expandAll: () => {
+        set(
+          produce((s: Store) => {
+            s.collapsed = false;
+            s.symptoms.forEach((item) => {
+              item.open = true;
+            });
+          })
+        );
+      },
+      diseases: getRawDiseases(),
+      history: [],
+      addHistory: (item) => {
+        if (calcStorageSpace().free < JSON.stringify(item.symptoms).length) {
+          return new Error("No space left");
+        }
+        // assign a new uuid
+        const newItem: IHistoryItem = {
+          ...item,
+          uuid: uuid4(),
+          hash: sha256(JSON.stringify(item.symptoms)).toString(),
+        };
+        if (get().history.some((h) => h.hash === newItem.hash)) {
+          return new Error("Duplicate item");
+        }
+        const currentHistory = get().history;
+        const newHistory = [newItem, ...currentHistory];
+        set((s) => ({ history: newHistory }));
+        return newHistory;
+      },
+      removeHistory: (index) => {
+        set(
+          produce((s: Store) => {
+            s.history.splice(index, 1);
+          })
+        );
+      },
+      loadHistory: (item) => {
+        console.log("BEFORE", (JSON.stringify(get().symptoms).length / 1024).toFixed(2));
+        console.log("AFTER", (JSON.stringify(item.symptoms).length / 1024).toFixed(2));
+        set({ symptoms: item.symptoms });
+      },
+      // app ui
+      initialized: false,
+      setInitialized: () => {
+        set({ initialized: true });
+      },
+      snackbar: null,
+      showSnackbar: (message: string, color?: string) => {
+        set({ snackbar: { message, color } });
+      },
+      hideSnackbar: () => {
+        set({ snackbar: null });
+      },
+      // app settings
+      autoBackup: false,
+      mode: AppMode.Preval,
+      setMode: (mode) => {
+        set({ mode });
+      },
+      chartMode: "bar",
+      setChartMode: (chartMode) => {
+        set({ chartMode: chartMode });
+      },
+    }),
+    { name: "app-storage", storage: createJSONStorage(() => localStorage) }
+  )
+);

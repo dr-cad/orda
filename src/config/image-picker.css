@@ -1,0 +1,47 @@
+.pintura-editor {
+  --color-background: 0, 0, 0;
+  --color-foreground: 255, 255, 255;
+  --color-primary: #2990ff;
+  --color-primary-dark: #1a80ec;
+  --color-primary-text: #fff;
+  --color-secondary: #03a9f4;
+  --color-secondary-dark: #046bbf;
+}
+
+.filepond--root {
+  border-radius: 14px;
+  border: 2px dashed #fff2;
+  background-color: #ffffff12;
+}
+.filepond--panel-root {
+  background-color: #fff0;
+}
+.filepond--drop-label {
+  color: #a3a3a3;
+}
+.filepond--action-edit-item-alt {
+  position: absolute;
+  top: 120px;
+  left: calc(50% + 4px);
+  background-color: #0008;
+  max-height: min-content;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25em;
+  transform: translate(-50%, -50%);
+  border: 2px solid #ffff;
+  transition: border 0.5s ease;
+  cursor: pointer;
+}
+.filepond--action-edit-item-alt:hover {
+  border: 2px solid #ffff;
+}
+.filepond--action-edit-item-alt span {
+  display: none;
+}
+.filepond--action-edit-item-alt svg {
+  height: 2em;
+  width: 2em;
+}

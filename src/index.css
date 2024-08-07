@@ -1,0 +1,218 @@
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --app-border: 1px dashed #fff4;
+  --theme-color: #15c4bf;
+}
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb {
+  --background-color: #0f212e;
+
+  --bg-mask: rgba(255, 255, 255, 0.3);
+  --scroll-size: 5px;
+  --scroll-radius: 20px;
+  --scroll-track: rgba(0, 0, 0, 0.4);
+  --scroll-thumb: linear-gradient(
+    var(--bg-mask) 20%,
+    transparent 20%,
+    transparent 40%,
+    var(--bg-mask) 40%,
+    var(--bg-mask) 60%,
+    transparent 60%,
+    transparent 80%,
+    var(--bg-mask) 80%
+  );
+  --scroll-thumb-color: var(--theme-color);
+}
+
+body {
+  background-color: var(--background-color);
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+a.link {
+  color: var(--theme-color);
+  transition: color 0.5s ease;
+}
+a.link:hover {
+  color: #5dfdc0;
+}
+
+img.desc-img {
+  max-width: 65vw;
+  height: auto;
+  border-radius: 14px;
+}
+
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  border-left: var(--app-border);
+  border-right: var(--app-border);
+}
+
+@media screen and (max-width: 480px) {
+  #root {
+    border: none;
+  }
+}
+
+@supports not selector(::-webkit-scrollbar-thumb) {
+  * {
+    scrollbar-color: var(--scroll-thumb-color) var(--scroll-track);
+    scrollbar-width: auto;
+  }
+}
+
+*::-webkit-scrollbar {
+  width: var(--scroll-size);
+  height: var(--scroll-size);
+}
+
+*::-webkit-scrollbar-track {
+  background-color: var(--scroll-track);
+  border-radius: var(--scroll-radius);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb-color);
+  background-image: var(--scroll-thumb);
+  border-radius: var(--scroll-radius);
+}
+
+.editable {
+}
+
+.text-wrap {
+  text-wrap: wrap;
+  max-width: 100%;
+  overflow: hidden;
+  word-wrap: break-word;
+  /* word-break: break-all; */
+}
+
+.blur-bg,
+.blur-bg-dark {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.blur-bg-dark {
+  background-color: #0005;
+}
+
+.sticky {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+}
+
+.text-ellipsis {
+  flex: 1 1 auto;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.abs-center-x {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* dent-picker */
+.dent-picker {
+  max-width: 65vw;
+  height: auto;
+  aspect-ratio: 340 / 320;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.dent-picker img {
+  width: 100%;
+  height: auto;
+}
+.dent-picker .clear-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+.dent-picker .circle {
+  position: absolute;
+  transform: translate(-50%, -50%);
+
+  width: 18px;
+  height: auto;
+  aspect-ratio: 1;
+
+  font-size: 0.65rem;
+  line-height: 1;
+  font-weight: 600;
+
+  color: #000;
+  background-color: #fff2;
+  backdrop-filter: brightness(1.5) blur(2px);
+
+  border-radius: 50%;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 0.5s ease, color 0.25s ease, background 0.25s ease;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+}
+.dent-picker .circle:hover {
+  background-color: #fff8;
+  transform: translate(-50%, -50%) scale(1.25);
+}
+.dent-picker .circle:hover,
+.dent-picker .circle-start,
+.dent-picker .circle-end {
+  z-index: 1;
+}
+.dent-picker .circle-start,
+.dent-picker .circle-between,
+.dent-picker .circle-end {
+  color: #000;
+  box-shadow: 0 0 0 1px inset #fff;
+}
+.dent-picker .circle-start,
+.dent-picker .circle-end {
+  background-color: #5dfdc0 !important;
+}
+.dent-picker .circle-between {
+  background-color: #8ffbff88 !important;
+}
+
+.dent-picker .circle-select {
+  background-color: #ff4b4b !important;
+}
+.dent-picker .circle:active {
+  background-color: #fd5dc8 !important;
+}
+@media screen and (max-width: 480px) {
+  .dent-picker .circle {
+    width: 14px;
+  }
+}
+
+.image-picker {
+}

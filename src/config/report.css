@@ -1,0 +1,149 @@
+.report {
+  aspect-ratio: 1/1.414;
+  overflow: hidden;
+  background-color: black;
+  border-radius: 4px;
+  /* filter: grayscale(1) contrast(1.5); */
+}
+
+.report * {
+  margin: 0;
+  padding: 0;
+  line-height: 1.25em;
+}
+
+.report section + section {
+  margin-top: 0.5rem;
+}
+
+.report p {
+  margin: 0.5rem 0;
+}
+
+.report ol {
+  margin: 0.75rem 0;
+  list-style-position: inside;
+}
+
+.report li {
+  margin-top: 0.5rem;
+}
+
+.report li::marker {
+  color: #0008;
+}
+
+.report .content {
+  width: 595px;
+  height: 842px;
+  color: black;
+  background-color: white;
+  transform-origin: top left;
+  padding: 0.5rem;
+  display: flex;
+}
+
+.report .content-inner {
+  flex: 1;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.report .header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  position: relative;
+}
+
+.report .info {
+}
+
+.report .pat-name {
+  margin-top: 0.25rem;
+  font-weight: 300;
+  font-size: 2rem;
+}
+
+.report .pat-info {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.report .logo {
+  flex: 0 0 auto;
+  width: auto;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-weight: 700;
+  color: var(--background-color);
+  padding: 0.25rem;
+}
+
+.report .logo img {
+  width: 4.75rem;
+}
+
+.report .panaromic-images {
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+
+  flex: 0 0 auto;
+  width: 100%;
+  position: relative;
+  border: 2px solid black;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.report .panaromic-images img {
+  aspect-ratio: 504 / 230;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.report .panaromic-images .next-btn {
+  position: absolute;
+  bottom: 1rem;
+}
+
+.report section.advice {
+  display: flex;
+  gap: 1rem;
+  flex: 0 0 auto;
+}
+
+.report .advice-dashes {
+  flex: 0 0 80%;
+  border-bottom: 1px dashed #0006;
+  margin-bottom: 0.4rem;
+}
+
+.report section.footer {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.report section.footer .signature {
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  font-size: 1.25rem;
+  color: #0003;
+  padding-left: 4rem;
+}

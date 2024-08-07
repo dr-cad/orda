@@ -1,0 +1,247 @@
+import { ChevronRightRounded, ImageOutlined, PrintOutlined, ShareOutlined } from "@mui/icons-material";
+import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import moment from "moment";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
+import BarChart from "../components/BarChart";
+import "../config/report.css";
+import { useStore } from "../config/store";
+import useReportFindings from "../hooks/report";
+import useScores from "../hooks/scores";
+import { useSymptomValueOf } from "../hooks/symptom";
+import { handleShareImage, takeScreenshoot } from "../lib/share";
+import { sleep } from "../lib/utils";
+import { AppMode, IHistoryItem } from "../types/interfaces";
+
+type Mode = "print" | "image";
+
+const CONTENT_WIDTH = 595;
+const email = "info@dr-cad.ir";
+
+export default function ReportPage() {
+  const { id } = useParams();
+  const history = useStore((s) => s.history);
+
+  const item = useMemo(() => (id ? history.find((x) => x.uuid.startsWith(id)) : undefined), [history, id]);
+
+  if (!item) return null;
+
+  return <ReportPageContent id={id!} item={item} />;
+}
+
+function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
+  const ref = useRef<HTMLDivElement>(null!);
+  const content = useRef<HTMLDivElement>(null!);
+
+  const canResize = useRef(true);
+
+  const scaleToFit = (mode?: Mode) => {
+    if (!canResize.current && !mode) return;
+    const parent = ref.current.getBoundingClientRect();
+    let scale = Math.min(parent.width / CONTENT_WIDTH, 1);
+    if (mode === "print") scale = 1 / scale;
+    if (mode === "image") scale = 1;
+    content.current.style.setProperty("scale", scale.toString());
+  };
+
+  const onBeforeAction = async (mode?: Mode) => {
+    canResize.current = false;
+    scaleToFit(mode);
+    const elements = document.getElementsByClassName("no-print");
+    for (const el of elements) {
+      (el as any).style.visibility = "hidden";
+    }
+    await sleep(150);
+  };
+
+  const onAfterAction = () => {
+    canResize.current = true;
+    scaleToFit();
+    const elements = document.getElementsByClassName("no-print");
+    for (const el of elements) {
+      (el as any).style.visibility = "visible";
+    }
+  };
+
+  const handlePrint = useReactToPrint({
+    content: () => ref.current,
+    onBeforeGetContent: () => onBeforeAction("print"),
+    onAfterPrint: onAfterAction,
+  });
+
+  useEffect(() => {
+    if (!ref.current) return;
+    scaleToFit();
+    const observer = new ResizeObserver(() => scaleToFit());
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const handleDownload = async () => {
+    await onBeforeAction("image");
+
+    const data = await takeScreenshoot(content.current!, "white");
+    const link = document.createElement("a");
+
+    link.href = data;
+    link.download = `orda-report-${id}.jpg`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    onAfterAction();
+  };
+
+  const handleShare = async () => {
+    await onBeforeAction("image");
+
+    await handleShareImage(
+      content.current,
+      `${patName ?? "ORDA"} - ${id} - ${new Date().toLocaleString()}.png`,
+      "Patient Report",
+      "white"
+    );
+
+    onAfterAction();
+  };
+
+  const [panaromicImageIndex, setPanaromicImageIndex] = useState(0);
+
+  const patName = useSymptomValueOf<string>(item.symptoms, "pat-name");
+  const patMale = useSymptomValueOf<string>(item.symptoms, "pat-male");
+  const patAge = useSymptomValueOf<number>(item.symptoms, "pat-age");
+  const panaromicImages = useSymptomValueOf<string>(item.symptoms, "panaromic-images");
+
+  const images = useMemo<string[] | undefined>(() => {
+    if (!panaromicImages) return;
+    return JSON.parse(panaromicImages);
+  }, [panaromicImages]);
+
+  const image = useMemo(() => {
+    if (!images) return;
+    if (panaromicImageIndex > images.length - 1) return;
+    return images[panaromicImageIndex];
+  }, [images, panaromicImageIndex]);
+
+  const { scores, barChartData } = useScores(item.scores, AppMode.Preval, 3);
+
+  const findings = useReportFindings(item.symptoms);
+
+  return (
+    <Stack aria-label="report-wrapper" flex={1} p={2} gap={3}>
+      <div ref={ref} className="report">
+        <div ref={content} className="content">
+          <div className="content-inner">
+            <section className="header">
+              <div className="info">
+                <h1>Radiology Report Summary</h1>
+                <span>
+                  <span>
+                    <strong>Serial No:</strong> &nbsp;{id}
+                  </span>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <span>
+                    <strong>Date:</strong> &nbsp;{moment(item.createdAt).format("DD MMM YYYY")}
+                  </span>
+                </span>
+                <h1 className="pat-name">{patName}</h1>
+                <span className="pat-info">
+                  {patMale ? "male" : "female"} / {patAge}
+                </span>
+              </div>
+              <div className="logo">
+                <img alt="ORDA" src="/logo-report.png" />
+                <img alt="Dr Cad" src="/script.svg" />
+              </div>
+            </section>
+
+            {images && image && (
+              <section
+                className="panaromic-images"
+                onClick={() => setPanaromicImageIndex((s) => (s + 1) % images.length)}>
+                <img alt={patName} src={image} />
+                {images.length > 1 && (
+                  <IconButton
+                    className="next-btn no-print"
+                    sx={{
+                      backgroundColor: "#0008",
+                      "&:hover": { backgroundColor: "#0005" },
+                    }}>
+                    <ChevronRightRounded />
+                  </IconButton>
+                )}
+              </section>
+            )}
+
+            <section>
+              <h4>Imaging Findings</h4>
+              <p contentEditable className="text-wrap">
+                {findings}
+              </p>
+            </section>
+
+            <section>
+              <Box
+                display="flex"
+                gap={2}
+                // sx={{ overflowX: "hidden", overflowY: "visible" }}
+                justifyContent="space-between">
+                <Box>
+                  <h4>Differentiated Diagnosis</h4>
+                  <ol>
+                    {scores.slice(0, 5).map((score, i) => (
+                      <li key={i}>{score.name} </li>
+                    ))}
+                  </ol>
+                </Box>
+                <Box flex="0 0 50%" height="11.75rem" mt={-4} mb={-2}>
+                  <BarChart data={barChartData} darkMode={false} compact />
+                </Box>
+              </Box>
+            </section>
+
+            <section className="advice text-wrap">
+              <h4>Advice:</h4>
+              <span className="advice-dashes" contentEditable />
+            </section>
+
+            <section className="footer">
+              <Box flex={1} className="signature">
+                <span>Name & Signature</span>
+              </Box>
+              <Stack flex="0 0 auto" mr={2}>
+                <span>
+                  <strong>Website:</strong> &nbsp;orda.dr-cad.ir
+                </span>
+                <span>
+                  <strong>Email:</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <Link to={"mailto:" + email}>{email}</Link>
+                </span>
+              </Stack>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <Box display="flex" justifyContent="center" gap={2}>
+        <Button onClick={handlePrint} startIcon={<PrintOutlined />} sx={{ borderRadius: 2, px: 2 }}>
+          <Typography fontSize="0.65rem" className="text-ellipsis">
+            Print
+          </Typography>
+        </Button>
+        <Button onClick={handleDownload} startIcon={<ImageOutlined />} sx={{ borderRadius: 2, px: 2 }}>
+          <Typography fontSize="0.65rem" className="text-ellipsis">
+            Save
+          </Typography>
+        </Button>
+        <Button onClick={handleShare} startIcon={<ShareOutlined />} sx={{ borderRadius: 2, px: 2 }}>
+          <Typography fontSize="0.65rem" className="text-ellipsis">
+            Share
+          </Typography>
+        </Button>
+      </Box>
+    </Stack>
+  );
+}
