@@ -4,8 +4,6 @@ import Pagination from "./Pagination";
 import Snackbar from "./Snackbar";
 
 export default function PageLayout({ children }: { children: React.ReactNode }) {
-  // First we get the viewport height and we multiple it by 1% to get a value for a vh unit
-  let vh = window.innerHeight;
   return (
     <Stack
       overflow="hidden"
@@ -14,7 +12,7 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
       justifyContent="space-between"
       alignItems="stretch"
       position="relative"
-      sx={{ height: [vh, "100vh"], overflowY: "auto", overflowX: "hidden" }}>
+      sx={{ height: "100dvh", overflowY: "auto", overflowX: "hidden" }}>
       <Header />
       {children}
       <Pagination />

@@ -3,7 +3,7 @@ import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import useAppHistory from "../hooks/history";
-import { ReactComponent as Logo } from "./favicon.svg";
+import Logo from "./favicon.svg?react";
 import NewRecordButton from "./NewRecordButton";
 import ReportIcon from "./ReportIcon";
 

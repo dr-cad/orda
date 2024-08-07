@@ -6,8 +6,8 @@ export default function getRawDiseases() {
   const data: IDisease[] = rawDiseases;
 
   const validate = () => {
-    let idRepo: string[] = [];
-    for (let item of data) {
+    const idRepo: string[] = [];
+    for (const item of data) {
       if (!item.id) {
         return { item, message: "No Id defined" };
       }
@@ -27,8 +27,8 @@ export default function getRawDiseases() {
         idRepo.push(item.id);
       }
 
-      if (!!item.factors) {
-        for (let factor of item.factors) {
+      if (item.factors) {
+        for (const factor of item.factors) {
           if (!rawSymptoms.find((x) => x.id === factor.sid)) {
             return {
               item,
@@ -43,7 +43,7 @@ export default function getRawDiseases() {
 
   const error = validate();
 
-  if (!!error) {
+  if (error) {
     console.log("Diseases data not valid", error);
     return [];
   }

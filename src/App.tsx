@@ -10,7 +10,7 @@ import SymptomsPage from "./pages/SymptomsPage";
 // TODO on data available - navigate from intro to history
 
 function App() {
-  if (process.env.NODE_ENV === "production") clarity.init("nj04qzc3hn");
+  if (import.meta.env.PROD) clarity.init("nj04qzc3hn");
 
   return (
     <BrowserRouter>

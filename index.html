@@ -1,12 +1,39 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <!-- Icons and Manifest -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- possible content values: default, black or black-translucent -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="%VITE_BG_COLOR%" />
+    <meta name="description" content="%VITE_DESC%" />
+
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://%VITE_DOMAIN%" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="%VITE_TITLE%" />
+    <meta property="og:description" content="%VITE_DESC%" />
+    <meta property="og:image" content="https://%VITE_DOMAIN%/thumbnail.jpeg" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:domain" content="%VITE_DOMAIN%" />
+    <meta property="twitter:url" content="https://%VITE_DOMAIN%" />
+    <meta name="twitter:title" content="%VITE_TITLE%" />
+    <meta name="twitter:description" content="%VITE_DESC%" />
+    <meta name="twitter:image" content="https://%VITE_DOMAIN%/thumbnail.jpeg" />
+
+    <title>%VITE_SITE_TITLE%</title>
   </head>
   <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -31,7 +31,7 @@ export default function useReportFindings(sypmtoms: ISymptom[]) {
     }
     const v = getSymptomValueById(sypmtoms, r.sid);
     if (v && r.text) output += spaceBefore + pickText(r.text);
-    if (r.ranges && v) output += spaceBefore + pickFromRange(r.ranges, v);
+    if (r.ranges && v) output += spaceBefore + pickFromRange(r.ranges, v as IRange);
   }
   return output + ".";
 }

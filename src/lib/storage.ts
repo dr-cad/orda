@@ -13,7 +13,7 @@ export function calcStorageSpace(preserve = DEFAULT_PRESERVE_SPACE) {
       free -= preserve;
       free = Math.min(free, MAX_SPACE - used);
 
-      if (process.env.NODE_ENV === "development") {
+      if (import.meta.env.DEV) {
         console.log(`Storage space: ${(used / 1024).toFixed(2)}K/${((free + used) / 1024).toFixed(2)}K (${i})`);
       }
       break;

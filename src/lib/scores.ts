@@ -19,7 +19,7 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
       switch (symptom.type) {
         case "range":
           if (!Array.isArray(dfranges)) return 1;
-          for (let range of dfranges) {
+          for (const range of dfranges) {
             if (
               typeof symptom.value !== "object" ||
               // Array.isArray(symptom.value) ||
@@ -41,7 +41,7 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
           return inactive; // TODO
         case "number":
           if (!Array.isArray(dfranges)) return 1;
-          for (let range of dfranges) {
+          for (const range of dfranges) {
             if ((symptom.value! as number) >= range.a && (symptom.value! as number) <= range.b) {
               return manipulateRate(range.rate);
             }

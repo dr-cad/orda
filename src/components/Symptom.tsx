@@ -94,7 +94,7 @@ const Label = ({ symptom, parent }: IInnerProps) => {
             alignItems: "center",
             fontWeight: bold ? 800 : 400,
           }}
-          color={!!symptom.value ? (isEnumParent ? "warning.light" : "primary") : undefined}>
+          color={symptom.value ? (isEnumParent ? "warning.light" : "primary") : undefined}>
           {symptom.name}
           {symptom.required && <span style={{ color: "#ff576e" }}>&nbsp;&nbsp;*</span>}
         </Typography>

@@ -3,7 +3,7 @@
 // load history from file
 
 import { AddRounded, UploadFileOutlined } from "@mui/icons-material";
-import { ReactComponent as Logo } from "../components/favicon.svg";
+import Logo from "../components/favicon.svg?react";
 
 import { Box, Button, Stack, Typography } from "@mui/material";
 import useAppHistory from "../hooks/history";

@@ -6,6 +6,7 @@ interface IProps {
   draft?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const NewRecordButton: ExtendButtonBase<ButtonTypeMap<IProps, "button">> = ({ draft, ...props }: any) => {
   const { handleNewRecord } = useAppHistory();
 
