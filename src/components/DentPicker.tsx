@@ -110,7 +110,7 @@ export default function DentPicker() {
 
   return (
     <div className="dent-picker">
-      <img alt="Radiography Anatomic Location" src="/assets/ana-loc.jpg" />
+      <img alt="Radiography Anatomic Location" src="/assets/ana-loc.webp" />
       {points.map((p, i) => (
         <Point key={i} p={p} onSelect={onSelect} start={start} />
       ))}
