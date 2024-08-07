@@ -22,6 +22,7 @@ export default function Pagination() {
         shape="rounded"
         hidePrevButton
         onChange={(e, p) => {
+          e.stopPropagation();
           handleTo(p);
         }}
         renderItem={(item) => {

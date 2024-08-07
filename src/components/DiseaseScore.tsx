@@ -2,7 +2,7 @@ import { ListItem, ListItemText, Typography } from "@mui/material";
 import { useStore } from "../config/store";
 import { IScoredDisease } from "../types/interfaces";
 
-export default function DiseaseScore({ value, name, pvalue, preval, index }: IScoredDisease & { index: number }) {
+export default function DiseaseScore({ value, name, pvalue, index }: IScoredDisease & { index: number }) {
   const mode = useStore((s) => s.mode);
   return (
     <>

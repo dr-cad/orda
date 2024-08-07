@@ -9,7 +9,7 @@ interface Props {
   params?: any[];
 }
 
-export default memo(function Features({ value, symptom }: Props) {
+export default memo(function Features({ value }: Props) {
   switch (value) {
     case Feature.DentPicker:
       return (

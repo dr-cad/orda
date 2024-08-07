@@ -164,10 +164,8 @@ export const useStore = create(
         if (get().history.some((h) => h.hash === newItem.hash)) {
           return new Error("Duplicate item");
         }
-        const currentHistory = get().history;
-        const newHistory = [newItem, ...currentHistory];
-        set((s) => ({ history: newHistory }));
-        return newHistory;
+        set((s) => ({ history: [newItem, ...s.history] }));
+        return get().history;
       },
       removeHistory: (index) => {
         set(
