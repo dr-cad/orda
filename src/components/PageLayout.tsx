@@ -12,7 +12,7 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
       justifyContent="space-between"
       alignItems="stretch"
       position="relative"
-      sx={{ height: "100dvh", overflowY: "auto", overflowX: "hidden" }}>
+      sx={{ height: "100dvh", overflowY: "scroll", overflowX: "hidden" }}>
       <Header />
       {children}
       <Pagination />
