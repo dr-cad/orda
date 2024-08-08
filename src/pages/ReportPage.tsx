@@ -42,7 +42,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
     if (!canResize.current && !mode) return;
     const parent = ref.current.getBoundingClientRect();
     let scale = Math.min(parent.width / CONTENT_WIDTH, 1);
-    if (mode === "print") scale = 1 / scale;
+    if (mode === "print") scale = CONTENT_WIDTH / (parent.width + 4);
     if (mode === "image") scale = 1;
     content.current.style.setProperty("scale", scale.toString());
   };

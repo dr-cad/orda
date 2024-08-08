@@ -1,6 +1,6 @@
 import { Box, Checkbox, FormControlLabel, Radio, Stack, TextField, Typography } from "@mui/material";
 import _ from "lodash";
-import React, { Fragment, MouseEventHandler, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { Fragment, MouseEventHandler, useCallback, useEffect, useMemo } from "react";
 import { useStore } from "../config/store";
 import { digestSymptom } from "../lib/symptoms";
 import { IRange, ISymptom, Value } from "../types/interfaces";
