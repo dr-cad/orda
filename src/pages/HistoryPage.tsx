@@ -55,14 +55,14 @@ export default function HistoryPage() {
           disableUnderline: true,
         }}
       />
+      <Button fullWidth onClick={() => handleNewRecord(true)} startIcon={<AddRounded />} sx={{ borderRadius: 4 }}>
+        New Record
+      </Button>
       <List>
         {list.map((item, i) => (
           <HistoryItem key={i} index={i} {...item} />
         ))}
       </List>
-      <Button fullWidth onClick={() => handleNewRecord(true)} startIcon={<AddRounded />} sx={{ borderRadius: 4 }}>
-        New Record
-      </Button>
     </Stack>
   );
 }
