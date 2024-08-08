@@ -8,7 +8,7 @@ import ReportPage from "./pages/ReportPage";
 import ResultPage from "./pages/ResultPage";
 import SymptomsPage from "./pages/SymptomsPage";
 
-function App() {
+export default function App() {
   if (import.meta.env.PROD) clarity.init("nj04qzc3hn");
   const history = useStore((s) => s.history);
 
@@ -26,5 +26,3 @@ function App() {
     </Routes>
   );
 }
-
-export default App;

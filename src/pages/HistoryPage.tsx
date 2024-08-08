@@ -1,16 +1,6 @@
-import { AddRounded, CloseRounded, SearchRounded } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  IconButton,
-  InputAdornment,
-  List,
-  ListItem,
-  ListItemText,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { AddRounded, DeleteRounded, EditRounded, OpenInFullRounded, SearchRounded } from "@mui/icons-material";
+import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemText, Stack, TextField } from "@mui/material";
+import moment from "moment";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
@@ -58,7 +48,7 @@ export default function HistoryPage() {
       <Button fullWidth onClick={() => handleNewRecord(true)} startIcon={<AddRounded />} sx={{ borderRadius: 4 }}>
         New Record
       </Button>
-      <List>
+      <List sx={{ gap: 1, display: "flex", flexDirection: "column" }}>
         {list.map((item, i) => (
           <HistoryItem key={i} index={i} {...item} />
         ))}
@@ -88,6 +78,15 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
     showSnackbar("History record loaded!");
   };
 
+  const handleEdit: React.MouseEventHandler = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    saveDraft(); // draft current data before loading the item
+    load(item);
+    nav("/list/1");
+    showSnackbar("History record loaded!");
+  };
+
   const handleRemove: React.MouseEventHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -100,22 +99,31 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
       sx={{
         justifyContent: "space-between",
         alignItems: "center",
-        borderBottom: "var(--app-border)",
+        // borderBottom: "var(--app-border)",
+        backgroundColor: "#ffffff08",
+        borderRadius: 3,
         cursor: "pointer",
+        "&:hover": {
+          backgroundColor: "#ffffff12",
+        },
       }}
-      onClick={handleLoad}>
-      <IconButton size="small" color="error" onClick={handleRemove}>
-        <CloseRounded fontSize="small" />
-      </IconButton>
+      onClick={handleLoad}
+      secondaryAction={
+        <Box display="flex" flexDirection="row" gap={1}>
+          <IconButton size="small" color="primary" onClick={handleEdit}>
+            <EditRounded fontSize="small" />
+          </IconButton>
+          <IconButton size="small" color="error" onClick={handleRemove}>
+            <DeleteRounded fontSize="small" />
+          </IconButton>
+        </Box>
+      }>
       <Box flex="0 0 8px" />
       <ListItemText
         primary={title.toString()}
-        secondary={item.unsaved ? "(unsaved draft)" : undefined}
-        secondaryTypographyProps={{ fontSize: "0.65rem", color: "warning.main" }}
+        secondary={item.unsaved ? "(unsaved draft)" : moment(item.createdAt).format("DD MMM YYYY")}
+        secondaryTypographyProps={{ fontSize: "0.65rem", color: item.unsaved ? "warning.main" : "#fff6" }}
       />
-      <Typography fontSize="0.75rem" sx={{ textAlign: "end", opacity: 0.55 }}>
-        {new Date(item.createdAt).toUTCString()}
-      </Typography>
     </ListItem>
   );
 };
