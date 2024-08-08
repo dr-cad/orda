@@ -86,7 +86,7 @@ const symptoms: ISymptomRaw[] = [
   },
   {
     id: "pat-his-cli-fin",
-    name: "History",
+    name: "History & Clinical findings",
     desc: { title: "Patient's history \nand Clinical findings" },
     page: 3,
     options: ["onset-course", "history-of-surgery", "hist-radio", "recent-gingival", "lymph", "impact", "sig-blood"],
