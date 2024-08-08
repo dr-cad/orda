@@ -75,6 +75,8 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
     setNoPrintVisible(true);
   };
 
+  // events
+
   const handlePrint = useReactToPrint({
     content: () => ref.current,
     onBeforeGetContent: () => onBeforeAction("print"),
@@ -109,6 +111,8 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
 
     onAfterAction();
   };
+
+  // ui values
 
   const [panaromicImageIndex, setPanaromicImageIndex] = useState(0);
 
