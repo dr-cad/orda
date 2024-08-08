@@ -1,6 +1,6 @@
 import { Box, Checkbox, FormControlLabel, Radio, Stack, TextField, Typography } from "@mui/material";
 import _ from "lodash";
-import React, { Fragment, MouseEventHandler, useCallback, useMemo } from "react";
+import React, { Fragment, MouseEventHandler, useCallback, useEffect, useMemo, useRef } from "react";
 import { useStore } from "../config/store";
 import { digestSymptom } from "../lib/symptoms";
 import { IRange, ISymptom, Value } from "../types/interfaces";
@@ -136,9 +136,12 @@ const Desc = (symptom: ISymptom) => {
 const Input = React.memo(({ symptom }: IInnerProps) => {
   const updateSymptom = useStore((s) => s.updateSymptom);
   const handleChange = useCallback(
-    (value: Value) => updateSymptom(symptom.id, value), //
+    (value: Value) => setTimeout(() => updateSymptom(symptom.id, value), 500),
     [symptom.id, updateSymptom]
   );
+
+  useEffect(() => {}, [symptom.value]);
+
   return (
     <Stack p={2}>
       {symptom.type === "string" ? (
@@ -147,7 +150,7 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
           size="small"
           type="text"
           placeholder={symptom.name}
-          value={symptom.value ?? ""}
+          defaultValue={symptom.value ?? ""}
           onChange={(e) => handleChange(e.target.value)}
         />
       ) : symptom.type === "number" ? (
@@ -156,7 +159,7 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
           size="small"
           type="tel"
           placeholder={symptom.name}
-          value={symptom.value ?? ""}
+          defaultValue={symptom.value ?? ""}
           onChange={(e) => handleChange(e.target.value)}
         />
       ) : symptom.type === "range" ? (
@@ -166,7 +169,7 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
             size="small"
             type="tel"
             placeholder="Start"
-            value={(symptom.value as IRange)?.a ?? ""}
+            defaultValue={(symptom.value as IRange)?.a ?? ""}
             onChange={(e) => {
               const v = parseInt(e.target.value);
               const lim = (symptom.value as IRange)?.b;
@@ -182,7 +185,7 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
             size="small"
             type="tel"
             placeholder="End"
-            value={(symptom.value as IRange)?.b ?? ""}
+            defaultValue={(symptom.value as IRange)?.b ?? ""}
             onChange={(e) => {
               const v = parseInt(e.target.value);
               const lim = (symptom.value as IRange)?.a;

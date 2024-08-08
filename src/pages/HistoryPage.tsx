@@ -1,4 +1,4 @@
-import { AddRounded, DeleteRounded, EditRounded, OpenInFullRounded, SearchRounded } from "@mui/icons-material";
+import { AddRounded, DeleteRounded, EditRounded, SearchRounded } from "@mui/icons-material";
 import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemText, Stack, TextField } from "@mui/material";
 import moment from "moment";
 import { useMemo, useState } from "react";
