@@ -11,11 +11,9 @@ export default function ReportIcon() {
   const symptoms = useStore((s) => s.symptoms);
   const history = useStore((s) => s.history);
   const item: IHistoryItem = useMemo(() => history[0], [history]);
-  const errors = useMemo(() => getSymptomsErrors(symptoms), [symptoms]);
+  const disabled = useMemo(() => getSymptomsErrors(symptoms).length, [symptoms]);
 
   if (!item) return null;
-
-  const disabled = !!errors.length;
 
   return (
     <Tooltip title={!disabled ? "Print Report" : "Please fill the requirements to print report"}>

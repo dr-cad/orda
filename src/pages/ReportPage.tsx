@@ -27,8 +27,8 @@ export default function ReportPage() {
   const item = useMemo(() => (id ? history.find((x) => x.uuid.startsWith(id)) : undefined), [history, id]);
 
   if (!item) return null;
-  const errors = useMemo(() => getSymptomsErrors(item.symptoms), [item.symptoms]);
-  if (errors) return <Navigate to="/result" replace />;
+  const disabled = useMemo(() => getSymptomsErrors(item.symptoms).length, [item.symptoms]);
+  if (disabled) return <Navigate to="/result" replace />;
   return <ReportPageContent id={id!} item={item} />;
 }
 
