@@ -16,7 +16,7 @@ function App() {
     <Routes>
       <Route
         path="/intro"
-        element={history.length ? <Navigate to="/history" replace /> : <PageLayout children={<IntroPage />} />}
+        element={history.length > 3 ? <Navigate to="/history" replace /> : <PageLayout children={<IntroPage />} />}
       />
       <Route path="/list/:pageIndex" element={<PageLayout children={<SymptomsPage />} />} />
       <Route path="/history" element={<PageLayout children={<HistoryPage />} />} />
