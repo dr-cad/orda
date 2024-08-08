@@ -9,8 +9,9 @@ export default defineConfig({
     svgr(),
     react(),
     VitePWA({
-      registerType: "autoUpdate",
       manifest: false,
+      registerType: "autoUpdate",
+      devOptions: { enabled: true },
     }),
   ],
 });

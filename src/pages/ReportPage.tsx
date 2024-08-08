@@ -2,7 +2,7 @@ import { ChevronRightRounded, ImageOutlined, PrintOutlined, ShareOutlined } from
 import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
 import moment from "moment";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import BarChart from "../components/BarChart";
 import "../config/report.css";
@@ -13,6 +13,7 @@ import { useSymptomValueOf } from "../hooks/symptom";
 import { handleShareImage, takeScreenshoot } from "../lib/share";
 import { sleep } from "../lib/utils";
 import { AppMode, IHistoryItem } from "../types/interfaces";
+import { getSymptomsErrors } from "../lib/symptoms";
 
 type Mode = "print" | "image";
 
@@ -26,7 +27,8 @@ export default function ReportPage() {
   const item = useMemo(() => (id ? history.find((x) => x.uuid.startsWith(id)) : undefined), [history, id]);
 
   if (!item) return null;
-
+  const errors = useMemo(() => getSymptomsErrors(item.symptoms), [item.symptoms]);
+  if (errors) return <Navigate to="/result" replace />;
   return <ReportPageContent id={id!} item={item} />;
 }
 

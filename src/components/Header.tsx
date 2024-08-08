@@ -1,16 +1,15 @@
-import { HistoryRounded, HomeOutlined, SaveOutlined, UploadFileOutlined } from "@mui/icons-material";
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { AddRounded, HistoryRounded, HomeOutlined, SaveOutlined, UploadFileOutlined } from "@mui/icons-material";
+import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import useAppHistory from "../hooks/history";
 import Logo from "./favicon.svg?react";
-import NewRecordButton from "./NewRecordButton";
 import ReportIcon from "./ReportIcon";
 
 export default function Header() {
   const { pathname } = useLocation();
 
-  const { handleImportHistory, handleExportHistory } = useAppHistory();
+  const { handleImportHistory, handleExportHistory, handleNewRecord } = useAppHistory();
 
   const inIntro = useMemo(() => pathname.startsWith("/intro"), [pathname]);
   const inList = useMemo(() => pathname.startsWith("/list"), [pathname]);
@@ -34,7 +33,14 @@ export default function Header() {
       zIndex={99}
       borderBottom="var(--app-border)">
       <Stack flex="0 1 100%" direction="row" alignItems="center" justifyContent="flex-start" overflow="hidden">
-        {inList && <NewRecordButton size="small" sx={{ fontSize: "0.75rem" }} draft />}
+        {inList && (
+          <Button
+            onClick={() => handleNewRecord(true)}
+            startIcon={<AddRounded style={{ fontSize: "1rem" }} />}
+            sx={{ borderRadius: 4, fontSize: "0.75rem" }}>
+            New
+          </Button>
+        )}
         {inResult && <ReportIcon />}
         {inHistory && (
           <Tooltip title="Import History">

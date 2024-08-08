@@ -1,6 +1,7 @@
-import { CloseRounded, SearchRounded } from "@mui/icons-material";
+import { AddRounded, CloseRounded, SearchRounded } from "@mui/icons-material";
 import {
   Box,
+  Button,
   IconButton,
   InputAdornment,
   List,
@@ -12,7 +13,6 @@ import {
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NewRecordButton from "../components/NewRecordButton";
 import { useStore } from "../config/store";
 import useAppHistory from "../hooks/history";
 import { getSymptomValueById } from "../lib/symptoms";
@@ -22,6 +22,8 @@ export default function HistoryPage() {
   const history = useStore((s) => s.history);
   const [query, setQuery] = useState("");
   const handleChange = (v: string) => setQuery(v);
+
+  const { handleNewRecord } = useAppHistory();
 
   const list = useMemo(
     () =>
@@ -58,7 +60,9 @@ export default function HistoryPage() {
           <HistoryItem key={i} index={i} {...item} />
         ))}
       </List>
-      <NewRecordButton fullWidth draft />
+      <Button fullWidth onClick={() => handleNewRecord(true)} startIcon={<AddRounded />} sx={{ borderRadius: 4 }}>
+        New Record
+      </Button>
     </Stack>
   );
 }

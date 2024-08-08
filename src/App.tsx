@@ -1,28 +1,29 @@
 import { clarity } from "react-microsoft-clarity";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import PageLayout from "./components/PageLayout";
+import { useStore } from "./config/store";
 import HistoryPage from "./pages/HistoryPage";
 import IntroPage from "./pages/IntroPage";
 import ReportPage from "./pages/ReportPage";
 import ResultPage from "./pages/ResultPage";
 import SymptomsPage from "./pages/SymptomsPage";
 
-// TODO on data available - navigate from intro to history
-
 function App() {
   if (import.meta.env.PROD) clarity.init("nj04qzc3hn");
+  const history = useStore((s) => s.history);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/intro" element={<PageLayout children={<IntroPage />} />} />
-        <Route path="/list/:pageIndex" element={<PageLayout children={<SymptomsPage />} />} />
-        <Route path="/history" element={<PageLayout children={<HistoryPage />} />} />
-        <Route path="/result" element={<PageLayout children={<ResultPage />} />} />
-        <Route path="/report/:id" element={<PageLayout children={<ReportPage />} />} />
-        <Route path="*" element={<Navigate to="/intro" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route
+        path="/intro"
+        element={history.length ? <Navigate to="/history" replace /> : <PageLayout children={<IntroPage />} />}
+      />
+      <Route path="/list/:pageIndex" element={<PageLayout children={<SymptomsPage />} />} />
+      <Route path="/history" element={<PageLayout children={<HistoryPage />} />} />
+      <Route path="/result" element={<PageLayout children={<ResultPage />} />} />
+      <Route path="/report/:id" element={<PageLayout children={<ReportPage />} />} />
+      <Route path="*" element={<Navigate to="/intro" replace />} />
+    </Routes>
   );
 }
 

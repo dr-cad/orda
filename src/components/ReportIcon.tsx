@@ -18,12 +18,20 @@ export default function ReportIcon() {
   const disabled = !!errors.length;
 
   return (
-    <Tooltip title={!disabled ? "Print Report" : "Please fill the required fields to print report"}>
-      <NavLink to={"/report/" + getId(item.uuid)} aria-disabled={disabled}>
-        <IconButton disabled={disabled}>
-          <PrintOutlined />
-        </IconButton>
-      </NavLink>
+    <Tooltip title={!disabled ? "Print Report" : "Please fill the requirements to print report"}>
+      {disabled ? (
+        <span>
+          <IconButton disabled>
+            <PrintOutlined />
+          </IconButton>
+        </span>
+      ) : (
+        <NavLink to={"/report/" + getId(item.uuid)}>
+          <IconButton>
+            <PrintOutlined />
+          </IconButton>
+        </NavLink>
+      )}
     </Tooltip>
   );
 }
