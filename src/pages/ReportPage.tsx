@@ -41,36 +41,11 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
   const scaleToFit = (mode?: Mode) => {
     if (!canResize.current && !mode) return;
     const parent = ref.current.getBoundingClientRect();
-    let scale = Math.min(parent.width / CONTENT_WIDTH, 1);
+    let scale = Math.min(parent.width / CONTENT_WIDTH, 1); // default
     if (mode === "print") scale = CONTENT_WIDTH / (parent.width + 4);
     if (mode === "image") scale = 1;
     content.current.style.setProperty("scale", scale.toString());
   };
-
-  const onBeforeAction = async (mode?: Mode) => {
-    canResize.current = false;
-    scaleToFit(mode);
-    const elements = document.getElementsByClassName("no-print");
-    for (const el of elements) {
-      (el as any).style.visibility = "hidden";
-    }
-    await sleep(150);
-  };
-
-  const onAfterAction = () => {
-    canResize.current = true;
-    scaleToFit();
-    const elements = document.getElementsByClassName("no-print");
-    for (const el of elements) {
-      (el as any).style.visibility = "visible";
-    }
-  };
-
-  const handlePrint = useReactToPrint({
-    content: () => ref.current,
-    onBeforeGetContent: () => onBeforeAction("print"),
-    onAfterPrint: onAfterAction,
-  });
 
   useEffect(() => {
     if (!ref.current) return;
@@ -79,6 +54,32 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
+
+  const setNoPrintVisible = (v: boolean) => {
+    const elements = document.getElementsByClassName("no-print");
+    for (const el of elements) {
+      (el as any).style.visibility = v ? "hidden" : "visible";
+    }
+  };
+
+  const onBeforeAction = async (mode?: Mode) => {
+    canResize.current = false;
+    scaleToFit(mode);
+    setNoPrintVisible(false);
+    await sleep(150);
+  };
+
+  const onAfterAction = () => {
+    canResize.current = true;
+    scaleToFit();
+    setNoPrintVisible(true);
+  };
+
+  const handlePrint = useReactToPrint({
+    content: () => ref.current,
+    onBeforeGetContent: () => onBeforeAction("print"),
+    onAfterPrint: onAfterAction,
+  });
 
   const handleDownload = async () => {
     await onBeforeAction("image");
