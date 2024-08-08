@@ -14,9 +14,7 @@ const symptomTypes = ["string", "number", "range", "date", "enum", "none"];
 // TODO according to commit 32dc533, we need new validation, which ensures that input items (string, number, range), don't inlcude children
 // TODO page items should not have any type! - also define a new type "page" for that
 
-export default function getRawSymptoms(
-  data: ISymptomRaw[] = rawSymptoms
-): ISymptom[] {
+export default function getRawSymptoms(data: ISymptomRaw[] = rawSymptoms): ISymptom[] {
   const validate = (): ValidationError | null => {
     const idRepo: string[] = [];
     for (const item of data) {
@@ -72,15 +70,9 @@ export default function getRawSymptoms(
 
   // fill empty types with none
   const dataMapped = dataFiltered.map<ISymptom>((item) => {
-    const hasEnoughChildren =
-      Array.isArray(item.options) && item.options.length < MAX_OPTIONS_TO_OPEN;
-    const hasEnumParent = !!dataFiltered.find(
-      (parent) => parent.options?.includes(item.id) && parent.type === "enum"
-    );
-    const isOpen =
-      typeof item.open === "boolean"
-        ? item.open
-        : hasEnoughChildren || !hasEnumParent; // TODO also if not boolean, close level-3 parents (hint: page>level-1>level-2>level-3)
+    const hasEnoughChildren = Array.isArray(item.options) && item.options.length < MAX_OPTIONS_TO_OPEN;
+    const hasEnumParent = !!dataFiltered.find((parent) => parent.options?.includes(item.id) && parent.type === "enum");
+    const isOpen = typeof item.open === "boolean" ? item.open : hasEnoughChildren || !hasEnumParent; // TODO also if not boolean, close level-3 parents (hint: page>level-1>level-2>level-3)
     return {
       ...item,
       type: item.type ? item.type : "none",
@@ -97,23 +89,15 @@ export function getSymptomValueById(symptoms: ISymptom[], sid: string) {
 
 export function digestSymptom(symptom?: ISymptom) {
   if (!symptom) return {};
-  const hasInput =
-    !symptom.noInput && symptom.type !== "enum" && symptom.type !== "none";
+  const hasInput = !symptom.noInput && symptom.type !== "enum" && symptom.type !== "none";
   const hasDesc = !!symptom.desc;
-  const hasOptions =
-    Array.isArray(symptom.options) && symptom.options.length !== 0;
+  const hasOptions = Array.isArray(symptom.options) && symptom.options.length !== 0;
   const expandable = !!symptom && (hasDesc || hasInput || hasOptions);
-  const isEnumParent =
-    symptom.type === "enum" &&
-    Array.isArray(symptom.options) &&
-    symptom.options?.length > 1;
+  const isEnumParent = symptom.type === "enum" && Array.isArray(symptom.options) && symptom.options?.length > 1;
   return { hasInput, hasDesc, hasOptions, expandable, isEnumParent };
 }
 
-export function getSymptomPage(
-  symptoms: ISymptom[],
-  symptom: ISymptom
-): number | undefined {
+export function getSymptomPage(symptoms: ISymptom[], symptom: ISymptom): number | undefined {
   if (symptom.page) return symptom.page;
   const parent = symptoms.find((s) => s.options?.includes(symptom.id));
   if (parent) return getSymptomPage(symptoms, parent);
@@ -140,4 +124,49 @@ export function getSymptomsErrors(symptoms: ISymptom[]): IError[] {
   }
 
   return errors;
+}
+
+/**
+ * clear items value and its children
+ * @param arr list of all symptoms
+ * @param id id of the symptom
+ */
+export function recursivelyResetItem(arr: ISymptom[], id: string) {
+  // populate item
+  let item = arr.find((x) => x.id === id);
+  // reset if found
+  if (item) {
+    console.log("Removing", item.id);
+    // reset self
+    item.value = undefined;
+    item.open = false; // close the item
+    // reset each child recursively
+    if (Array.isArray(item.options)) {
+      item.options.forEach((o) => recursivelyResetItem(arr, o));
+    }
+  } else console.error("Couldn't find option", id);
+}
+
+/**
+ * for enum parents that already have values, update the values
+ * based on the child change
+ * @param arr list of all symptoms
+ * @param id id of the symptom
+ */
+export function recursivelyUpdateParents(arr: ISymptom[], id: string) {
+  // find a parent which has this id as a child
+  const parent = arr.find((p) => p.options?.includes(id));
+  if (parent) {
+    console.log("Updating Parent", parent.id);
+    parent.value = false;
+    for (const option of parent.options ?? []) {
+      // reset siblings of enum parent
+      if (parent.type === "enum" && option !== id) recursivelyResetItem(arr, option);
+      // set ancestors whom have value
+      // it works: because it fills from inner parents to outer ones
+      const item = arr.find((item) => item.id === option);
+      if (!!item?.value) parent.value = true;
+    }
+    recursivelyUpdateParents(arr, parent.id);
+  }
 }

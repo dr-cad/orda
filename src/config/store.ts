@@ -5,53 +5,8 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import getRawDiseases from "../lib/diseases";
 import { calcStorageSpace } from "../lib/storage";
-import getRawSymptoms from "../lib/symptoms";
+import getRawSymptoms, { recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
 import { AppMode, ChartMode, IDisease, IHistoryItem, ISymptom, Value } from "../types/interfaces";
-
-/**
- * clear items value and its children
- * @param arr list of all symptoms
- * @param id id of the symptom
- */
-const recursivelyResetItem = (arr: ISymptom[], id: string) => {
-  // populate item
-  let item = arr.find((x) => x.id === id);
-  // reset if found
-  if (item) {
-    console.log("Removing", item.id);
-    // reset self
-    item.value = undefined;
-    item.open = false; // close the item
-    // reset each child recursively
-    if (Array.isArray(item.options)) {
-      item.options.forEach((o) => recursivelyResetItem(arr, o));
-    }
-  } else console.error("Couldn't find option", id);
-};
-
-/**
- * for enum parents that already have values, update the values
- * based on the child change
- * @param arr list of all symptoms
- * @param id id of the symptom
- */
-const recursivelyUpdateParents = (arr: ISymptom[], id: string) => {
-  // find a parent which has this id as a child
-  const parent = arr.find((p) => p.options?.includes(id));
-  if (parent) {
-    console.log("Updating Parent", parent.id);
-    parent.value = false;
-    for (const option of parent.options ?? []) {
-      // reset siblings of enum parent
-      if (parent.type === "enum" && option !== id) recursivelyResetItem(arr, option);
-      // set ancestors whom have value
-      // it works: because it fills from inner parents to outer ones
-      const item = arr.find((item) => item.id === option);
-      if (!!item?.value) parent.value = true;
-    }
-    recursivelyUpdateParents(arr, parent.id);
-  }
-};
 
 export interface Store {
   symptoms: ISymptom[];
@@ -91,9 +46,9 @@ export const useStore = create(
             let arr: ISymptom[] = s.symptoms;
             let item = arr.find((i) => i.id === id);
             if (item) {
-              // if unset occured and has options -> reset item -r
-              // TODO Quick fix: I excluded inputs from reseting - the reason why we did this is that, input items don't have children.
+              // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
               const hasInput = item.type === "string" || item.type === "number" || item.type === "range";
+              // if unset occured and has options -> reset item -r
               if (!value && !hasInput) recursivelyResetItem(arr, item.id);
               // update/reset value
               console.log("Updating", id, value);
@@ -177,7 +132,7 @@ export const useStore = create(
       loadHistory: (item) => {
         console.log("BEFORE", (JSON.stringify(get().symptoms).length / 1024).toFixed(2));
         console.log("AFTER", (JSON.stringify(item.symptoms).length / 1024).toFixed(2));
-        set({ symptoms: item.symptoms });
+        set({ symptoms: item.symptoms }); // load symptoms into symptoms-buffer
       },
       // app ui
       initialized: false,
