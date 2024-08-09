@@ -1,34 +1,26 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useStore } from "../config/store";
+import { useSymptomValue } from "../hooks/symptom";
 import { calcStorageSpace } from "../lib/storage";
 
 import FilePondPluginImageEditor from "@pqina/filepond-plugin-image-editor/dist/FilePondPluginImageEditor.js";
-import {
-  createDefaultImageReader,
-  createDefaultImageWriter,
-  getEditorDefaults,
-  openEditor,
-  processImage,
-} from "@pqina/pintura";
 import { ActualFileObject, FilePondFile } from "filepond";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
-import FilePondPluginImageEdit from "filepond-plugin-image-edit";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { FilePond, registerPlugin } from "react-filepond";
 
-import "@pqina/pintura/";
 import "@pqina/pintura/pintura.css";
-import "filepond-plugin-image-edit/dist/filepond-plugin-image-edit.css";
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+// import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 import "filepond/dist/filepond.min.css";
 import "../config/image-picker.css";
-import { useStore } from "../config/store";
-import { useSymptomValue } from "../hooks/symptom";
 
 registerPlugin(
-  FilePondPluginImageEdit,
+  // plugins
   FilePondPluginImageEditor,
   FilePondPluginImagePreview,
+  // FilePondPluginFilePoster,
   FilePondPluginFileValidateSize
 );
 
@@ -39,6 +31,8 @@ const maxFileSize = 100 * 1024; // 100 KB
 export default function ImagePicker() {
   const updateSymptom = useStore((s) => s.updateSymptom);
   const imagesRaw: string | undefined = useSymptomValue(sid);
+
+  const fielpond = useRef<FilePond>(null);
 
   const { free } = useMemo(calcStorageSpace, []);
 
@@ -51,7 +45,7 @@ export default function ImagePicker() {
     });
   });
 
-  const onFilesAdded = useCallback(
+  const onFilesUpdate = useCallback(
     async (files: FilePondFile[]) => {
       setImages(files.map((f) => f.file));
       const base64PromiseList = files.map((f) => fileToDataURL(f.file));
@@ -86,34 +80,58 @@ export default function ImagePicker() {
         </p>
       ) : (
         <FilePond
-          files={images}
-          onupdatefiles={onFilesAdded}
-          allowMultiple
-          // imageEditorInstantEdit
-          maxFiles={maxFiles}
-          maxTotalFileSize={Math.min(free, maxTotalFileSize) / 1024 + "KB"}
-          imagePreviewHeight={150}
-          imageEditor={{
-            // Maps legacy data objects to new imageState objects (optional)
-            // legacyDataToImageState: legacyDataToImageState,
-            // Used to create the editor (required)
-            createEditor: openEditor,
-            // Used for reading the image data. See JavaScript installation for details on the `imageReader` property (required)
-            imageReader: [createDefaultImageReader, {}],
-            // Required when generating a preview thumbnail and/or output image
-            imageWriter: [createDefaultImageWriter, {}],
-            // Used to create poster and output images, runs an invisible "headless" editor instance
-            imageProcessor: processImage,
-            // Pintura Image Editor options
-            editorOptions: {
-              // Pass the editor default configuration options
-              ...getEditorDefaults(),
-              // This will set a square crop aspect ratio
-              // imageCropAspectRatio: 1,
-            },
-          }}
+          ref={fielpond}
+          files={images} // initial files
           name="files" /* sets the file input name, it's filepond by default */
           labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+          onupdatefiles={onFilesUpdate}
+          onprocessfile={() => onFilesUpdate(fielpond.current?.getFiles() || [])}
+          allowReorder
+          allowMultiple
+          maxFiles={maxFiles}
+          maxTotalFileSize={Math.min(free, maxTotalFileSize) / 1024 + "KB"}
+          imagePreviewMaxHeight={150}
+          // filePosterMaxHeight={150}
+          // imageEditor={{
+          //   // Maps legacy data objects to new imageState objects (optional)
+          //   // legacyDataToImageState: legacyDataToImageState,
+          //   // Used to create the editor (required)
+          //   createEditor: openEditor,
+          //   // Used for reading the image data. See JavaScript installation for details on the `imageReader` property (required)
+          //   imageReader: [createDefaultImageReader],
+          //   // Required when generating a preview thumbnail and/or output image
+          //   imageWriter: [createDefaultImageWriter],
+          //   // Used to create poster and output images, runs an invisible "headless" editor instance
+          //   imageProcessor: async (src: File, options: PinturaEditorHeadlessOptions) => {
+          //     console.log({ src, options, size: src.size });
+          //     const res = await processImage(src, options);
+          //     console.log(res, res.dest.size);
+          //     const index = images.findIndex(async (x) => (await x.text()) === (await src.text()));
+          //     if (index > -1) fielpond.current?.removeFile(index);
+          //     fielpond.current?.addFile(res.dest);
+          //     return res.dest;
+          //   },
+          //   // Pintura Image Editor options
+          //   editorOptions: {
+          //     // Pass the editor default configuration options
+          //     ...getEditorDefaults(),
+          //     // This will set a square crop aspect ratio
+          //     // imageCropAspectRatio: 1,
+          //   },
+          // }}
+          // workaround
+          // instantUpload={false}
+          // server={{
+          //   process: (name, file, metadata, load) => {
+          //     setTimeout(() => {
+          //       load(Date.now().toString());
+          //     }, 500);
+          //   },
+          //   // FilePond will try to revert earlier uploads, if you've supplied a
+          //   // URL to `server.url` or `server` you need to set `revert` to null prevent
+          //   // FilePond from calling the server to DELETE the file
+          //   revert: null,
+          // }}
         />
       )}
     </div>

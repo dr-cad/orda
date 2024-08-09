@@ -110,9 +110,9 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   return (
     <ListItem
       sx={{
+        // borderBottom: "var(--app-border)",
         justifyContent: "space-between",
         alignItems: "center",
-        // borderBottom: "var(--app-border)",
         backgroundColor: "#ffffff08",
         borderRadius: 3,
         cursor: "pointer",

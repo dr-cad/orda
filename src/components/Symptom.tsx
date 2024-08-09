@@ -79,9 +79,9 @@ function Symptom({ id, parent }: IProps) {
 }
 
 const Label = ({ symptom, parent }: IInnerProps) => {
-  const { hasInput, isEnumParent } = useDigestSymptom(symptom);
+  const { inputable, isEnumParent } = useDigestSymptom(symptom);
   const isParent = Array.isArray(symptom.options);
-  const noButton = hasInput || isParent;
+  const noButton = inputable || isParent;
   const bold = isParent;
   return (
     <FormControlLabel

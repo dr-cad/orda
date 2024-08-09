@@ -89,12 +89,13 @@ export function getSymptomValueById(symptoms: ISymptom[], sid: string) {
 
 export function digestSymptom(symptom?: ISymptom) {
   if (!symptom) return {};
-  const hasInput = !symptom.noInput && symptom.type !== "enum" && symptom.type !== "none";
+  const inputable = symptom.type !== "enum" && symptom.type !== "none";
+  const hasInput = !symptom.noInput && inputable;
   const hasDesc = !!symptom.desc;
   const hasOptions = Array.isArray(symptom.options) && symptom.options.length !== 0;
   const expandable = !!symptom && (hasDesc || hasInput || hasOptions);
   const isEnumParent = symptom.type === "enum" && Array.isArray(symptom.options) && symptom.options?.length > 1;
-  return { hasInput, hasDesc, hasOptions, expandable, isEnumParent };
+  return { inputable, hasInput, hasDesc, hasOptions, expandable, isEnumParent };
 }
 
 export function getSymptomPage(symptoms: ISymptom[], symptom: ISymptom): number | undefined {
