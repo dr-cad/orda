@@ -1,5 +1,16 @@
-import { AddRounded, DeleteRounded, EditRounded, SearchRounded } from "@mui/icons-material";
-import { Box, Button, IconButton, InputAdornment, List, ListItem, ListItemText, Stack, TextField } from "@mui/material";
+import { AddRounded, DeleteRounded, EditRounded, SearchRounded, Visibility } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemText,
+  Stack,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import moment from "moment";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -111,12 +122,21 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
       onClick={handleLoad}
       secondaryAction={
         <Box display="flex" flexDirection="row" gap={1}>
-          <IconButton size="small" color="primary" onClick={handleEdit}>
-            <EditRounded fontSize="small" />
-          </IconButton>
-          <IconButton size="small" color="error" onClick={handleRemove}>
-            <DeleteRounded fontSize="small" />
-          </IconButton>
+          <Tooltip title="Results">
+            <IconButton size="small" color="success">
+              <Visibility fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton size="small" color="primary" onClick={handleEdit}>
+              <EditRounded fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton size="small" color="error" onClick={handleRemove}>
+              <DeleteRounded fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       }>
       <Box flex="0 0 8px" />
