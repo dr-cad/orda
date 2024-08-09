@@ -18,7 +18,7 @@ export interface Store {
   diseases: IDisease[];
   reset: () => void;
   history: IHistoryItem[];
-  addHistory: (item: Omit<IHistoryItem, "uuid" | "hash">) => IHistoryItem[] | Error;
+  addHistory: (item: Omit<IHistoryItem, "uuid" | "hash" | "hash2">) => IHistoryItem[] | Error;
   removeHistory: (index: number) => void;
   loadHistory: (item: IHistoryItem) => void;
   // app ui
@@ -108,19 +108,30 @@ export const useStore = create(
       history: [],
       addHistory: (item) => {
         if (calcStorageSpace().free < JSON.stringify(item.symptoms).length) {
-          return new Error("No space left");
+          set({ snackbar: { message: `Unable to save result! No space left`, color: "error.main" } });
+          return Error("No space left");
         }
         // assign a new uuid
         const newItem: IHistoryItem = {
           ...item,
           uuid: uuid4(),
           hash: sha256(JSON.stringify(item.symptoms)).toString(),
+          hash2: sha256(JSON.stringify(item.scores)).toString(),
         };
-        if (get().history.some((h) => h.hash === newItem.hash)) {
-          // return new Error("Duplicate item");
-          return get().history; // no error needed
-        }
-        set((s) => ({ history: [newItem, ...s.history] }));
+
+        set(
+          produce((s: Store) => {
+            const existing = s.history.findIndex((r) => r.hash === newItem.hash);
+            // if same symptoms and (same scores or unsaved) -> replace previous
+            if (existing > -1 && (s.history[existing].hash2 === newItem.hash2 || s.history[existing].unsaved)) {
+              s.history.splice(existing, 1); // would be replaced by new scores - since they're identically equal we don't need previous anymore and it would also bring new data to top
+              s.snackbar = { message: `Updated results of existing record`, color: "primary.main" };
+            } else {
+              s.snackbar = { message: `Result saved! You can check it in history`, color: "success.main" };
+            }
+            s.history.unshift(newItem);
+          })
+        );
         return get().history;
       },
       removeHistory: (index) => {

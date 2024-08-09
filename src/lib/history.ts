@@ -34,7 +34,7 @@ export async function importHistory(addHistory: Store["addHistory"], callback: F
         callback();
       } catch (e) {
         if (e instanceof Error) {
-          alert(e.message);
+          console.log(e.message);
         }
       }
     };

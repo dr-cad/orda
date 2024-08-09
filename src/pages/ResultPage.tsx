@@ -33,11 +33,7 @@ export default function ResultPage() {
     if (!backedUp.current) {
       backedUp.current = true;
       const history = addHistory({ createdAt: new Date(), scores: newScores, symptoms });
-      if (history instanceof Error) {
-        showSnackbar(`Unable to save result! ${history.message}`, "error.main");
-        return;
-      }
-      showSnackbar(`Result saved! You can check in history`, "success.main");
+      if (history instanceof Error) return;
       // download a backup file
       if (autoBackup) exportHistory(history);
     }

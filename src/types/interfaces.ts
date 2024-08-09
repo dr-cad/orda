@@ -80,6 +80,7 @@ export interface IHistoryItem {
   scores: IScoredDisease[];
   unsaved?: boolean;
   hash: string;
+  hash2: string;
 }
 
 export interface IError {
