@@ -1,7 +1,7 @@
 import { ImageOutlined, ShareOutlined, ViewKanbanRounded, ViewTimelineRounded } from "@mui/icons-material";
 import { Alert, Box, IconButton, List, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import BarChart, { Keys } from "../components/BarChart";
 import DiseaseScore from "../components/DiseaseScore";
 import { useStore } from "../config/store";
@@ -13,6 +13,8 @@ import { getSymptomValueById, getSymptomsErrors } from "../lib/symptoms";
 import { AppMode, IScoredDisease } from "../types/interfaces";
 
 export default function ResultPage() {
+  const { id } = useParams();
+
   const backedUp = useRef(false);
   const _chartBox = useRef();
 
@@ -20,6 +22,7 @@ export default function ResultPage() {
   const setMode = useStore((s) => s.setMode);
   const symptoms = useStore((s) => s.symptoms);
   const diseases = useStore((s) => s.diseases);
+  const history = useStore((s) => s.history);
   const addHistory = useStore((s) => s.addHistory);
   const autoBackup = useStore((s) => s.autoBackup);
   const showSnackbar = useStore((s) => s.showSnackbar);
@@ -27,6 +30,14 @@ export default function ResultPage() {
   const [_scores, setScores] = useState<IScoredDisease[]>([]);
 
   useEffect(() => {
+    // if id provided - load previous
+    if (id) {
+      const item = history.find((r) => r.uuid.startsWith(id));
+      if (!item) return showSnackbar("Can't find history record item!", "error.main");
+      return setScores(item.scores);
+    }
+
+    // if no id provided - save new
     const newScores = getScores({ diseases, symptoms }); // heavy calculations
     setScores(newScores);
     // update in-app history

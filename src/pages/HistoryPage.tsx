@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
 import useAppHistory from "../hooks/history";
 import { getSymptomValueById } from "../lib/symptoms";
+import { getId } from "../lib/utils";
 import { IHistoryItem } from "../types/interfaces";
 
 export default function HistoryPage() {
@@ -74,7 +75,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
     e.stopPropagation();
     saveDraft(); // draft current data before loading the item
     load(item);
-    nav("/result");
+    nav("/result/" + getId(item.uuid));
     showSnackbar("History record loaded!");
   };
 
