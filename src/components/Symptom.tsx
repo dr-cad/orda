@@ -150,7 +150,7 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
   }, [symptom.value]);
 
   return (
-    <Stack p={2} key={key}>
+    <Stack key={key} p={2}>
       {symptom.type === "string" ? (
         <TextField
           id={symptom.id + "-textfield"}
