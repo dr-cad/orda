@@ -19,7 +19,7 @@ export interface Store {
   reset: () => void;
   history: IHistoryItem[];
   addHistory: (item: Omit<IHistoryItem, "uuid" | "hash" | "hash2">) => IHistoryItem[] | Error;
-  removeHistory: (index: number) => void;
+  removeHistory: (index: IHistoryItem) => void;
   loadHistory: (item: IHistoryItem) => void;
   // app ui
   initialized: boolean;
@@ -127,19 +127,20 @@ export const useStore = create(
             if (existing > -1 && (s.history[existing].hash2 === newItem.hash2 || s.history[existing].unsaved)) {
               // if same symptoms and (same scores or unsaved) -> replace previous
               s.history.splice(existing, 1); // would be replaced by new scores - since they're identically equal we don't need previous anymore and it would also bring new data to top
-              s.snackbar = { message: `Updated results of existing record`, color: "primary.main" };
+              s.snackbar = { message: `Updated existing record!`, color: "primary.main" };
             } else {
-              s.snackbar = { message: `Result saved! You can check it in history`, color: "success.main" };
+              s.snackbar = { message: `Record saved! You can check it in history`, color: "success.main" };
             }
             s.history.unshift(newItem);
           })
         );
         return get().history;
       },
-      removeHistory: (index) => {
+      removeHistory: (item) => {
         set(
           produce((s: Store) => {
-            s.history.splice(index, 1);
+            const index = s.history.indexOf(item);
+            if (index > -1) s.history.splice(index, 1);
           })
         );
       },

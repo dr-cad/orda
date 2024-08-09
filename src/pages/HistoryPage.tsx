@@ -70,7 +70,7 @@ export default function HistoryPage() {
 }
 
 const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const { saveDraft } = useAppHistory();
   const remove = useStore((s) => s.removeHistory);
   const load = useStore((s) => s.loadHistory);
@@ -86,7 +86,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
     e.stopPropagation();
     saveDraft(); // draft current data before loading the item
     load(item);
-    nav("/result/" + getId(item.uuid));
+    navigate("/result/" + getId(item.uuid));
     showSnackbar("History record loaded!");
   };
 
@@ -95,14 +95,15 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
     e.stopPropagation();
     saveDraft(); // draft current data before loading the item
     load(item);
-    nav("/list/1");
+    if (item.unsaved) remove(item); // after loading draft item, remove it
+    navigate("/list/1");
     showSnackbar("History record loaded!");
   };
 
   const handleRemove: React.MouseEventHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    remove(index);
+    remove(item);
     showSnackbar("History record removed!");
   };
 
@@ -119,7 +120,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
           backgroundColor: "#ffffff12",
         },
       }}
-      onClick={handleLoad}
+      onClick={!item.unsaved ? handleLoad : handleEdit}
       secondaryAction={
         <Box display="flex" flexDirection="row" gap={1}>
           {!item.unsaved && (
