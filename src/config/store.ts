@@ -117,7 +117,8 @@ export const useStore = create(
           hash: sha256(JSON.stringify(item.symptoms)).toString(),
         };
         if (get().history.some((h) => h.hash === newItem.hash)) {
-          return new Error("Duplicate item");
+          // return new Error("Duplicate item");
+          return get().history; // no error needed
         }
         set((s) => ({ history: [newItem, ...s.history] }));
         return get().history;
