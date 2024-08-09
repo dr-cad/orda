@@ -118,12 +118,13 @@ export const useStore = create(
           hash: sha256(JSON.stringify(item.symptoms)).toString(),
           hash2: sha256(JSON.stringify(item.scores)).toString(),
         };
-
+        // update
         set(
           produce((s: Store) => {
             const existing = s.history.findIndex((r) => r.hash === newItem.hash);
-            // if same symptoms and (same scores or unsaved) -> replace previous
+            if (existing > -1 && item.unsaved) return; // ignore saving
             if (existing > -1 && (s.history[existing].hash2 === newItem.hash2 || s.history[existing].unsaved)) {
+              // if same symptoms and (same scores or unsaved) -> replace previous
               s.history.splice(existing, 1); // would be replaced by new scores - since they're identically equal we don't need previous anymore and it would also bring new data to top
               s.snackbar = { message: `Updated results of existing record`, color: "primary.main" };
             } else {
