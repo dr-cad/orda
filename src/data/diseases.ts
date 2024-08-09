@@ -209,12 +209,12 @@ const diseases: IDisease[] = [
         sid: "maxilla",
         ranges: [
           { a: 4, b: 5, rate: 0.32 },
-          { a: 3, b: 6, rate: 0.16 },
-          { a: 2, b: 7, rate: 0.08 },
+          { a: 3, b: 6, rate: 0.24 },
+          { a: 2, b: 7, rate: 0.16 },
           { a: 9, b: 10, rate: 0.32 },
-          { a: 8, b: 11, rate: 0.16 },
-          { a: 7, b: 12, rate: 0.08 },
-          { a: 1, b: 12, rate: 0.065 },
+          { a: 8, b: 11, rate: 0.24 },
+          { a: 7, b: 12, rate: 0.16 },
+          { a: 1, b: 12, rate: 0.08 },
         ],
       },
       {
@@ -223,7 +223,7 @@ const diseases: IDisease[] = [
           { a: 4, b: 5, rate: 0.48 },
           { a: 3, b: 6, rate: 0.36 },
           { a: 2, b: 7, rate: 0.24 },
-          { a: 1, b: 12, rate: 0.10 },
+          { a: 1, b: 12, rate: 0.12 },
         ],
       },
       {
