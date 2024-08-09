@@ -681,7 +681,7 @@ const diseases: IDisease[] = [
   },
   {
     id: "unicystic",
-    name: "Unicystic Ameloblastoma",
+    name: "Unicystic/Mural Ameloblastoma",
     preval: 0.01,
     factors: [
       {

@@ -4,9 +4,9 @@ const report: IReport[] = [
   {
     text: [
       // static
-      "Panaromic radiography revealed",
-      "Panaromic examination indicates",
-      "Panaromic findings illustrates",
+      "Panoramic radiography revealed",
+      "Panoramic examination indicates",
+      "Panoramic findings illustrates",
     ],
   },
 
