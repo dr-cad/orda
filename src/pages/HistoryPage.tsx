@@ -122,11 +122,13 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
       onClick={handleLoad}
       secondaryAction={
         <Box display="flex" flexDirection="row" gap={1}>
-          <Tooltip title="Results">
-            <IconButton size="small" color="success">
-              <Visibility fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          {!item.unsaved && (
+            <Tooltip title="Results">
+              <IconButton size="small" color="success">
+                <Visibility fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
           <Tooltip title="Edit">
             <IconButton size="small" color="primary" onClick={handleEdit}>
               <EditRounded fontSize="small" />

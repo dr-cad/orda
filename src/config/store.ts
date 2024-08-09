@@ -64,6 +64,7 @@ export const useStore = create(
         return result;
       },
       reset: () => {
+        console.log("RESET");
         set({
           symptoms: getRawSymptoms(),
           diseases: getRawDiseases(),
