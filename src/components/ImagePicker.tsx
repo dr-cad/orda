@@ -119,6 +119,10 @@ export default function ImagePicker() {
           //     // imageCropAspectRatio: 1,
           //   },
           // }}
+          // imageEditorAfterWriteImage={(res) => {
+          //   console.log("After write", res.dest.fileSize);
+          //   return res.dest;
+          // }}
           // workaround
           // instantUpload={false}
           // server={{
