@@ -4,17 +4,26 @@ import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
 import { calcStorageSpace } from "../lib/storage";
 
+import "@pqina/pintura/pintura.css";
+// import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
+import "filepond/dist/filepond.min.css";
+import "../config/image-picker.css";
+
 import FilePondPluginImageEditor from "@pqina/filepond-plugin-image-editor/dist/FilePondPluginImageEditor.js";
 import { ActualFileObject, FilePondFile } from "filepond";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { FilePond, registerPlugin } from "react-filepond";
 
-import "@pqina/pintura/pintura.css";
-// import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.min.css";
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
-import "filepond/dist/filepond.min.css";
-import "../config/image-picker.css";
+// import {
+//   createDefaultImageReader,
+//   createDefaultImageWriter,
+//   getEditorDefaults,
+//   openEditor,
+//   PinturaEditorHeadlessOptions,
+//   processImage,
+// } from "@pqina/pintura";
 
 registerPlugin(
   // plugins
@@ -109,7 +118,7 @@ export default function ImagePicker() {
           //     const index = images.findIndex(async (x) => (await x.text()) === (await src.text()));
           //     if (index > -1) fielpond.current?.removeFile(index);
           //     fielpond.current?.addFile(res.dest);
-          //     return res.dest;
+          //     return URL.createObjectURL(res.dest);
           //   },
           //   // Pintura Image Editor options
           //   editorOptions: {

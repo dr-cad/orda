@@ -95,7 +95,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
     e.stopPropagation();
     saveDraft(); // draft current data before loading the item
     load(item);
-    if (item.unsaved) remove(item); // after loading draft item, remove it
+    if (item.unsaved) remove(item.uuid); // after loading draft item, remove it
     navigate("/list/1");
     showSnackbar("History record loaded!");
   };
@@ -103,7 +103,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   const handleRemove: React.MouseEventHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    remove(item);
+    remove(item.uuid);
     showSnackbar("History record removed!");
   };
 

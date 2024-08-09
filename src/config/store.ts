@@ -19,7 +19,7 @@ export interface Store {
   reset: () => void;
   history: IHistoryItem[];
   addHistory: (item: Omit<IHistoryItem, "uuid" | "hash" | "hash2">) => IHistoryItem[] | Error;
-  removeHistory: (index: IHistoryItem) => void;
+  removeHistory: (uuid: string) => void;
   loadHistory: (item: IHistoryItem) => void;
   // app ui
   initialized: boolean;
@@ -136,10 +136,10 @@ export const useStore = create(
         );
         return get().history;
       },
-      removeHistory: (item) => {
+      removeHistory: (uuid) => {
         set(
           produce((s: Store) => {
-            const index = s.history.indexOf(item);
+            const index = s.history.findIndex((x) => x.uuid === uuid);
             if (index > -1) s.history.splice(index, 1);
           })
         );
