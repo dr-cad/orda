@@ -7,16 +7,9 @@ import Logo from "../components/favicon.svg?react";
 
 import { Box, Button, Stack, Typography } from "@mui/material";
 import useAppHistory from "../hooks/history";
-import { useStore } from "../config/store";
-import { redirect } from "react-router-dom";
 
 export default function IntroPage() {
-  const history = useStore((s) => s.history);
   const { handleImportHistory, handleNewRecord } = useAppHistory();
-
-  if (history.length > 3) {
-    redirect("/history");
-  }
 
   return (
     <Stack aria-label="intro-wrapper" flex={1} maxWidth={350} alignItems="center" textAlign="center" mx="auto">
