@@ -42,7 +42,6 @@ export const makeUploadRequest = ({
 
   request.onload = () => {
     const data: IResponseData = JSON.parse(request.response);
-    // console.log({ data });
     if (request.status >= 200 && request.status < 300) {
       successCallback(data);
     } else {

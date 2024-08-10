@@ -109,7 +109,6 @@ export default function ImagePicker() {
             },
             progressCallback: (_len, loaded, total) => {
               const percent = (loaded / total) * 100;
-              console.log(percent);
               setProgress(percent >= 100 ? 0 : percent);
             },
           })
