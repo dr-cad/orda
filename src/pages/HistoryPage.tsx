@@ -1,4 +1,4 @@
-import { AddRounded, DeleteRounded, EditRounded, SearchRounded, Visibility } from "@mui/icons-material";
+import { AddRounded, DeleteRounded, EditRounded, PrintRounded, SearchRounded, Visibility } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import moment from "moment";
-import { useMemo, useState } from "react";
+import { MouseEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
 import useAppHistory from "../hooks/history";
@@ -81,26 +81,29 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
     return patName || "ORDA";
   }, [item.symptoms]);
 
-  const handleLoad: React.MouseEventHandler = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    saveDraft(); // draft current data before loading the item
-    load(item);
-    navigate("/result/" + getId(item.uuid));
-    showSnackbar("History record loaded!");
-  };
-
-  const handleEdit: React.MouseEventHandler = (e) => {
+  const handleLoadAndGo = (e: MouseEvent, to: string) => {
     e.preventDefault();
     e.stopPropagation();
     saveDraft(); // draft current data before loading the item
     load(item);
     if (item.unsaved) remove(item.uuid); // after loading draft item, remove it
-    navigate("/list/1");
+    navigate(to);
     showSnackbar("History record loaded!");
   };
 
-  const handleRemove: React.MouseEventHandler = (e) => {
+  const handleReport = (e: MouseEvent) => {
+    handleLoadAndGo(e, "/report/" + getId(item.uuid));
+  };
+
+  const handleLoad = (e: MouseEvent) => {
+    handleLoadAndGo(e, "/result/" + getId(item.uuid));
+  };
+
+  const handleEdit = (e: MouseEvent) => {
+    handleLoadAndGo(e, "/list/1");
+  };
+
+  const handleRemove = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     remove(item.uuid);
@@ -124,11 +127,18 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
       secondaryAction={
         <Box display="flex" flexDirection="row" gap={1}>
           {!item.unsaved && (
-            <Tooltip title="Results">
-              <IconButton size="small" color="success">
-                <Visibility fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            <>
+              <Tooltip title="Report">
+                <IconButton size="small" onClick={handleReport}>
+                  <PrintRounded fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Results">
+                <IconButton size="small" color="success">
+                  <Visibility fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </>
           )}
           <Tooltip title="Edit">
             <IconButton size="small" color="primary" onClick={handleEdit}>
