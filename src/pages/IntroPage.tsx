@@ -12,7 +12,14 @@ export default function IntroPage() {
   const { handleImportHistory, handleNewRecord } = useAppHistory();
 
   return (
-    <Stack aria-label="intro-wrapper" flex={1} maxWidth={350} alignItems="center" textAlign="center" mx="auto">
+    <Stack
+      aria-label="intro-wrapper"
+      flex={1}
+      maxWidth={350}
+      maxHeight="100dvh"
+      alignItems="center"
+      textAlign="center"
+      mx="auto">
       <Box flex={1} />
       <Logo style={{ height: "15rem", width: "auto" }} />
       <Typography variant="h3">Welcome to Oral Diagnosis App</Typography>
