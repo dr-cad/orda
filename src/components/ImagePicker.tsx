@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
@@ -11,10 +11,20 @@ import "filepond/dist/filepond.min.css";
 import "../config/image-picker.css";
 
 import FilePondPluginImageEditor from "@pqina/filepond-plugin-image-editor/dist/FilePondPluginImageEditor.js";
-import { ActualFileObject, FilePondFile } from "filepond";
+import {
+  ActualFileObject,
+  FilePondErrorDescription,
+  FilePondFile,
+  LoadServerConfigFunction,
+  ProcessServerConfigFunction,
+  RevertServerConfigFunction,
+} from "filepond";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { FilePond, registerPlugin } from "react-filepond";
+import { makeDeleteRequest, makeUploadRequest } from "../lib/cloudinary";
+import { ICImage } from "../types/interfaces";
+import { parseImages, stringifyImages } from "../lib/image";
 
 // import {
 //   createDefaultImageReader,
@@ -41,41 +51,126 @@ export default function ImagePicker() {
   const updateSymptom = useStore((s) => s.updateSymptom);
   const imagesRaw: string | undefined = useSymptomValue(sid);
 
-  const fielpond = useRef<FilePond>(null);
-
+  const filepond = useRef<FilePond>(null);
   const { free } = useMemo(calcStorageSpace, []);
+  const [images, setImages] = useState<ActualFileObject[]>();
 
-  const [images, setImages] = useState<ActualFileObject[]>(() => {
-    // load initial images
-    if (!imagesRaw) return [];
-    const base64List: string[] = JSON.parse(imagesRaw);
-    return base64List.map((dataURL, i) => {
-      return dataURLToFile(dataURL, `image-${i + 1}`);
+  useEffect(() => {
+    const setImagesOnInit = async () => {
+      const images = parseImages(imagesRaw);
+
+      const list = await Promise.all(
+        images.map(async (image) => {
+          const res = await fetch(image.url);
+          return new File([await res.blob()], image.filename, { type: "image/jpeg" });
+        })
+      );
+
+      setImages(list);
+    };
+
+    setImagesOnInit();
+
+    return () => {
+      // TODO clean up
+    };
+  }, []);
+
+  // cloudinary + store
+
+  const onAddFile = (error: FilePondErrorDescription | null, file: FilePondFile) => {
+    console.log("add", { error, file });
+    return;
+    const abortRequest = makeUploadRequest({
+      file: file.file as File,
+      fieldName: file.filename,
+      successCallback: (deleteToken, data) => {
+        const images = parseImages(imagesRaw);
+        images.push({
+          url: data.url,
+          deleteToken: deleteToken,
+          filename: file.filename,
+        });
+        updateSymptom(sid, stringifyImages(images));
+      },
+      errorCallback: () => {},
+      progressCallback: () => {},
     });
-  });
+  };
 
-  const onFilesUpdate = useCallback(
-    async (files: FilePondFile[]) => {
-      setImages(files.map((f) => f.file));
-      const base64PromiseList = files.map((f) => fileToDataURL(f.file));
-      const base64List = await Promise.all(base64PromiseList);
-      const base64ListStringify = files.length ? JSON.stringify(base64List) : false;
-      updateSymptom(sid, base64ListStringify);
-    },
-    [updateSymptom]
-  );
+  const onRemoveFile = (error: FilePondErrorDescription | null, file: FilePondFile) => {
+    console.log("remove", { error, file });
+    // TODO same as top with splice -> get returned item from splice and
+  };
+
+  // methods
+
+  const revert: RevertServerConfigFunction = (token, successCallback, errorCallback) => {
+    makeDeleteRequest({
+      token,
+      successCallback,
+      errorCallback,
+    });
+  };
+
+  const process: ProcessServerConfigFunction = (
+    fieldName,
+    file,
+    _metadata,
+    load,
+    error,
+    progress,
+    abort,
+    _transfer,
+    _options
+  ) => {
+    console.log({ _metadata });
+
+    const abortRequest = makeUploadRequest({
+      file: file as File,
+      fieldName,
+      successCallback: (deleteToken, data) => {
+        load(deleteToken);
+      },
+      errorCallback: error,
+      progressCallback: progress,
+    });
+
+    return {
+      abort: () => {
+        abortRequest();
+        abort();
+      },
+    };
+  };
+
+  const load: LoadServerConfigFunction = (source, load, error, progress, abort, headers) => {
+    console.log({ source, headers });
+    fetch(source).then(async (res) => {
+      const file = new File([await res.blob()], "image", { type: "image/jpg" });
+      load(file);
+    });
+  };
+
+  const onFilesUpdate = (files: FilePondFile[]) => {
+    console.log({ files });
+    setImages(files.map((f) => f.file));
+  };
+
+  // ui
 
   const maxTotalFileSize = maxFileSize * maxFiles; // B
 
   return (
     <div className="image-picker">
       <p style={{ marginTop: 0 }}>
-        Please upload your panaromic image.
+        Please upload your panaromic images.
         <br />
         for image compression go to{" "}
         <Link to="https://tinypng.com" target="_blank" rel="noreferrer" style={{ color: "var(--theme-color)" }}>
           TinyPng.com
         </Link>
+        .
         <br />
         <span style={{ color: "#666" }}>(preferred formats are: jpeg, webp)</span>
       </p>
@@ -89,86 +184,24 @@ export default function ImagePicker() {
         </p>
       ) : (
         <FilePond
-          ref={fielpond}
+          ref={filepond}
           files={images} // initial files
           name="files" /* sets the file input name, it's filepond by default */
           labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
           onupdatefiles={onFilesUpdate}
-          onprocessfile={() => onFilesUpdate(fielpond.current?.getFiles() || [])}
-          allowReorder
+          onprocessfile={(err, file) => console.log("proc", { err, file })}
+          // onaddfile={onAddFile}
+          onremovefile={onRemoveFile}
+          // allowReorder
           allowMultiple
+          acceptedFileTypes={["image/jpeg"]} // FIXME not working
           maxFiles={maxFiles}
           maxTotalFileSize={Math.min(free, maxTotalFileSize) / 1024 + "KB"}
           imagePreviewMaxHeight={150}
-          // filePosterMaxHeight={150}
-          // imageEditor={{
-          //   // Maps legacy data objects to new imageState objects (optional)
-          //   // legacyDataToImageState: legacyDataToImageState,
-          //   // Used to create the editor (required)
-          //   createEditor: openEditor,
-          //   // Used for reading the image data. See JavaScript installation for details on the `imageReader` property (required)
-          //   imageReader: [createDefaultImageReader],
-          //   // Required when generating a preview thumbnail and/or output image
-          //   imageWriter: [createDefaultImageWriter],
-          //   // Used to create poster and output images, runs an invisible "headless" editor instance
-          //   imageProcessor: async (src: File, options: PinturaEditorHeadlessOptions) => {
-          //     console.log({ src, options, size: src.size });
-          //     const res = await processImage(src, options);
-          //     console.log(res, res.dest.size);
-          //     const index = images.findIndex(async (x) => (await x.text()) === (await src.text()));
-          //     if (index > -1) fielpond.current?.removeFile(index);
-          //     fielpond.current?.addFile(res.dest);
-          //     return URL.createObjectURL(res.dest);
-          //   },
-          //   // Pintura Image Editor options
-          //   editorOptions: {
-          //     // Pass the editor default configuration options
-          //     ...getEditorDefaults(),
-          //     // This will set a square crop aspect ratio
-          //     // imageCropAspectRatio: 1,
-          //   },
-          // }}
-          // imageEditorAfterWriteImage={(res) => {
-          //   console.log("After write", res.dest.fileSize);
-          //   return res.dest;
-          // }}
-          // workaround
           // instantUpload={false}
-          // server={{
-          //   process: (name, file, metadata, load) => {
-          //     setTimeout(() => {
-          //       load(Date.now().toString());
-          //     }, 500);
-          //   },
-          //   // FilePond will try to revert earlier uploads, if you've supplied a
-          //   // URL to `server.url` or `server` you need to set `revert` to null prevent
-          //   // FilePond from calling the server to DELETE the file
-          //   revert: null,
-          // }}
+          // server={{ process, revert, load }}
         />
       )}
     </div>
   );
-}
-
-async function fileToDataURL(file: ActualFileObject): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      const url = event.target?.result?.toString();
-      if (!url) return reject("Couldn't read file: " + file.name);
-      resolve(url);
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function dataURLToFile(dataURL: string, filename: string): File {
-  const arr = dataURL.split(",");
-  const mime = arr[0].match(/:(.*?);/)![1];
-  const bstr = atob(arr[arr.length - 1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) u8arr[n] = bstr.charCodeAt(n);
-  return new File([u8arr], filename, { type: mime });
 }

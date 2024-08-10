@@ -95,3 +95,11 @@ export interface IReport {
   ranges?: (IRange & { text: string })[];
   text?: string | string[];
 }
+
+// image
+
+export interface ICImage {
+  url: string;
+  deleteToken: string;
+  filename: string;
+}
