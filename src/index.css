@@ -64,6 +64,8 @@ img.desc-img {
   margin: 0 auto;
   border-left: var(--app-border);
   border-right: var(--app-border);
+  height: 100dvh;
+  max-height: 100dvh;
 }
 
 @media screen and (max-width: 480px) {
@@ -93,9 +95,6 @@ img.desc-img {
   background-color: var(--scroll-thumb-color);
   background-image: var(--scroll-thumb);
   border-radius: var(--scroll-radius);
-}
-
-.editable {
 }
 
 .text-wrap {
@@ -212,7 +211,4 @@ img.desc-img {
   .dent-picker .circle {
     width: 14px;
   }
-}
-
-.image-picker {
 }
