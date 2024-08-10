@@ -129,7 +129,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
           {!item.unsaved && (
             <>
               <Tooltip title="Report">
-                <IconButton size="small" onClick={handleReport}>
+                <IconButton size="small" color="primary" onClick={handleReport}>
                   <PrintRounded fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -141,7 +141,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
             </>
           )}
           <Tooltip title="Edit">
-            <IconButton size="small" color="primary" onClick={handleEdit}>
+            <IconButton size="small" color="warning" onClick={handleEdit}>
               <EditRounded fontSize="small" />
             </IconButton>
           </Tooltip>

@@ -85,35 +85,37 @@ export default function ImagePicker() {
     for await (const file of files || []) {
       const hash = await fileHash(file);
       const existing = imagesParsed.find((x) => x.hash === hash);
+
+      // don't upload again just use previous
       if (existing) {
-        // don't upload again just use previous
         newImages.push(existing);
-      } else {
-        // upload
-        await new Promise((resolve, reject) =>
-          makeUploadRequest({
-            file: file as File,
-            fieldName: file.name,
-            successCallback: (data) => {
-              newImages.push({
-                hash,
-                url: data.url,
-                deleteToken: data.delete_token,
-              });
-              console.log("cloud:upload", { data });
-              resolve(data);
-            },
-            errorCallback: (error) => {
-              console.error("cloud:upload", { error });
-              reject(error);
-            },
-            progressCallback: (_len, loaded, total) => {
-              const percent = (loaded / total) * 100;
-              setProgress(percent >= 100 ? 0 : percent);
-            },
-          })
-        );
+        continue;
       }
+
+      // upload
+      await new Promise((resolve, reject) =>
+        makeUploadRequest({
+          file: file as File,
+          fieldName: file.name,
+          successCallback: (data) => {
+            newImages.push({
+              hash,
+              url: data.url,
+              deleteToken: data.delete_token,
+            });
+            console.log("cloud:upload", { data });
+            resolve(data);
+          },
+          errorCallback: (error) => {
+            console.error("cloud:upload", { error });
+            reject(error);
+          },
+          progressCallback: (_len, loaded, total) => {
+            const percent = (loaded / total) * 100;
+            setProgress(percent >= 100 ? 0 : percent);
+          },
+        })
+      );
     }
 
     updateSymptom(sid, stringifyImages(newImages));
