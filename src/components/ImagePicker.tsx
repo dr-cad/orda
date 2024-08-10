@@ -17,7 +17,6 @@ import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
 import { makeUploadRequest } from "../lib/cloudinary";
 import { parseImages, stringifyImages } from "../lib/image";
-import { calcStorageSpace } from "../lib/storage";
 import { ICImage } from "../types/interfaces";
 
 registerPlugin(
@@ -28,8 +27,8 @@ registerPlugin(
 );
 
 const sid = "panaromic-images";
-const maxFiles = 5;
-const maxFileSize = 100 * 1024; // 100 KB
+const maxFiles = 10;
+const maxFileSize = 1500 * 1024; // 1.5MB < 2.5MB cloudinary limit
 
 export default function ImagePicker() {
   const updateSymptom = useStore((s) => s.updateSymptom);
@@ -37,13 +36,8 @@ export default function ImagePicker() {
   const imagesParsed = useMemo(() => parseImages(imagesRaw), [imagesRaw]);
 
   const filepond = useRef<FilePond>(null);
-  const { free } = useMemo(calcStorageSpace, []);
   const [files, setFiles] = useState<ActualFileObject[]>();
   const initialized = useRef(false);
-
-  useEffect(() => {
-    console.log({ imagesParsed });
-  }, [imagesParsed]);
 
   useEffect(() => {
     const setImagesOnInit = async () => {
@@ -61,7 +55,6 @@ export default function ImagePicker() {
       }, 500);
     };
 
-    console.log("INITIALIZE");
     setImagesOnInit();
 
     return () => {
@@ -80,15 +73,13 @@ export default function ImagePicker() {
       if (existing) {
         // don't upload again just use previous
         newImages.push(existing);
-        console.log({ existing });
       } else {
         // upload
-        await new Promise((resolve) =>
+        await new Promise((resolve, reject) =>
           makeUploadRequest({
             file: file as File,
             fieldName: file.name,
             successCallback: (data) => {
-              console.log(data);
               newImages.push({
                 hash,
                 url: data.url,
@@ -98,6 +89,7 @@ export default function ImagePicker() {
             },
             errorCallback: (err) => {
               console.log("error", err);
+              reject(err);
             },
             progressCallback: () => {},
           })
@@ -109,6 +101,7 @@ export default function ImagePicker() {
   };
 
   useEffect(() => {
+    // on-demand revalidation for upload - based on count and init
     if (initialized.current) updateImages();
   }, [files?.length]);
 
@@ -116,10 +109,6 @@ export default function ImagePicker() {
     console.log({ newFiles });
     setFiles(newFiles.map((f) => f.file));
   };
-
-  // ui
-
-  const maxTotalFileSize = maxFileSize * maxFiles; // B
 
   return (
     <div className="image-picker">
@@ -134,38 +123,22 @@ export default function ImagePicker() {
         <br />
         <span style={{ color: "#666" }}>(preferred formats are: jpeg, webp)</span>
       </p>
-      {free < maxFileSize ? (
-        <p>
-          You have used all your storage, please{" "}
-          <Link className="link" to="/history">
-            delete some records
-          </Link>{" "}
-          to continue!
-        </p>
-      ) : (
-        <FilePond
-          ref={filepond}
-          files={files} // initial files
-          name="files" /* sets the file input name, it's filepond by default */
-          labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
-          onupdatefiles={onFilesUpdate}
-          onaddfile={(err, file) => {
-            console.log("add", file);
-          }}
-          // beforeRemoveFile={(file) => {}}
-          onremovefile={(err, file) => {
-            console.log("remove", file);
-          }}
-          // allowReorder
-          allowMultiple
-          acceptedFileTypes={["image/jpeg"]} // FIXME not working
-          maxFiles={maxFiles}
-          maxTotalFileSize={Math.min(free, maxTotalFileSize) / 1024 + "KB"}
-          imagePreviewMaxHeight={150}
-          instantUpload={false}
-          server={{ revert: null }}
-        />
-      )}
+
+      <FilePond
+        ref={filepond}
+        files={files} // initial files
+        name="files" /* sets the file input name, it's filepond by default */
+        labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+        onupdatefiles={onFilesUpdate}
+        // allowReorder
+        allowMultiple
+        acceptedFileTypes={["image/jpeg"]} // FIXME not working
+        maxFiles={maxFiles}
+        maxFileSize={maxFileSize / 1024 + "KB"}
+        imagePreviewMaxHeight={150}
+        instantUpload={false}
+        server={{ revert: null }}
+      />
     </div>
   );
 }
