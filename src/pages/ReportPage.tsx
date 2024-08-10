@@ -12,7 +12,7 @@ import useScores from "../hooks/scores";
 import { useSymptomValueOf } from "../hooks/symptom";
 import { handleShareImage, takeScreenshoot } from "../lib/share";
 import { sleep } from "../lib/utils";
-import { AppMode, IHistoryItem } from "../types/interfaces";
+import { AppMode, ICImage, IHistoryItem } from "../types/interfaces";
 import { getSymptomsErrors } from "../lib/symptoms";
 
 type Mode = "print" | "image";
@@ -121,7 +121,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
   const patAge = useSymptomValueOf<number>(item.symptoms, "pat-age");
   const panaromicImages = useSymptomValueOf<string>(item.symptoms, "panaromic-images");
 
-  const images = useMemo<string[] | undefined>(() => {
+  const images = useMemo<ICImage[] | undefined>(() => {
     if (!panaromicImages) return;
     return JSON.parse(panaromicImages);
   }, [panaromicImages]);
@@ -168,7 +168,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
               <section
                 className="panaromic-images"
                 onClick={() => setPanaromicImageIndex((s) => (s + 1) % images.length)}>
-                <img alt={patName} src={image} />
+                <img alt={patName} src={image.url} />
                 {images.length > 1 && (
                   <IconButton
                     className="next-btn no-print"

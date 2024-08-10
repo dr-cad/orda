@@ -14,6 +14,7 @@ export default function Header() {
   const inIntro = useMemo(() => pathname.startsWith("/intro"), [pathname]);
   const inList = useMemo(() => pathname.startsWith("/list"), [pathname]);
   const inResult = useMemo(() => pathname.startsWith("/result"), [pathname]);
+  const inReport = useMemo(() => pathname.startsWith("/report"), [pathname]);
   const inHistory = useMemo(() => pathname.startsWith("/history"), [pathname]);
 
   if (inIntro) return null;
@@ -42,6 +43,13 @@ export default function Header() {
           </Button>
         )}
         {inResult && <ReportIcon />}
+        {inReport && (
+          <NavLink to="/history" replace>
+            <IconButton>
+              <HomeOutlined />
+            </IconButton>
+          </NavLink>
+        )}
         {inHistory && (
           <Tooltip title="Import History">
             <IconButton onClick={handleImportHistory}>
