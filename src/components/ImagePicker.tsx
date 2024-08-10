@@ -36,13 +36,14 @@ export default function ImagePicker() {
   const imagesRaw: string | undefined = useSymptomValue(sid);
   const imagesParsed = useMemo(() => parseImages(imagesRaw), [imagesRaw]);
 
-  useEffect(() => {
-    console.log({ imagesParsed });
-  }, [imagesParsed]);
-
   const filepond = useRef<FilePond>(null);
   const { free } = useMemo(calcStorageSpace, []);
   const [files, setFiles] = useState<ActualFileObject[]>();
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    console.log({ imagesParsed });
+  }, [imagesParsed]);
 
   useEffect(() => {
     const setImagesOnInit = async () => {
@@ -54,6 +55,10 @@ export default function ImagePicker() {
       );
 
       setFiles(list);
+
+      setTimeout(() => {
+        initialized.current = true;
+      }, 500);
     };
 
     console.log("INITIALIZE");
@@ -103,10 +108,9 @@ export default function ImagePicker() {
     updateSymptom(sid, stringifyImages(newImages));
   };
 
-  const [updateIter, setUpdateIter] = useState(0);
   useEffect(() => {
-    updateImages();
-  }, [updateIter]);
+    if (initialized.current) updateImages();
+  }, [files?.length]);
 
   const onFilesUpdate = async (newFiles: FilePondFile[]) => {
     console.log({ newFiles });
@@ -146,15 +150,11 @@ export default function ImagePicker() {
           labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
           onupdatefiles={onFilesUpdate}
           onaddfile={(err, file) => {
-            const iter = updateIter + 1;
-            console.log("add: " + iter, file);
-            setUpdateIter(iter);
+            console.log("add", file);
           }}
           // beforeRemoveFile={(file) => {}}
           onremovefile={(err, file) => {
-            const iter = updateIter - 1;
-            console.log("remove: " + iter, file);
-            if (updateIter > 0) setUpdateIter(iter);
+            console.log("remove", file);
           }}
           // allowReorder
           allowMultiple
