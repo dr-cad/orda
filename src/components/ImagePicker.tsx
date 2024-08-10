@@ -1,5 +1,4 @@
 import "@pqina/pintura/pintura.css";
-// import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 import "filepond/dist/filepond.min.css";
 import "../config/image-picker.css";
@@ -15,9 +14,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
-import { makeUploadRequest } from "../lib/cloudinary";
+import { makeDeleteRequest, makeUploadRequest } from "../lib/cloudinary";
 import { parseImages, stringifyImages } from "../lib/image";
 import { ICImage } from "../types/interfaces";
+import { CircularProgress } from "@mui/material";
 
 registerPlugin(
   // plugins
@@ -56,17 +56,32 @@ export default function ImagePicker() {
     };
 
     setImagesOnInit();
-
-    return () => {
-      // TODO clean up
-    };
   }, []);
 
   // cloudinary + store
 
+  const [progress, setProgress] = useState(0);
+
   const updateImages = async () => {
     const newImages: ICImage[] = [];
 
+    // remove removed images from cloudinary
+    for await (const image of imagesParsed) {
+      const removed = !files?.find((x) => x.name === image.hash);
+      if (removed) {
+        makeDeleteRequest({
+          token: image.deleteToken,
+          successCallback: () => {
+            console.log("cloud:delete", { image });
+          },
+          errorCallback: (error) => {
+            console.error("cloud:delete", { error });
+          },
+        });
+      }
+    }
+
+    // add new items - use existing if there is
     for await (const file of files || []) {
       const hash = await fileHash(file);
       const existing = imagesParsed.find((x) => x.hash === hash);
@@ -85,13 +100,18 @@ export default function ImagePicker() {
                 url: data.url,
                 deleteToken: data.delete_token,
               });
+              console.log("cloud:upload", { data });
               resolve(data);
             },
-            errorCallback: (err) => {
-              console.log("error", err);
-              reject(err);
+            errorCallback: (error) => {
+              console.error("cloud:upload", { error });
+              reject(error);
             },
-            progressCallback: () => {},
+            progressCallback: (_len, loaded, total) => {
+              const percent = (loaded / total) * 100;
+              console.log(percent);
+              setProgress(percent >= 100 ? 0 : percent);
+            },
           })
         );
       }
@@ -123,6 +143,15 @@ export default function ImagePicker() {
         <br />
         <span style={{ color: "#666" }}>(preferred formats are: jpeg, webp)</span>
       </p>
+
+      {!!progress && (
+        <CircularProgress
+          variant="determinate"
+          size="2rem"
+          value={progress}
+          sx={{ position: "fixed", top: 0, right: "1rem" }}
+        />
+      )}
 
       <FilePond
         ref={filepond}
