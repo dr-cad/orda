@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
 import { exportHistory, importHistory } from "../lib/history";
 import { calcStorageSpace } from "../lib/storage";
@@ -11,6 +11,7 @@ const rawSymptoms = getRawSymptoms();
 
 export default function useAppHistory() {
   const nav = useNavigate();
+  const { pathname } = useLocation();
 
   const history = useStore((s) => s.history);
   const addHistory = useStore((s) => s.addHistory);
@@ -31,6 +32,7 @@ export default function useAppHistory() {
     importHistory(addHistory, () => {
       showSnackbar("History file imported successfully!");
     });
+    if (!pathname.startsWith("/history")) nav("/history");
   };
 
   const saveDraft = () => {
