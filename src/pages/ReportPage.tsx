@@ -10,10 +10,10 @@ import { useStore } from "../config/store";
 import useReportFindings from "../hooks/report";
 import useScores from "../hooks/scores";
 import { useSymptomValueOf } from "../hooks/symptom";
-import { handleShareImage, takeScreenshoot } from "../lib/share";
+import { handleDownloadImage, handleShareImage } from "../lib/share";
+import { getSymptomsErrors } from "../lib/symptoms";
 import { sleep } from "../lib/utils";
 import { AppMode, ICImage, IHistoryItem } from "../types/interfaces";
-import { getSymptomsErrors } from "../lib/symptoms";
 
 type Mode = "print" | "image";
 
@@ -85,30 +85,18 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
 
   const handleDownload = async () => {
     await onBeforeAction("image");
-
-    const data = await takeScreenshoot(content.current!, "white");
-    const link = document.createElement("a");
-
-    link.href = data;
-    link.download = `orda-report-${id}.jpg`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
+    await handleDownloadImage(content.current!, `orda-report-${id}.jpg`);
     onAfterAction();
   };
 
   const handleShare = async () => {
     await onBeforeAction("image");
-
     await handleShareImage(
       content.current,
       `${patName ?? "ORDA"} - ${id} - ${new Date().toLocaleString()}.png`,
       "Patient Report",
       "white"
     );
-
     onAfterAction();
   };
 

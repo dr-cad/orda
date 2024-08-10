@@ -26,3 +26,19 @@ export const handleShareImage = async (
     console.log(err);
   }
 };
+
+export const handleDownloadImage = async (el: HTMLElement, filename: string) => {
+  try {
+    const data = await takeScreenshoot(el, "white");
+    const link = document.createElement("a");
+
+    link.href = data;
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (err) {
+    console.log(err);
+  }
+};
