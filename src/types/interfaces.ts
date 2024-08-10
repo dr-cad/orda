@@ -101,5 +101,6 @@ export interface IReport {
 export interface ICImage {
   url: string;
   deleteToken: string;
-  filename: string;
+  // filename: string;
+  hash: string;
 }

@@ -2,6 +2,19 @@ const cloudName = "dta443kr0";
 const uploadPreset = "orda-cloud";
 const baseUrl = `https://api.cloudinary.com/v1_1/${cloudName}`;
 
+interface IResponseData {
+  access_mode: string;
+  asset_id: string;
+  public_id: string;
+  bytes: number;
+  created_at: string;
+  url: string;
+  resource_type: string;
+  format: string;
+  display_name: string;
+  delete_token: string;
+}
+
 export const makeUploadRequest = ({
   file,
   progressCallback,
@@ -11,7 +24,7 @@ export const makeUploadRequest = ({
   file: File;
   fieldName: string;
   progressCallback: (lengthComputable: boolean, loaded: number, total: number) => void;
-  successCallback: (deleteToken: string, data: any) => void;
+  successCallback: (data: IResponseData) => void;
   errorCallback: (message: string) => void;
 }) => {
   const url = `${baseUrl}/image/upload`;
@@ -28,11 +41,10 @@ export const makeUploadRequest = ({
   };
 
   request.onload = () => {
-    const data = JSON.parse(request.response);
-    console.log({ data });
+    const data: IResponseData = JSON.parse(request.response);
+    // console.log({ data });
     if (request.status >= 200 && request.status < 300) {
-      const { delete_token: deleteToken } = JSON.parse(request.response);
-      successCallback(deleteToken, data);
+      successCallback(data);
     } else {
       errorCallback(request.responseText);
     }
