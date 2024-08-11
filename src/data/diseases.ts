@@ -654,7 +654,7 @@ const diseases: IDisease[] = [
       { sid: "wispy2", rate: -1 },
       { sid: "coarse2", rate: 0.70 },
       { sid: "rarefaction", rate: -1 },
-      { sid: "mixed", rate: -1 },
+      { sid: "mixed", rate: 0 },
       { sid: "eruption", rate: -1 },
       { sid: "displace-0", rate: 0.65 },
       { sid: "resorp-1", rate: 0.5 },
