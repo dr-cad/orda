@@ -1,9 +1,9 @@
-import domToImage from "dom-to-image";
+import * as htmlToImage from "html-to-image";
 import theme from "../config/theme";
 import * as Sentry from "@sentry/react";
 
-export const takeScreenshoot = async (el: HTMLElement, bgcolor = theme.palette.background.default) => {
-  return await domToImage.toJpeg(el, { bgcolor });
+export const takeScreenshoot = async (el: HTMLElement, backgroundColor = theme.palette.background.default) => {
+  return await htmlToImage.toJpeg(el, { backgroundColor });
 };
 
 export const handleShareImage = async (
@@ -13,12 +13,12 @@ export const handleShareImage = async (
   backgroundColor?: string
 ) => {
   try {
+    if (!navigator.canShare) throw new Error("Sharing unavailable on your browser!");
     const data = await takeScreenshoot(el, backgroundColor);
     const resp = await fetch(data);
     const blob = await resp.blob();
     const file = new File([blob], filename, { type: "image/jpeg" });
     const title = "ORDA";
-    if (!navigator.canShare) throw new Error("Sharing unavailable on your browser!");
     if (!navigator.canShare({ files: [file] })) throw new Error("Can't share image");
     await navigator.share({ files: [file], title, text: subtitle });
   } catch (err) {
