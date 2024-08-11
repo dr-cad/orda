@@ -1,5 +1,6 @@
 import * as htmlToImage from "html-to-image";
 import theme from "../config/theme";
+import * as Sentry from "@sentry/react";
 
 export const takeScreenshoot = async (el: HTMLElement, backgroundColor = theme.palette.background.default) => {
   return await htmlToImage.toPng(el, { backgroundColor });
@@ -21,6 +22,7 @@ export const handleShareImage = async (
     await navigator.share({ files: [file], title, text: subtitle });
   } catch (err) {
     console.log(err);
+    Sentry.captureException(err);
   }
 };
 
@@ -37,5 +39,6 @@ export const handleDownloadImage = async (el: HTMLElement, filename: string) => 
     document.body.removeChild(link);
   } catch (err) {
     console.log(err);
+    Sentry.captureException(err);
   }
 };
