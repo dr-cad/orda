@@ -2,10 +2,7 @@ import * as htmlToImage from "html-to-image";
 import theme from "../config/theme";
 
 export const takeScreenshoot = async (el: HTMLElement, backgroundColor = theme.palette.background.default) => {
-  const result = await htmlToImage.toPng(el, {
-    backgroundColor,
-  });
-  return result;
+  return await htmlToImage.toPng(el, { backgroundColor });
 };
 
 export const handleShareImage = async (

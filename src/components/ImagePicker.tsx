@@ -97,6 +97,10 @@ export default function ImagePicker() {
         makeUploadRequest({
           file: file as File,
           fieldName: file.name,
+          progressCallback: (_len, loaded, total) => {
+            const percent = (loaded / total) * 100;
+            setProgress(percent >= 100 ? 0 : percent);
+          },
           successCallback: (data) => {
             newImages.push({
               hash,
@@ -109,10 +113,6 @@ export default function ImagePicker() {
           errorCallback: (error) => {
             console.error("cloud:upload", { error });
             reject(error);
-          },
-          progressCallback: (_len, loaded, total) => {
-            const percent = (loaded / total) * 100;
-            setProgress(percent >= 100 ? 0 : percent);
           },
         })
       );

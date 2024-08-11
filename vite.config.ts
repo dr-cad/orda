@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import svgr from "vite-plugin-svgr";
@@ -13,5 +14,12 @@ export default defineConfig({
       registerType: "autoUpdate",
       devOptions: { enabled: true },
     }),
+    sentryVitePlugin({
+      org: "dr-cad",
+      project: "javascript-react",
+    }),
   ],
+  build: {
+    sourcemap: true,
+  },
 });
