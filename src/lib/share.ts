@@ -22,9 +22,7 @@ export const handleShareImage = async (
     if (!navigator.canShare({ files: [file] })) throw new Error("Can't share image");
     await navigator.share({ files: [file], title, text: subtitle });
   } catch (err) {
-    let message = "Unknown Error";
-    if (err instanceof Error) message = err.message;
-    alert(message);
+    doAlert(err);
     Sentry.captureException(err);
   }
 };
@@ -37,9 +35,13 @@ export const handleDownloadImage = async (el: HTMLElement, filename: string) => 
     link.href = data;
     link.click();
   } catch (err) {
-    let message = "Unknown Error";
-    if (err instanceof Error) message = err.message;
-    alert(message);
+    doAlert(err);
     Sentry.captureException(err);
   }
 };
+
+function doAlert(err: any) {
+  if (typeof err === "string") alert(err);
+  else if (err?.message) alert(err.message);
+  else alert(JSON.stringify(err));
+}
