@@ -3,7 +3,7 @@ import theme from "../config/theme";
 import * as Sentry from "@sentry/react";
 
 export const takeScreenshoot = async (el: HTMLElement, backgroundColor = theme.palette.background.default) => {
-  return await htmlToImage.toJpeg(el, { backgroundColor });
+  return await htmlToImage.toPng(el, { backgroundColor });
 };
 
 export const handleShareImage = async (
@@ -17,7 +17,7 @@ export const handleShareImage = async (
     const data = await takeScreenshoot(el, backgroundColor);
     const resp = await fetch(data);
     const blob = await resp.blob();
-    const file = new File([blob], filename, { type: "image/jpeg" });
+    const file = new File([blob], filename, { type: "image/png" });
     const title = "ORDA";
     if (!navigator.canShare({ files: [file] })) throw new Error("Can't share image");
     await navigator.share({ files: [file], title, text: subtitle });

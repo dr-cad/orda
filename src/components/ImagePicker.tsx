@@ -99,15 +99,16 @@ export default function ImagePicker() {
           fieldName: file.name,
           progressCallback: (_len, loaded, total) => {
             const percent = (loaded / total) * 100;
-            setProgress(percent >= 100 ? 0 : percent);
+            setProgress(percent);
           },
           successCallback: (data) => {
             newImages.push({
               hash,
-              url: data.url,
+              url: data.url.replace("http://", "https://"),
               deleteToken: data.delete_token,
             });
             console.log("cloud:upload", { data });
+            setProgress(0);
             resolve(data);
           },
           errorCallback: (error) => {
@@ -147,9 +148,10 @@ export default function ImagePicker() {
 
       {!!progress && (
         <CircularProgress
-          variant="determinate"
           size="2rem"
           value={progress}
+          variant={progress >= 100 ? "indeterminate" : "determinate"}
+          color={progress >= 100 ? "success" : "primary"}
           sx={{ position: "fixed", top: 0, right: "1rem" }}
         />
       )}

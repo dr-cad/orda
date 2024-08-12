@@ -120,6 +120,8 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
     return images[panaromicImageIndex];
   }, [images, panaromicImageIndex]);
 
+  console.log(image);
+
   const { scores, barChartData } = useScores(item.scores, AppMode.Preval, 3);
 
   const findings = useReportFindings(item.symptoms);
