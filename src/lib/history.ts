@@ -1,15 +1,11 @@
 import { Store } from "../config/store";
 import { IHistoryItem } from "../types/interfaces";
+import { downloadFile } from "./share";
 
 export async function exportHistory(history: IHistoryItem[]) {
   const prefix = "ORDA";
   const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history));
-  const link = document.createElement("a");
-  link.href = data;
-  link.download = `${prefix} ${new Date().toLocaleString()}.json`;
-  document.body.appendChild(link); // required for firefox
-  link.click();
-  link.remove();
+  downloadFile(`${prefix} ${new Date().toLocaleString()}.json`, data);
 }
 
 export async function importHistory(addHistory: Store["addHistory"], callback: Function) {

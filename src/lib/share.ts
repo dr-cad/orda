@@ -30,15 +30,26 @@ export const handleShareImage = async (
 export const handleDownloadImage = async (el: HTMLElement, filename: string) => {
   try {
     const data = await takeScreenshoot(el, "white");
-    const link = document.createElement("a");
-    link.download = filename;
-    link.href = data;
-    link.click();
+    downloadFile(filename, data);
   } catch (err) {
     doAlert(err);
     Sentry.captureException(err);
   }
 };
+
+export function downloadFile(filename: string, data: string) {
+  try {
+    const link = document.createElement("a");
+    link.href = data;
+    link.download = filename;
+    document.body.appendChild(link); // required for firefox
+    link.click();
+    link.remove();
+  } catch (err) {
+    doAlert(err);
+    Sentry.captureException(err);
+  }
+}
 
 function doAlert(err: any) {
   if (typeof err === "string") alert(err);
