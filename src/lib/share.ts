@@ -43,5 +43,5 @@ export const handleDownloadImage = async (el: HTMLElement, filename: string) => 
 function doAlert(err: any) {
   if (typeof err === "string") alert(err);
   else if (err?.message) alert(err.message);
-  else alert(JSON.stringify(err));
+  else alert(JSON.stringify(err, ["message", "arguments", "type", "name"]));
 }
