@@ -18,7 +18,7 @@ export default defineConfig({
     }),
     sentryVitePlugin({
       org: "dr-cad",
-      project: "javascript-react",
+      project: "orda",
     }),
   ],
   build: {
