@@ -7,18 +7,18 @@ import { useReactToPrint } from "react-to-print";
 import BarChart from "../components/BarChart";
 import "../config/report.css";
 import { useStore } from "../config/store";
+import { appName, email, orgName, siteURL } from "../config/strings";
 import useReportFindings from "../hooks/report";
 import useScores from "../hooks/scores";
 import { useSymptomValueOf } from "../hooks/symptom";
 import { handleDownloadImage, handleShareImage } from "../lib/share";
 import { getSymptomsErrors } from "../lib/symptoms";
-import { sleep } from "../lib/utils";
+import { getFilename, sleep } from "../lib/utils";
 import { AppMode, ICImage, IHistoryItem } from "../types/interfaces";
 
 type Mode = "print" | "image";
 
 const CONTENT_WIDTH = 595;
-const email = "info@dr-cad.ir";
 
 export default function ReportPage() {
   const { id } = useParams();
@@ -75,31 +75,6 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
     setNoPrintVisible(true);
   };
 
-  // events
-
-  const handlePrint = useReactToPrint({
-    content: () => ref.current,
-    onBeforeGetContent: () => onBeforeAction("print"),
-    onAfterPrint: onAfterAction,
-  });
-
-  const handleDownload = async () => {
-    await onBeforeAction("image");
-    await handleDownloadImage(content.current!, `orda-report-${id}.jpg`);
-    onAfterAction();
-  };
-
-  const handleShare = async () => {
-    await onBeforeAction("image");
-    await handleShareImage(
-      content.current,
-      `${patName ?? "ORDA"} - ${id} - ${new Date().toLocaleString()}.png`,
-      "Patient Report",
-      "white"
-    );
-    onAfterAction();
-  };
-
   // ui values
 
   const [panaromicImageIndex, setPanaromicImageIndex] = useState(0);
@@ -120,11 +95,31 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
     return images[panaromicImageIndex];
   }, [images, panaromicImageIndex]);
 
-  console.log(image);
+  const findings = useReportFindings(item.symptoms);
 
   const { scores, barChartData } = useScores(item.scores, AppMode.Preval, 3);
 
-  const findings = useReportFindings(item.symptoms);
+  // events
+
+  const handlePrint = useReactToPrint({
+    content: () => ref.current,
+    onBeforeGetContent: () => onBeforeAction("print"),
+    onAfterPrint: onAfterAction,
+  });
+
+  const handleDownload = async () => {
+    await onBeforeAction("image");
+    const filename = getFilename("Report", patName || appName, id, "png");
+    await handleDownloadImage(content.current!, filename);
+    onAfterAction();
+  };
+
+  const handleShare = async () => {
+    await onBeforeAction("image");
+    const filename = getFilename("Report", patName || appName, id, "png");
+    await handleShareImage(content.current, filename, "Patient Report", "white");
+    onAfterAction();
+  };
 
   return (
     <Stack aria-label="report-wrapper" flex={1} p={2} gap={3}>
@@ -149,8 +144,8 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
                 </span>
               </div>
               <div className="logo">
-                <img alt="ORDA" src="/logo-report.png" />
-                <img alt="Dr Cad" src="/script.svg" />
+                <img alt={appName} src="/logo-report.png" />
+                <img alt={orgName} src="/script.svg" />
               </div>
             </section>
 
@@ -210,7 +205,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
               </Box>
               <Stack flex="0 0 auto" mr={2}>
                 <span>
-                  <strong>Website:</strong> &nbsp;orda.dr-cad.ir
+                  <strong>Website:</strong> &nbsp;{siteURL}
                 </span>
                 <span>
                   <strong>Email:</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

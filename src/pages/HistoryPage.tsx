@@ -15,6 +15,7 @@ import moment from "moment";
 import { MouseEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
+import { appName } from "../config/strings";
 import useAppHistory from "../hooks/history";
 import { getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
@@ -78,7 +79,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
 
   const title = useMemo(() => {
     const patName = getSymptomValueById(item.symptoms, "pat-name");
-    return patName || "ORDA";
+    return patName || appName;
   }, [item.symptoms]);
 
   const handleLoadAndGo = (e: MouseEvent, to: string) => {

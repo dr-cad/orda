@@ -1,9 +1,10 @@
 import { Store } from "../config/store";
+import { appName } from "../config/strings";
 import { IHistoryItem } from "../types/interfaces";
 import { downloadFile } from "./share";
 
 export async function exportHistory(history: IHistoryItem[]) {
-  const prefix = "ORDA";
+  const prefix = appName;
   const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history));
   downloadFile(`${prefix} ${new Date().toLocaleString()}.json`, data);
 }

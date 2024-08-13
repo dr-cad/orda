@@ -83,8 +83,8 @@ export default function getRawSymptoms(data: ISymptomRaw[] = rawSymptoms): ISymp
   return dataMapped;
 }
 
-export function getSymptomValueById(symptoms: ISymptom[], sid: string) {
-  return symptoms.find((s) => s.id === sid)?.value;
+export function getSymptomValueById<T>(symptoms: ISymptom[], sid: string): T | undefined {
+  return symptoms.find((s) => s.id === sid)?.value as never;
 }
 
 export function digestSymptom(symptom?: ISymptom) {

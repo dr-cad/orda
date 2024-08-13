@@ -1,6 +1,7 @@
-import * as htmlToImage from "html-to-image";
-import theme from "../config/theme";
 import * as Sentry from "@sentry/react";
+import * as htmlToImage from "html-to-image";
+import { appName } from "../config/strings";
+import theme from "../config/theme";
 
 export const takeScreenshoot = async (el: HTMLElement, backgroundColor = theme.palette.background.default) => {
   return await htmlToImage.toPng(el, { backgroundColor });
@@ -18,7 +19,7 @@ export const handleShareImage = async (
     const resp = await fetch(data);
     const blob = await resp.blob();
     const file = new File([blob], filename, { type: "image/png" });
-    const title = "ORDA";
+    const title = appName;
     if (!navigator.canShare({ files: [file] })) throw new Error("Can't share image");
     await navigator.share({ files: [file], title, text: subtitle });
   } catch (err) {

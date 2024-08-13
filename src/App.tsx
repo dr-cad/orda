@@ -20,7 +20,6 @@ export default function App() {
       />
       <Route path="/list/:pageIndex" element={<PageLayout children={<SymptomsPage />} />} />
       <Route path="/history" element={<PageLayout children={<HistoryPage />} />} />
-      <Route path="/result" element={<PageLayout children={<ResultPage />} />} />
       <Route path="/result/:id" element={<PageLayout children={<ResultPage />} />} />
       <Route path="/report/:id" element={<PageLayout children={<ReportPage />} />} />
       <Route path="*" element={<Navigate to="/intro" replace />} />

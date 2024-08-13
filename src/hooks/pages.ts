@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useStore } from "../config/store";
+import { exportHistory } from "../lib/history";
+import getScores from "../lib/scores";
+import { getId } from "../lib/utils";
 
 export function usePageIndex() {
   const symptoms = useStore((s) => s.symptoms);
@@ -27,8 +30,22 @@ export function usePageIndex() {
   const handleNext = () => {
     if (canGoForward) nav("/list/" + (pageIndex + 2));
   };
+
+  const diseases = useStore((s) => s.diseases);
+  const addHistory = useStore((s) => s.addHistory);
+  const autoBackup = useStore((s) => s.autoBackup);
+
   const handleResult = () => {
-    nav("/result");
+    // if no id provided - save new
+    const newScores = getScores({ diseases, symptoms }); // heavy calculations
+    // update in-app history
+    const history = addHistory({ createdAt: new Date(), scores: newScores, symptoms });
+    if (history instanceof Error) return; // TODO show snackbar
+    // download a backup file
+    if (autoBackup) exportHistory(history);
+    // navigate to result
+    const item = history[0];
+    nav("/result/" + getId(item.uuid));
   };
 
   return {

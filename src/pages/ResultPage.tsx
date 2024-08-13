@@ -1,61 +1,37 @@
 import { ImageOutlined, ShareOutlined, ViewKanbanRounded, ViewTimelineRounded } from "@mui/icons-material";
 import { Alert, Box, IconButton, List, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import BarChart, { Keys } from "../components/BarChart";
 import DiseaseScore from "../components/DiseaseScore";
 import { useStore } from "../config/store";
+import { appName } from "../config/strings";
+import { useHistoryItem } from "../hooks/history";
 import useScores from "../hooks/scores";
-import { exportHistory } from "../lib/history";
-import getScores from "../lib/scores";
 import { handleShareImage, takeScreenshoot } from "../lib/share";
 import { getSymptomValueById, getSymptomsErrors } from "../lib/symptoms";
-import { AppMode, IScoredDisease } from "../types/interfaces";
+import { getFilename } from "../lib/utils";
+import { AppMode, IHistoryItem } from "../types/interfaces";
 
 export default function ResultPage() {
   const { id } = useParams();
+  const item = useHistoryItem(id);
 
-  const backedUp = useRef(false);
+  if (!item || !id) return null; // TODO
+  return <ResultPageContent id={id} item={item} />;
+}
+
+export function ResultPageContent({ id, item }: { id: string; item: IHistoryItem }) {
   const _chartBox = useRef();
 
-  const mode = useStore((s) => s.mode);
-  const setMode = useStore((s) => s.setMode);
+  const [mode, setMode] = useState(AppMode.Preval);
   const symptoms = useStore((s) => s.symptoms);
-  const diseases = useStore((s) => s.diseases);
-  const history = useStore((s) => s.history);
-  const addHistory = useStore((s) => s.addHistory);
-  const autoBackup = useStore((s) => s.autoBackup);
-  const showSnackbar = useStore((s) => s.showSnackbar);
 
-  const [_scores, setScores] = useState<IScoredDisease[]>([]);
-
-  useEffect(() => {
-    // if id provided - load previous
-    if (id) {
-      const item = history.find((r) => r.uuid.startsWith(id));
-      if (!item) return showSnackbar("Can't find history record item!", "error.main");
-      return setScores(item.scores);
-    }
-
-    // if no id provided - save new
-    const newScores = getScores({ diseases, symptoms }); // heavy calculations
-    setScores(newScores);
-    // update in-app history
-    if (!backedUp.current) {
-      backedUp.current = true;
-      const history = addHistory({ createdAt: new Date(), scores: newScores, symptoms });
-      if (history instanceof Error) return;
-      // download a backup file
-      if (autoBackup) exportHistory(history);
-    }
-  }, [addHistory, autoBackup, diseases, showSnackbar, symptoms]);
-
-  const { scores, barChartData } = useScores(_scores, mode);
-
+  const { scores, barChartData } = useScores(item.scores, mode);
   const errors = useMemo(() => getSymptomsErrors(symptoms), [symptoms]);
 
   const { title, patName } = useMemo(() => {
-    const patName = getSymptomValueById(symptoms, "pat-name");
+    const patName = getSymptomValueById<string>(symptoms, "pat-name");
     const patMale = getSymptomValueById(symptoms, "pat-male");
     const patFemale = getSymptomValueById(symptoms, "pat-female");
     const patAge = getSymptomValueById(symptoms, "pat-age");
@@ -70,21 +46,18 @@ export default function ResultPage() {
 
   const handleDownload = async () => {
     const data = await takeScreenshoot(_chartBox.current!);
+    const filename = getFilename("Report", patName || appName, id, "png");
     const link = document.createElement("a");
     link.href = data;
-    link.download = `${patName ?? "ORDA"} - ${new Date().toLocaleString()}.png`;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     link.remove();
   };
 
   const handleShare = async () => {
-    handleShareImage(
-      // params
-      _chartBox.current!,
-      `${patName ?? "ORDA"} - ${new Date().toLocaleString()}.png`,
-      "Patient result"
-    );
+    const filename = getFilename("Report", patName || appName, id, "png");
+    await handleShareImage(_chartBox.current!, filename, "Patient result");
   };
 
   return (

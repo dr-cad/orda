@@ -1,5 +1,5 @@
-const cloudName = "dta443kr0";
-const uploadPreset = "orda-cloud";
+import { cloudName, uploadPreset } from "../config/strings";
+
 const baseUrl = `https://api.cloudinary.com/v1_1/${cloudName}`;
 
 interface IResponseData {

@@ -4,6 +4,7 @@ import { exportHistory, importHistory } from "../lib/history";
 import { calcStorageSpace } from "../lib/storage";
 import getRawSymptoms from "../lib/symptoms";
 import _ from "lodash";
+import { IHistoryItem } from "../types/interfaces";
 
 const SAVE_DRAFT_SPACE_LEFT = 250 * 1024; // 250KB
 
@@ -59,4 +60,20 @@ export default function useAppHistory() {
   };
 
   return { handleImportHistory, handleExportHistory, handleNewRecord, saveDraft };
+}
+
+export function useHistoryItem(id?: string): IHistoryItem | undefined {
+  const history = useStore((s) => s.history);
+  const showSnackbar = useStore((s) => s.showSnackbar);
+
+  if (!id) {
+    showSnackbar("History item id not provided!", "error.main");
+    return;
+  }
+  const item = history.find((r) => r.uuid.startsWith(id));
+  if (!item) {
+    showSnackbar("Can't find history record item!", "error.main");
+    return;
+  }
+  return item;
 }

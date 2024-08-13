@@ -10,6 +10,6 @@ export function useSymptomValue<T>(sid: string): T | undefined {
 }
 
 export function useSymptomValueOf<T>(symptoms: ISymptom[], sid: string): T | undefined {
-  const value = useMemo(() => getSymptomValueById(symptoms, sid), [sid, symptoms]);
+  const value = useMemo(() => getSymptomValueById<T>(symptoms, sid), [sid, symptoms]);
   return value as never;
 }

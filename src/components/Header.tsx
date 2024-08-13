@@ -2,6 +2,7 @@ import { AddRounded, HistoryRounded, HomeOutlined, SaveOutlined, UploadFileOutli
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { appName } from "../config/strings";
 import useAppHistory from "../hooks/history";
 import Logo from "./favicon.svg?react";
 import ReportIcon from "./ReportIcon";
@@ -70,7 +71,7 @@ export default function Header() {
         style={{ flex: "0 1 100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
         <Logo style={{ height: "2.5rem", width: "auto" }} />
         <Typography fontWeight={600} color="text">
-          ORDA
+          {appName}
         </Typography>
       </NavLink>
       <Stack flex="0 1 100%" gap={0.25} direction="row" justifyContent="flex-end" alignItems="center">
