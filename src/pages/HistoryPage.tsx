@@ -1,4 +1,14 @@
-import { AddRounded, DeleteRounded, EditRounded, PrintRounded, SearchRounded, Visibility } from "@mui/icons-material";
+import {
+  AddRounded,
+  CalendarMonth,
+  DeleteRounded,
+  EditRounded,
+  PrintRounded,
+  SearchRounded,
+  SortByAlpha,
+  SwapVert,
+  Visibility,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -11,6 +21,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
+import _ from "lodash";
 import moment from "moment";
 import { MouseEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,23 +32,44 @@ import { getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
 import { IHistoryItem } from "../types/interfaces";
 
+enum SortType {
+  Created,
+  AZ,
+}
+
+enum SortDir {
+  Desc = "desc",
+  Asc = "asc",
+}
+
 export default function HistoryPage() {
   const history = useStore((s) => s.history);
   const [query, setQuery] = useState("");
+  const [sortType, setSortType] = useState(SortType.Created);
+  const [sortDir, setSortDir] = useState(SortDir.Desc);
+
   const handleChange = (v: string) => setQuery(v);
 
   const { handleNewRecord } = useAppHistory();
 
-  const list = useMemo(
-    () =>
-      history.filter((h) => {
-        const patName = h.symptoms.find((s) => s.id === "pat-name")?.value as string | undefined;
-        const matchPatName = patName?.includes(query);
-        const matchUUID = h.uuid.includes(query);
-        return matchPatName || matchUUID;
-      }),
-    [history, query]
-  );
+  const list = useMemo(() => {
+    // search
+    let result = history.filter((h) => {
+      const patName = getSymptomValueById<string>(h.symptoms, "pat-name");
+      const matchPatName = patName?.includes(query);
+      const matchUUID = h.uuid.includes(query);
+      return matchPatName || matchUUID;
+    });
+    // sort - type, dir
+    if (sortType === SortType.AZ) {
+      result = _.sortBy(result, [(o) => getSymptomValueById(o.symptoms, "pat-name") || "zzz"]);
+    }
+    if (sortType === SortType.Created) {
+      result = _.orderBy(result, [(o) => o.createdAt], ["desc"]);
+    }
+    if (sortDir === SortDir.Asc) _.reverse(result);
+    return result;
+  }, [history, query, sortType, sortDir]);
 
   return (
     <Stack aria-label="diseases-page" flex={1} p={2} gap={2} position="relative">
@@ -58,9 +90,46 @@ export default function HistoryPage() {
           disableUnderline: true,
         }}
       />
-      <Button fullWidth onClick={() => handleNewRecord(true)} startIcon={<AddRounded />} sx={{ borderRadius: 4 }}>
-        New Record
-      </Button>
+      <Box display="flex" flexWrap="wrap" gap={2}>
+        <Button
+          color="primary"
+          onClick={() => handleNewRecord(true)}
+          startIcon={<AddRounded />}
+          sx={{ borderRadius: 4, px: 2 }}>
+          New Record
+        </Button>
+        <Box flex={1} />
+
+        <Box display="flex" flexWrap="wrap" gap={1} alignItems="center">
+          <Tooltip title="By name">
+            <IconButton
+              size="small"
+              sx={{ color: sortType === SortType.AZ ? "#fff" : "#fff5" }}
+              color="inherit"
+              onClick={() => setSortType(SortType.AZ)}>
+              <SortByAlpha fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="By date">
+            <IconButton
+              size="small"
+              sx={{ color: sortType === SortType.Created ? "#fff" : "#fff5" }}
+              color="inherit"
+              onClick={() => setSortType(SortType.Created)}>
+              <CalendarMonth fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={sortDir === SortDir.Desc ? "Descending" : "Ascending"}>
+            <IconButton
+              size="small"
+              sx={{ color: sortDir === SortDir.Desc ? "#fff" : "#fff5" }}
+              color="inherit"
+              onClick={() => setSortDir((s) => (s === SortDir.Desc ? SortDir.Asc : SortDir.Desc))}>
+              <SwapVert fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
       <List sx={{ gap: 1, display: "flex", flexDirection: "column" }}>
         {list.map((item, i) => (
           <HistoryItem key={i} index={i} {...item} />
@@ -78,8 +147,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   const showSnackbar = useStore((s) => s.showSnackbar);
 
   const title = useMemo(() => {
-    const patName = getSymptomValueById(item.symptoms, "pat-name");
-    return patName || appName;
+    return getSymptomValueById<string>(item.symptoms, "pat-name") || appName;
   }, [item.symptoms]);
 
   const handleLoadAndGo = (e: MouseEvent, to: string) => {
