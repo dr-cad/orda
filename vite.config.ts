@@ -10,9 +10,11 @@ export default defineConfig({
     svgr(),
     react(),
     VitePWA({
-      manifest: false,
       registerType: "autoUpdate",
       devOptions: { enabled: true },
+      workbox: { globPatterns: ["**/*"] },
+      includeAssets: ["**/*"],
+      manifest: false,
     }),
     sentryVitePlugin({
       org: "dr-cad",
