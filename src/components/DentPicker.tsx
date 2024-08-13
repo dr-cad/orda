@@ -2,6 +2,7 @@ import { RestartAltRounded } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import clsx from "clsx";
 import { useMemo, useState } from "react";
+import AnaLocImage from "../assets/ana-loc.webp";
 import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
 import { IRange } from "../types/interfaces";
@@ -110,7 +111,7 @@ export default function DentPicker() {
 
   return (
     <div className="dent-picker">
-      <img alt="Radiography Anatomic Location" src="/assets/ana-loc.webp" />
+      <img alt="Radiography Anatomic Location" src={AnaLocImage} />
       {points.map((p, i) => (
         <Point key={i} p={p} onSelect={onSelect} start={start} />
       ))}
