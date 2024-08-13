@@ -93,11 +93,13 @@ export default function HistoryPage() {
       <Box display="flex" flexWrap="wrap" gap={2}>
         <Button
           color="primary"
+          variant="contained"
           onClick={() => handleNewRecord(true)}
           startIcon={<AddRounded />}
           sx={{ borderRadius: 4, px: 2 }}>
           New Record
         </Button>
+
         <Box flex={1} />
 
         <Box display="flex" flexWrap="wrap" gap={1} alignItems="center">

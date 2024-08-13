@@ -1,4 +1,11 @@
-import { AddRounded, HistoryRounded, HomeOutlined, SaveOutlined, UploadFileOutlined } from "@mui/icons-material";
+import {
+  AddRounded,
+  HistoryRounded,
+  HomeOutlined,
+  ListAltOutlined,
+  SaveOutlined,
+  UploadFileOutlined,
+} from "@mui/icons-material";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
@@ -84,9 +91,11 @@ export default function Header() {
         )}
         {inHistory && (
           <NavLink to="/list/1">
-            <IconButton>
-              <HomeOutlined />
-            </IconButton>
+            <Tooltip title="Back to List">
+              <IconButton>
+                <ListAltOutlined />
+              </IconButton>
+            </Tooltip>
           </NavLink>
         )}
       </Stack>
