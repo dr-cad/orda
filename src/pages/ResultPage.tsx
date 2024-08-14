@@ -116,7 +116,7 @@ export function ResultPageContent({ id, item }: { id: string; item: IHistoryItem
       <Box height={4} />
       <List>
         {scores.map((score, i) => (
-          <DiseaseScore key={i} index={i} {...score} />
+          <DiseaseScore key={i} index={i} mode={mode} {...score} />
         ))}
       </List>
     </Stack>

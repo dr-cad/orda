@@ -1,9 +1,13 @@
 import { ListItem, ListItemText, Typography } from "@mui/material";
-import { useStore } from "../config/store";
-import { IScoredDisease } from "../types/interfaces";
+import { AppMode, IScoredDisease } from "../types/interfaces";
 
-export default function DiseaseScore({ value, name, pvalue, index }: IScoredDisease & { index: number }) {
-  const mode = useStore((s) => s.mode);
+export default function DiseaseScore({
+  value,
+  name,
+  pvalue,
+  index,
+  mode,
+}: IScoredDisease & { index: number; mode: AppMode }) {
   return (
     <>
       <ListItem
@@ -13,7 +17,7 @@ export default function DiseaseScore({ value, name, pvalue, index }: IScoredDise
           borderBottom: "var(--app-border)",
         }}>
         <ListItemText primary={name} />
-        {mode === "prevalance" ? (
+        {mode === AppMode.Preval ? (
           <>
             <Typography sx={{ textAlign: "end" }}>{(pvalue * 100).toFixed(0)}%</Typography>
             <Typography sx={{ textAlign: "end", opacity: 0.5, ml: 1 }} fontSize="0.75rem">
