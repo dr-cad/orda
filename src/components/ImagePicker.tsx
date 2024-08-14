@@ -148,7 +148,8 @@ export default function ImagePicker() {
 
       {!!progress && (
         <CircularProgress
-          size="2rem"
+          size="1.5rem"
+          thickness={5}
           value={progress}
           variant={progress >= 100 ? "indeterminate" : "determinate"}
           color={progress >= 100 ? "success" : "primary"}
