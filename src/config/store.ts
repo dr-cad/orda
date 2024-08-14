@@ -22,7 +22,7 @@ export interface Store {
   history: IHistoryItem[];
   addHistory: (item: IHistoryItem) => IHistoryItem[] | null;
   removeHistory: (uuid: string) => void;
-  loadHistory: (item: IHistoryItem) => void;
+  loadHistory: (item: IHistoryItem, overwrite?: boolean) => void;
   // app ui
   collapsed: boolean;
   toggleExpanded: (id: string, open?: boolean) => void;
@@ -137,7 +137,7 @@ export const useStore = create(
         );
         get().showSnackbar("History record removed!");
       },
-      loadHistory: (item) => {
+      loadHistory: (item, overwrite) => {
         // saves and updates buffer
         // check not same uuid loading
         if (item.uuid === get().uuid) {
@@ -145,7 +145,7 @@ export const useStore = create(
           return;
         }
         // save first
-        if (!get().save()) return;
+        if (!overwrite && !get().save()) return;
         // load item
         console.log("BEFORE", (JSON.stringify(get().symptoms).length / 1024).toFixed(2));
         console.log("AFTER", (JSON.stringify(item.symptoms).length / 1024).toFixed(2));

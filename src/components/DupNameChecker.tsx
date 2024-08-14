@@ -5,6 +5,7 @@ import { useSymptomValue } from "../hooks/symptom";
 import { getSymptomValueById } from "../lib/symptoms";
 
 export default function DupNameChecker() {
+  const uuid = useStore((s) => s.uuid);
   const history = useStore((s) => s.history);
   const loadHistory = useStore((s) => s.loadHistory);
 
@@ -16,10 +17,10 @@ export default function DupNameChecker() {
 
   const load = () => {
     if (index < 0) return;
-    loadHistory(history[index]);
+    loadHistory(history[index], true);
   };
 
-  if (!patName || index < 0 || patName.length < 3) {
+  if (!patName || index < 0 || patName.length < 3 || uuid === history[index].uuid) {
     return <span>Please enter the full name</span>;
   }
 

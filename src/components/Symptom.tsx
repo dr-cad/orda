@@ -1,6 +1,6 @@
 import { Box, Checkbox, FormControlLabel, Radio, Stack, TextField, Typography } from "@mui/material";
 import _ from "lodash";
-import React, { Fragment, MouseEventHandler, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../config/store";
 import { digestSymptom } from "../lib/symptoms";
 import { IRange, ISymptom, Value } from "../types/interfaces";
@@ -128,32 +128,35 @@ const Desc = (symptom: ISymptom) => {
   );
 };
 
-const Input = React.memo(({ symptom }: IInnerProps) => {
+const Input = ({ symptom }: IInnerProps) => {
   const updateSymptom = useStore((s) => s.updateSymptom);
+  const [value, setValue] = useState<Value | undefined>(symptom.value);
+
+  const t0 = useRef<number>();
+  const throttle = (fn: Function) => {
+    window.clearTimeout(t0.current);
+    window.setTimeout(fn, 500);
+  };
+
+  useEffect(() => {
+    setValue(symptom.value ?? "");
+  }, [symptom.value]);
+
   const handleChange = useCallback(
-    (value: Value, instant = false) => {
-      if (instant) updateSymptom(symptom.id, value);
-      else setTimeout(() => updateSymptom(symptom.id, value), 500);
-    },
+    (value: Value) => updateSymptom(symptom.id, value), //
     [symptom.id, updateSymptom]
   );
 
-  const [key, setKey] = useState(0);
-  useEffect(() => {
-    // workaround to reset text-fields' defaults value
-    if (typeof symptom.value === "undefined") setKey((s) => s + 1);
-  }, [symptom.value]);
-
   return (
-    <Stack key={key} p={2}>
+    <Stack p={2}>
       {symptom.type === "string" ? (
         <TextField
           id={symptom.id + "-textfield"}
           size="small"
           type="text"
           placeholder={symptom.name}
-          defaultValue={symptom.value}
-          onChange={(e) => handleChange(e.target.value, true)}
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
         />
       ) : symptom.type === "number" ? (
         <TextField
@@ -161,7 +164,7 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
           size="small"
           type="tel"
           placeholder={symptom.name}
-          defaultValue={symptom.value}
+          value={value}
           onChange={(e) => handleChange(e.target.value)}
         />
       ) : symptom.type === "range" ? (
@@ -171,14 +174,17 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
             size="small"
             type="tel"
             placeholder="Start"
-            defaultValue={(symptom.value as IRange)?.a ?? ""}
+            value={(value as IRange)?.a ?? ""}
             onChange={(e) => {
               const v = parseInt(e.target.value);
               const lim = (symptom.value as IRange)?.b;
               const [min, max] = [symptom.min!, symptom.max!];
-              handleChange({
-                a: _.clamp(v || min, min, lim || max),
-                b: lim ?? "",
+              setValue({ a: v, b: lim ?? "" });
+              throttle(() => {
+                handleChange({
+                  a: _.clamp(v || min, min, lim || max),
+                  b: lim ?? "",
+                });
               });
             }}
           />
@@ -187,14 +193,17 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
             size="small"
             type="tel"
             placeholder="End"
-            defaultValue={(symptom.value as IRange)?.b ?? ""}
+            value={(value as IRange)?.b ?? ""}
             onChange={(e) => {
               const v = parseInt(e.target.value);
               const lim = (symptom.value as IRange)?.a;
               const [min, max] = [symptom.min!, symptom.max!];
-              handleChange({
-                a: lim ?? "",
-                b: _.clamp(v || max, lim || min, max),
+              setValue({ a: lim ?? "", b: v });
+              throttle(() => {
+                handleChange({
+                  a: lim ?? "",
+                  b: _.clamp(v || max, lim || min, max),
+                });
               });
             }}
           />
@@ -202,7 +211,7 @@ const Input = React.memo(({ symptom }: IInnerProps) => {
       ) : null}
     </Stack>
   );
-});
+};
 
 export default function SymptomsGroup({ symptom }: { symptom: ISymptom }) {
   if (!symptom.options?.length) return null;
