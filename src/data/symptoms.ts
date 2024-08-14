@@ -10,6 +10,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "pat-name",
     name: "Full Name",
+    desc: { feature: Feature.DuplicateNameChecker },
     required: true,
     type: "string",
     open: true,
@@ -41,10 +42,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "panaromic-images",
     name: "Panaromic Images",
-    desc: {
-      // title: "Please upload your panaromic images",
-      feature: Feature.ImagePicker,
-    },
+    desc: { feature: Feature.ImagePicker },
     type: "string",
     required: true,
     open: true,

@@ -17,7 +17,7 @@ export default function ResultPage() {
   const { id } = useParams();
   const item = useHistoryItem(id);
 
-  if (!item || !id) return null; // TODO
+  if (!item || !id || !item.scores) return null; // TODO
   return <ResultPageContent id={id} item={item} />;
 }
 
@@ -27,7 +27,7 @@ export function ResultPageContent({ id, item }: { id: string; item: IHistoryItem
   const [mode, setMode] = useState(AppMode.Preval);
   const symptoms = useStore((s) => s.symptoms);
 
-  const { scores, barChartData } = useScores(item.scores, mode);
+  const { scores, barChartData } = useScores(item.scores!, mode);
   const errors = useMemo(() => getSymptomsErrors(symptoms), [symptoms]);
 
   const { title, patName } = useMemo(() => {

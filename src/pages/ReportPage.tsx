@@ -26,7 +26,7 @@ export default function ReportPage() {
 
   const item = useMemo(() => (id ? history.find((x) => x.uuid.startsWith(id)) : undefined), [history, id]);
 
-  if (!item) return null;
+  if (!item || !item.scores) return null;
   const disabled = useMemo(() => getSymptomsErrors(item.symptoms).length, [item.symptoms]);
   if (disabled) return <Navigate to="/result" replace />;
   return <ReportPageContent id={id!} item={item} />;
@@ -97,7 +97,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
 
   const findings = useReportFindings(item.symptoms);
 
-  const { scores, barChartData } = useScores(item.scores, AppMode.Preval, 3);
+  const { scores, barChartData } = useScores(item.scores!, AppMode.Preval, 3);
 
   // events
 

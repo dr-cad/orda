@@ -114,21 +114,16 @@ const Label = ({ symptom, parent }: IInnerProps) => {
 
 const Desc = (symptom: ISymptom) => {
   if (!symptom.desc) return null;
-
+  if (!symptom.desc.title && !symptom.desc.image && !symptom.desc.feature) return null;
   return (
-    <Stack p={2}>
-      <div>
-        {symptom.desc.title && (
-          <>
-            <div>{symptom.desc.title + ": "}</div>
-            <Box sx={{ height: 18 }} />
-          </>
-        )}
+    <Stack p={2} pb={0}>
+      <Box display="flex" flexDirection="column" overflow="hidden" gap={1}>
+        {symptom.desc.title && <div>{symptom.desc.title}</div>}
         {symptom.desc.image && <img alt={symptom.desc.title} src={symptom.desc.image} className="desc-img" />}
         {symptom.desc.feature && (
           <Features value={symptom.desc.feature} symptom={symptom} params={symptom.desc.params} />
         )}
-      </div>
+      </Box>
     </Stack>
   );
 };

@@ -135,7 +135,7 @@ img.desc-img {
 
 /* dent-picker */
 .dent-picker {
-  max-width: 65vw;
+  /* max-width: 65vw; */
   height: auto;
   aspect-ratio: 340 / 320;
   border-radius: 14px;
