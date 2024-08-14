@@ -19,7 +19,7 @@ export default function IntroPage() {
       <Box flex={1} />
       {/* <Typography variant="body2">Select and option to get started</Typography> */}
       <Button
-        onClick={() => handleNewRecord(false)}
+        onClick={() => handleNewRecord()}
         variant="contained"
         startIcon={<AddRounded />}
         sx={{ borderRadius: 4, px: 2 }}>

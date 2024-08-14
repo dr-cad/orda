@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
 import { appName } from "../config/strings";
 import useAppHistory from "../hooks/history";
-import { getSymptomValueById } from "../lib/symptoms";
+import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
 import { IHistoryItem } from "../types/interfaces";
 
@@ -94,7 +94,7 @@ export default function HistoryPage() {
         <Button
           color="primary"
           variant="contained"
-          onClick={() => handleNewRecord(true)}
+          onClick={() => handleNewRecord()}
           startIcon={<AddRounded />}
           sx={{ borderRadius: 4, px: 2 }}>
           New Record
@@ -143,10 +143,10 @@ export default function HistoryPage() {
 
 const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   const navigate = useNavigate();
-  const { saveDraft } = useAppHistory();
   const remove = useStore((s) => s.removeHistory);
   const load = useStore((s) => s.loadHistory);
   const showSnackbar = useStore((s) => s.showSnackbar);
+  const reportDisabled = useMemo(() => getSymptomsErrors(item.symptoms).length, [item.symptoms]);
 
   const title = useMemo(() => {
     return getSymptomValueById<string>(item.symptoms, "pat-name") || appName;
@@ -155,9 +155,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   const handleLoadAndGo = (e: MouseEvent, to: string) => {
     e.preventDefault();
     e.stopPropagation();
-    saveDraft(); // draft current data before loading the item
     load(item);
-    if (item.unsaved) remove(item.uuid); // after loading draft item, remove it
     navigate(to);
     showSnackbar("History record loaded!");
   };
@@ -181,6 +179,8 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
     showSnackbar("History record removed!");
   };
 
+  const isDraft = !item.scores;
+
   return (
     <ListItem
       sx={{
@@ -194,22 +194,22 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
           backgroundColor: "#ffffff12",
         },
       }}
-      onClick={!item.unsaved ? handleLoad : handleEdit}
+      onClick={!isDraft ? handleLoad : handleEdit}
       secondaryAction={
         <Box display="flex" flexDirection="row" gap={1}>
-          {!item.unsaved && (
-            <>
-              <Tooltip title="Report">
-                <IconButton size="small" color="primary" onClick={handleReport}>
-                  <PrintRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Results">
-                <IconButton size="small" color="success">
-                  <Visibility fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </>
+          {!isDraft && !reportDisabled && (
+            <Tooltip title="Report">
+              <IconButton size="small" color="primary" onClick={handleReport}>
+                <PrintRounded fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+          {!isDraft && (
+            <Tooltip title="Results">
+              <IconButton size="small" color="success">
+                <Visibility fontSize="small" />
+              </IconButton>
+            </Tooltip>
           )}
           <Tooltip title="Edit">
             <IconButton size="small" color="warning" onClick={handleEdit}>
@@ -226,8 +226,8 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
       <Box flex="0 0 8px" />
       <ListItemText
         primary={title.toString()}
-        secondary={item.unsaved ? "(unsaved draft)" : moment(item.createdAt).format("DD MMM YYYY")}
-        secondaryTypographyProps={{ fontSize: "0.65rem", color: item.unsaved ? "warning.main" : "#fff6" }}
+        secondary={isDraft ? "(unsaved draft)" : moment(item.createdAt).format("DD MMM YYYY")}
+        secondaryTypographyProps={{ fontSize: "0.65rem", color: isDraft ? "warning.main" : "#fff6" }}
       />
     </ListItem>
   );

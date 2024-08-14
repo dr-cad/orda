@@ -1,27 +1,34 @@
 import sha256 from "crypto-js/sha256";
 import { produce } from "immer";
+import _ from "lodash";
 import uuid4 from "uuid4";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import getRawDiseases from "../lib/diseases";
+import getScores from "../lib/scores";
 import { calcStorageSpace } from "../lib/storage";
 import getRawSymptoms, { recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
-import { AppMode, ChartMode, IDisease, IHistoryItem, ISymptom, Value } from "../types/interfaces";
+import { IHistoryItem, ISymptom, Value } from "../types/interfaces";
 
 export interface Store {
+  // buffer
+  uuid: string;
   symptoms: ISymptom[];
+  createdAt: Date | null;
   updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
+  save: () => IHistoryItem[] | null;
+  reset: () => void;
+  // history
+  history: IHistoryItem[];
+  addHistory: (item: IHistoryItem) => IHistoryItem[] | null;
+  removeHistory: (uuid: string) => void;
+  loadHistory: (item: IHistoryItem) => void;
+  // app ui
   collapsed: boolean;
   toggleExpanded: (id: string, open?: boolean) => void;
   collapseAll: () => void;
   expandAll: () => void;
-  diseases: IDisease[];
-  reset: () => void;
-  history: IHistoryItem[];
-  addHistory: (item: Omit<IHistoryItem, "uuid" | "hash" | "hash2">) => IHistoryItem[] | Error;
-  removeHistory: (uuid: string) => void;
-  loadHistory: (item: IHistoryItem) => void;
-  // app ui
+  // app features
   initialized: boolean;
   setInitialized: () => void;
   snackbar: { message: string; color?: string } | null;
@@ -29,16 +36,15 @@ export interface Store {
   hideSnackbar: () => void;
   // app settings
   autoBackup: boolean;
-  mode: AppMode;
-  setMode: (mode: AppMode) => void;
-  chartMode: ChartMode;
-  setChartMode: (mode: ChartMode) => void;
 }
 
 export const useStore = create(
   persist<Store>(
     (set, get) => ({
+      // buffer
+      uuid: uuid4(),
       symptoms: getRawSymptoms(),
+      createdAt: null,
       updateSymptom: (id, value) => {
         let result = undefined;
         set(
@@ -63,13 +69,87 @@ export const useStore = create(
         );
         return result;
       },
+      save: () => {
+        // adds buffer to history with new scores - if needed
+        // check if symptoms are not empty, if empty ignore saving
+        if (_.isEqual(get().symptoms, getRawSymptoms())) return get().history; // ignore - ok
+        // save data and tell
+        const symptoms = get().symptoms;
+        const newScores = getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
+        const newDate = new Date();
+        const newItem: IHistoryItem = {
+          symptoms,
+          scores: newScores,
+          uuid: get().uuid,
+          hash: sha256(JSON.stringify(symptoms)).toString(),
+          hash2: sha256(JSON.stringify(newScores)).toString(),
+          createdAt: get().createdAt || newDate,
+          updatedAt: newDate,
+        };
+        const result = get().addHistory(newItem);
+        if (result) get().showSnackbar("Data saved! You can view it any time in history page");
+        return result;
+      },
       reset: () => {
+        // saves and resets buffer
+        // save first
+        if (!get().save()) return;
         console.log("RESET");
+        // update buffer
         set({
+          uuid: uuid4(),
           symptoms: getRawSymptoms(),
-          diseases: getRawDiseases(),
+          createdAt: null,
         });
       },
+
+      // history
+      history: [],
+      addHistory: (item) => {
+        if (calcStorageSpace().free < JSON.stringify(item.symptoms).length) {
+          get().showSnackbar(`Unable to save! No space left`, "error.main");
+          return null;
+        }
+        // update
+        set(
+          produce((s: Store) => {
+            const existing = s.history.findIndex((r) => r.uuid === item.uuid);
+            if (existing > -1 && item.updatedAt > s.history[existing].updatedAt) {
+              // if same uuid and newer -> replace previous
+              s.history.splice(existing, 1); // would be replaced by new scores - since they're identically equal we don't need previous anymore and it would also bring new data to top
+              s.snackbar = { message: `Updated existing record!`, color: "primary.main" };
+            } else {
+              s.snackbar = { message: `Record saved! You can check it in history`, color: "success.main" };
+            }
+            s.history.unshift(item);
+          })
+        );
+        return get().history;
+      },
+      removeHistory: (uuid) => {
+        set(
+          produce((s: Store) => {
+            const index = s.history.findIndex((x) => x.uuid === uuid);
+            if (index > -1) s.history.splice(index, 1);
+          })
+        );
+      },
+      loadHistory: (item) => {
+        // saves and updates buffer
+        // save first
+        if (!get().save()) return;
+        // load item
+        console.log("BEFORE", (JSON.stringify(get().symptoms).length / 1024).toFixed(2));
+        console.log("AFTER", (JSON.stringify(item.symptoms).length / 1024).toFixed(2));
+        // update buffer
+        set({
+          uuid: item.uuid,
+          symptoms: item.symptoms,
+          createdAt: item.createdAt,
+        });
+      },
+
+      // app ui
       collapsed: false,
       toggleExpanded: (id, open) => {
         // for single item
@@ -105,50 +185,7 @@ export const useStore = create(
           })
         );
       },
-      diseases: getRawDiseases(),
-      history: [],
-      addHistory: (item) => {
-        if (calcStorageSpace().free < JSON.stringify(item.symptoms).length) {
-          set({ snackbar: { message: `Unable to save result! No space left`, color: "error.main" } });
-          return Error("No space left");
-        }
-        // assign a new uuid
-        const newItem: IHistoryItem = {
-          ...item,
-          uuid: uuid4(),
-          hash: sha256(JSON.stringify(item.symptoms)).toString(),
-          hash2: sha256(JSON.stringify(item.scores)).toString(),
-        };
-        // update
-        set(
-          produce((s: Store) => {
-            const existing = s.history.findIndex((r) => r.hash === newItem.hash);
-            if (existing > -1 && item.unsaved) return; // ignore saving
-            if (existing > -1 && (s.history[existing].hash2 === newItem.hash2 || s.history[existing].unsaved)) {
-              // if same symptoms and (same scores or unsaved) -> replace previous
-              s.history.splice(existing, 1); // would be replaced by new scores - since they're identically equal we don't need previous anymore and it would also bring new data to top
-              s.snackbar = { message: `Updated existing record!`, color: "primary.main" };
-            } else {
-              s.snackbar = { message: `Record saved! You can check it in history`, color: "success.main" };
-            }
-            s.history.unshift(newItem);
-          })
-        );
-        return get().history;
-      },
-      removeHistory: (uuid) => {
-        set(
-          produce((s: Store) => {
-            const index = s.history.findIndex((x) => x.uuid === uuid);
-            if (index > -1) s.history.splice(index, 1);
-          })
-        );
-      },
-      loadHistory: (item) => {
-        console.log("BEFORE", (JSON.stringify(get().symptoms).length / 1024).toFixed(2));
-        console.log("AFTER", (JSON.stringify(item.symptoms).length / 1024).toFixed(2));
-        set({ symptoms: item.symptoms }); // load symptoms into symptoms-buffer
-      },
+
       // app ui
       initialized: false,
       setInitialized: () => {
@@ -163,15 +200,14 @@ export const useStore = create(
       },
       // app settings
       autoBackup: false,
-      mode: AppMode.Preval,
-      setMode: (mode) => {
-        set({ mode });
-      },
-      chartMode: "bar",
-      setChartMode: (chartMode) => {
-        set({ chartMode: chartMode });
-      },
     }),
     { name: "app-storage", storage: createJSONStorage(() => localStorage) }
   )
 );
+
+// TODO add a middleware for storage which checks left space using below code
+// calculate available space for saving draft
+// if (calcStorageSpace().free < SAVE_DRAFT_SPACE_LEFT) {
+//   get().showSnackbar(`Unable to save! No space left`, "error.main");
+//   return null;
+// }

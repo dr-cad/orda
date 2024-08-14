@@ -44,7 +44,7 @@ export default function Header() {
       <Stack flex="0 1 100%" direction="row" alignItems="center" justifyContent="flex-start" overflow="hidden">
         {inList && (
           <Button
-            onClick={() => handleNewRecord(true)}
+            onClick={() => handleNewRecord()}
             startIcon={<AddRounded style={{ fontSize: "1rem" }} />}
             sx={{ borderRadius: 4, fontSize: "0.75rem" }}>
             New

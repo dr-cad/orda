@@ -2,12 +2,12 @@
 
 import { AlertColor } from "@mui/material";
 
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export enum AppMode {
   Preval = "prevalance",
   Raw = "raw",
 }
-
-export type ChartMode = "treemap" | "bar";
 
 export enum Feature {
   DentPicker = "dent-picker",
@@ -76,9 +76,9 @@ export interface IScoredDisease extends IDisease {
 export interface IHistoryItem {
   uuid: string;
   createdAt: Date;
+  updatedAt: Date;
   symptoms: ISymptom[];
-  scores: IScoredDisease[];
-  unsaved?: boolean;
+  scores: IScoredDisease[] | null;
   hash: string;
   hash2: string;
 }

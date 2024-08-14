@@ -26,7 +26,7 @@ export async function importHistory(addHistory: Store["addHistory"], callback: F
         if (!Array.isArray(data)) throw new Error("wrong content");
         data.reverse().forEach((item) => {
           const history = addHistory(item);
-          if (history instanceof Error) throw history;
+          if (!history) throw new Error("Couldn't import item");
         });
         callback();
       } catch (e) {
