@@ -14,7 +14,7 @@ export interface Store {
   // buffer
   uuid: string;
   symptoms: ISymptom[];
-  createdAt: Date | null;
+  createdAt: number | null;
   updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
   save: () => IHistoryItem[] | null;
   reset: () => void;
@@ -76,7 +76,7 @@ export const useStore = create(
         // save data and tell
         const symptoms = get().symptoms;
         const newScores = getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
-        const newDate = new Date();
+        const newDate = new Date().getTime();
         const newItem: IHistoryItem = {
           symptoms,
           scores: newScores,
@@ -86,9 +86,7 @@ export const useStore = create(
           createdAt: get().createdAt || newDate,
           updatedAt: newDate,
         };
-        const result = get().addHistory(newItem);
-        if (result) get().showSnackbar("Data saved! You can view it any time in history page");
-        return result;
+        return get().addHistory(newItem);
       },
       reset: () => {
         // saves and resets buffer
@@ -114,14 +112,18 @@ export const useStore = create(
         set(
           produce((s: Store) => {
             const existing = s.history.findIndex((r) => r.uuid === item.uuid);
-            if (existing > -1 && item.updatedAt > s.history[existing].updatedAt) {
+            if (existing < 0) {
+              s.history.unshift(item);
+              s.snackbar = { message: `Record saved!`, color: "success.main" };
+            } else if (item.updatedAt > s.history[existing].updatedAt) {
               // if same uuid and newer -> replace previous
-              s.history.splice(existing, 1); // would be replaced by new scores - since they're identically equal we don't need previous anymore and it would also bring new data to top
-              s.snackbar = { message: `Updated existing record!`, color: "primary.main" };
+              s.history.splice(existing, 1); // remove outdated
+              s.history.unshift(item);
+              s.snackbar = { message: `Record updated!`, color: "primary.main" };
             } else {
-              s.snackbar = { message: `Record saved! You can check it in history`, color: "success.main" };
+              console.log({ item, newer: s.history[existing].createdAt });
+              s.snackbar = { message: `Record outdated!`, color: "error.main" };
             }
-            s.history.unshift(item);
           })
         );
         return get().history;
@@ -133,9 +135,15 @@ export const useStore = create(
             if (index > -1) s.history.splice(index, 1);
           })
         );
+        get().showSnackbar("History record removed!");
       },
       loadHistory: (item) => {
         // saves and updates buffer
+        // check not same uuid loading
+        if (item.uuid === get().uuid) {
+          get().showSnackbar("Record already loaded!", "warning.main");
+          return;
+        }
         // save first
         if (!get().save()) return;
         // load item
@@ -147,6 +155,7 @@ export const useStore = create(
           symptoms: item.symptoms,
           createdAt: item.createdAt,
         });
+        get().showSnackbar("History record loaded!");
       },
 
       // app ui

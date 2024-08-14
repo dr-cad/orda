@@ -10,6 +10,7 @@ export enum AppMode {
 }
 
 export enum Feature {
+  DuplicateNameChecker = "dup-name-checker",
   DentPicker = "dent-picker",
   ImagePicker = "image-picker",
 }
@@ -75,8 +76,8 @@ export interface IScoredDisease extends IDisease {
 
 export interface IHistoryItem {
   uuid: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
   symptoms: ISymptom[];
   scores: IScoredDisease[] | null;
   hash: string;

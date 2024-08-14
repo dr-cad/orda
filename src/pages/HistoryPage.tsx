@@ -143,9 +143,8 @@ export default function HistoryPage() {
 
 const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   const navigate = useNavigate();
-  const remove = useStore((s) => s.removeHistory);
-  const load = useStore((s) => s.loadHistory);
-  const showSnackbar = useStore((s) => s.showSnackbar);
+  const removeHistory = useStore((s) => s.removeHistory);
+  const loadHistory = useStore((s) => s.loadHistory);
   const reportDisabled = useMemo(() => getSymptomsErrors(item.symptoms).length, [item.symptoms]);
 
   const title = useMemo(() => {
@@ -155,9 +154,8 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   const handleLoadAndGo = (e: MouseEvent, to: string) => {
     e.preventDefault();
     e.stopPropagation();
-    load(item);
+    loadHistory(item);
     navigate(to);
-    showSnackbar("History record loaded!");
   };
 
   const handleReport = (e: MouseEvent) => {
@@ -175,8 +173,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
   const handleRemove = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    remove(item.uuid);
-    showSnackbar("History record removed!");
+    removeHistory(item.uuid);
   };
 
   const isDraft = !item.scores;
