@@ -135,7 +135,7 @@ const Input = ({ symptom }: IInnerProps) => {
   const t0 = useRef<number>();
   const throttle = (fn: Function) => {
     window.clearTimeout(t0.current);
-    window.setTimeout(fn, 500);
+    t0.current = window.setTimeout(fn, 1000);
   };
 
   useEffect(() => {
@@ -174,16 +174,17 @@ const Input = ({ symptom }: IInnerProps) => {
             size="small"
             type="tel"
             placeholder="Start"
-            value={(value as IRange)?.a ?? ""}
+            value={(value as IRange)?.a || ""}
             onChange={(e) => {
               const v = parseInt(e.target.value);
               const lim = (symptom.value as IRange)?.b;
               const [min, max] = [symptom.min!, symptom.max!];
-              setValue({ a: v, b: lim ?? "" });
+              setValue({ a: v, b: lim });
+              if (!v) return;
               throttle(() => {
                 handleChange({
                   a: _.clamp(v || min, min, lim || max),
-                  b: lim ?? "",
+                  b: lim,
                 });
               });
             }}
@@ -193,15 +194,16 @@ const Input = ({ symptom }: IInnerProps) => {
             size="small"
             type="tel"
             placeholder="End"
-            value={(value as IRange)?.b ?? ""}
+            value={(value as IRange)?.b || ""}
             onChange={(e) => {
               const v = parseInt(e.target.value);
               const lim = (symptom.value as IRange)?.a;
               const [min, max] = [symptom.min!, symptom.max!];
-              setValue({ a: lim ?? "", b: v });
+              setValue({ a: lim, b: v });
+              if (!v) return;
               throttle(() => {
                 handleChange({
-                  a: lim ?? "",
+                  a: lim,
                   b: _.clamp(v || max, lim || min, max),
                 });
               });
