@@ -62,8 +62,7 @@ const report: IReport[] = [
     sid: "mandible",
     ranges: [
       { a: 1, b: 2, text: "condyle" },
-      { a: 2, b: 3, text: "ramus" },
-      { a: 3, b: 4, text: "beginning of ramus" },
+      { a: 2, b: 4, text: "ramus" },
       { a: 4, b: 7, text: "molar" },
       { a: 7, b: 9, text: "premolar" },
       { a: 9, b: 10, text: "canine" },
@@ -74,8 +73,7 @@ const report: IReport[] = [
     sid: "both",
     ranges: [
       { a: 1, b: 2, text: "condyle" },
-      { a: 2, b: 3, text: "ramus" },
-      { a: 3, b: 4, text: "beginning of ramus" },
+      { a: 2, b: 4, text: "ramus" },
       { a: 4, b: 7, text: "molar" },
       { a: 7, b: 9, text: "premolar" },
       { a: 9, b: 10, text: "canine" },
