@@ -2,7 +2,7 @@ import { ImageOutlined, ShareOutlined, ViewKanbanRounded, ViewTimelineRounded } 
 import { Alert, Box, IconButton, List, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import BarChart, { Keys } from "../components/BarChart";
+import BarChart from "../components/BarChart";
 import DiseaseScore from "../components/DiseaseScore";
 import { useStore } from "../config/store";
 import { appName } from "../config/strings";
@@ -11,7 +11,7 @@ import useScores from "../hooks/scores";
 import { handleShareImage, takeScreenshoot } from "../lib/share";
 import { getSymptomValueById, getSymptomsErrors } from "../lib/symptoms";
 import { getFilename } from "../lib/utils";
-import { AppMode, IHistoryItem } from "../types/interfaces";
+import { AppMode, IHistoryItem, Keys } from "../types/interfaces";
 
 export default function ResultPage() {
   const { id } = useParams();

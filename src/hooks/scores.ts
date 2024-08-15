@@ -1,7 +1,6 @@
-import { AppMode } from "./../types/interfaces";
 import { useMemo } from "react";
 import { IScoredDisease } from "../types/interfaces";
-import { BarDatum, Keys } from "../components/BarChart";
+import { AppMode, BarDatum, Keys } from "./../types/interfaces";
 
 export default function useScores(scores: IScoredDisease[], mode = AppMode.Raw, limit = 5) {
   const output = useMemo(
