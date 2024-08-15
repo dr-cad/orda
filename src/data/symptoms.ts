@@ -5,7 +5,7 @@ const symptoms: ISymptomRaw[] = [
     id: "pat-info",
     name: "Information",
     page: 1,
-    options: ["pat-name", "pat-gender", "pat-age", "panaromic-images"],
+    options: ["pat-name", "pat-gender", "pat-age", "pat-images"],
   },
   {
     id: "pat-name",
@@ -40,7 +40,7 @@ const symptoms: ISymptomRaw[] = [
     name: "Female",
   },
   {
-    id: "panaromic-images",
+    id: "pat-images",
     name: "Panaromic Images",
     desc: { feature: Feature.ImagePicker },
     type: "string",
@@ -686,6 +686,6 @@ const symptoms: ISymptomRaw[] = [
     id: "sloping",
     name: "Sloping(velvet)",
   },
-];
+] as const;
 
 export default symptoms;

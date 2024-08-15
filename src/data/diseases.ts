@@ -498,9 +498,7 @@ const diseases: IDisease[] = [
       },
       {
         sid: "both",
-        ranges: [
-          { a: 1, b: 12, rate: 0.09 },
-        ],
+        ranges: [{ a: 1, b: 12, rate: 0.09 }],
       },
       { sid: "unilateral", rate: 0.95 },
       { sid: "bilateral", rate: 0.05 },
@@ -647,12 +645,12 @@ const diseases: IDisease[] = [
       { sid: "diffuse", rate: -1 },
       { sid: "radiopaue-zone", rate: -1 },
       { sid: "radiopaque-nozone", rate: -1 },
-      { sid: "uni1", rate: 0.20 },
+      { sid: "uni1", rate: 0.2 },
       { sid: "uni2", rate: -1 },
       { sid: "wispy1", rate: -1 },
-      { sid: "coarse1", rate: 0.10 },
+      { sid: "coarse1", rate: 0.1 },
       { sid: "wispy2", rate: -1 },
-      { sid: "coarse2", rate: 0.70 },
+      { sid: "coarse2", rate: 0.7 },
       { sid: "rarefaction", rate: -1 },
       { sid: "mixed", rate: 0 },
       { sid: "eruption", rate: -1 },
@@ -885,7 +883,7 @@ const diseases: IDisease[] = [
       {
         sid: "maxilla",
         ranges: [
-          { a: 4, b: 9, rate: 0.20 },
+          { a: 4, b: 9, rate: 0.2 },
           { a: 3, b: 10, rate: 0.125 },
           { a: 3, b: 11, rate: 0.05 },
           { a: 1, b: 12, rate: 0.01 },
@@ -894,7 +892,7 @@ const diseases: IDisease[] = [
       {
         sid: "mandible",
         ranges: [
-          { a: 4, b: 9, rate: 0.60 },
+          { a: 4, b: 9, rate: 0.6 },
           { a: 3, b: 10, rate: 0.375 },
           { a: 2, b: 11, rate: 0.15 },
           { a: 1, b: 12, rate: 0.02 },

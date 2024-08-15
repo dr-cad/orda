@@ -96,7 +96,7 @@
   width: 4.75rem;
 }
 
-.report .panaromic-images {
+.report .pat-images {
   border-radius: 10px;
   cursor: pointer;
   margin-bottom: 0.5rem;
@@ -111,7 +111,7 @@
   justify-content: center;
 }
 
-.report .panaromic-images img {
+.report .pat-images img {
   aspect-ratio: 504 / 230;
   width: 100%;
   height: auto;
@@ -119,7 +119,7 @@
   object-position: center center;
 }
 
-.report .panaromic-images .next-btn {
+.report .pat-images .next-btn {
   position: absolute;
   bottom: 1rem;
 }

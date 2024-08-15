@@ -83,7 +83,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
   const patName = useSymptomValueOf<string>(item.symptoms, "pat-name");
   const patMale = useSymptomValueOf<string>(item.symptoms, "pat-male");
   const patAge = useSymptomValueOf<number>(item.symptoms, "pat-age");
-  const panaromicImages = useSymptomValueOf<string>(item.symptoms, "panaromic-images");
+  const panaromicImages = useSymptomValueOf<string>(item.symptoms, "pat-images");
 
   const images = useMemo<ICImage[] | undefined>(() => {
     if (!panaromicImages) return;
@@ -152,7 +152,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
 
             {images && image && (
               <section
-                className="panaromic-images"
+                className="pat-images"
                 onClick={() => setPanaromicImageIndex((s) => (s + 1) % images.length)}>
                 <img alt={patName} src={image.url} />
                 {images.length > 1 && (

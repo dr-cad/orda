@@ -26,7 +26,7 @@ registerPlugin(
   FilePondPluginFileValidateSize
 );
 
-const sid = "panaromic-images";
+const sid = "pat-images";
 const maxFiles = 10;
 const maxFileSize = 1500 * 1024; // 1.5MB < 2.5MB cloudinary limit
 

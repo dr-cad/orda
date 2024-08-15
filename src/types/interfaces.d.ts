@@ -1,6 +1,7 @@
 // types
 
 import { AlertColor } from "@mui/material";
+import { SId } from "./sids";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -27,7 +28,7 @@ export type Desc = {
 export type SymptomType = "string" | "number" | "range" | "date" | "enum" | "none";
 
 export interface ISymptomRaw {
-  id: string;
+  id: SId;
   name: string;
   desc?: Desc;
   caption?: string;
@@ -55,7 +56,7 @@ export interface IDisease {
 }
 
 export interface IDiseaseFactor {
-  sid: string;
+  sid: SId;
   rate?: number;
   ranges?: IFactorRange[];
 }
