@@ -1,6 +1,6 @@
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
-import { FcDataBackup, FcImport, FcInternal, FcPlus, FcSurvey } from "react-icons/fc";
+import { FcDataBackup, FcExternal, FcInternal, FcPlus, FcSurvey } from "react-icons/fc";
 import { NavLink, useLocation } from "react-router-dom";
 import { appName } from "../config/strings";
 import useAppHistory from "../hooks/history";
@@ -55,7 +55,7 @@ export default function Header() {
         {inHistory && (
           <Tooltip title="Import History">
             <IconButton onClick={handleImportHistory}>
-              <FcImport filter="hue-rotate(180deg)" />
+              <FcExternal />
             </IconButton>
           </Tooltip>
         )}
