@@ -35,7 +35,7 @@ export function usePageIndex() {
 
   const handleResult = () => {
     // add to history
-    const history = save();
+    const history = save(false);
     if (!history) return; // TODO show snackbar
     // download a backup file
     if (autoBackup) exportHistory(history);

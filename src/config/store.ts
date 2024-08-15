@@ -17,7 +17,7 @@ export interface Store {
   symptoms: ISymptom[];
   createdAt: number | null;
   updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
-  save: () => IHistoryItem[] | null; // buffer -> hisory
+  save: (draft?: boolean) => IHistoryItem[] | null; // buffer -> hisory
   reset: () => void; // save, ~buffer
   // history
   history: IHistoryItem[];
@@ -78,13 +78,13 @@ export const useStore = create(
         );
         return result;
       },
-      save: () => {
+      save: (draft = true) => {
         // adds buffer to history with new scores - if needed
         // check if symptoms are not empty, if empty ignore saving
-        if (_.isEqual(get().symptoms, getRawSymptoms())) return get().history; // ignore - ok
-        // save data and tell
         const symptoms = get().symptoms;
-        const newScores = getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
+        if (_.isEqual(symptoms, getRawSymptoms())) return get().history; // ignore - ok
+        // save data and tell
+        const newScores = draft ? null : getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
         const newDate = new Date().getTime();
         const newItem: IHistoryItem = {
           symptoms,
@@ -95,6 +95,14 @@ export const useStore = create(
           createdAt: get().createdAt || newDate,
           updatedAt: newDate,
         };
+
+        try {
+          window.clarity?.("event", "saveResult");
+          window.clarity?.("set", "result", newItem.hash2);
+        } catch (e) {
+          console.log(e);
+        }
+
         return get().addHistory(newItem);
       },
       reset: () => {
@@ -122,15 +130,24 @@ export const useStore = create(
             if (existing < 0) {
               s.history.unshift(item);
               s.snackbar = { message: `Record saved!`, color: "success.main" };
-            } else if (item.updatedAt > s.history[existing].updatedAt) {
+              return;
+            }
+            const existingItem = s.history[existing];
+            let newItem = { ...item };
+            if (_.isEqual(existingItem.symptoms, item.symptoms)) {
+              // if symptoms unchanged, use any available scores
+              newItem.scores = newItem.scores || existingItem.scores;
+            }
+            if (item.updatedAt > existingItem.updatedAt) {
               // if same uuid and newer -> replace previous
               s.history.splice(existing, 1); // remove outdated
-              s.history.unshift(item);
+              s.history.unshift(newItem); // add new item
               s.snackbar = { message: `Record updated!`, color: "primary.main" };
-            } else {
-              console.log({ item, newer: s.history[existing].createdAt });
-              s.snackbar = { message: `Record outdated!`, color: "error.main" };
+              return;
             }
+            // else, the item is outdated and can't be imported
+            console.log({ item, newItem, newer: existingItem.createdAt });
+            s.snackbar = { message: `Record outdated! Can't import`, color: "error.main" };
           })
         );
         return get().history;
