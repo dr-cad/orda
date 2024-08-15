@@ -1,4 +1,3 @@
-import { EditRounded, PrintRounded, Visibility } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -13,14 +12,16 @@ import {
 } from "@mui/material";
 import _ from "lodash";
 import moment from "moment";
-import { MouseEvent, useMemo, useState } from "react";
+import { memo, MouseEvent, MouseEventHandler, useDeferredValue, useMemo, useState } from "react";
 import {
   FcAlphabeticalSortingAz,
   FcAlphabeticalSortingZa,
+  FcAreaChart,
   FcCalendar,
   FcDown,
   FcFullTrash,
   FcPlus,
+  FcPrint,
   FcSearch,
   FcUp,
 } from "react-icons/fc";
@@ -43,33 +44,14 @@ enum SortDir {
 }
 
 export default function HistoryPage() {
-  const history = useStore((s) => s.history);
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
   const [sortType, setSortType] = useState(SortType.Created);
   const [sortDir, setSortDir] = useState(SortDir.Desc);
 
   const handleChange = (v: string) => setQuery(v);
 
   const { handleNewRecord } = useAppHistory();
-
-  const list = useMemo(() => {
-    // search
-    let result = history.filter((h) => {
-      const patName = getSymptomValueById<string>(h.symptoms, "pat-name");
-      const matchPatName = patName?.includes(query);
-      const matchUUID = h.uuid.includes(query);
-      return matchPatName || matchUUID;
-    });
-    // sort - type, dir
-    if (sortType === SortType.AZ) {
-      result = _.sortBy(result, [(o) => getSymptomValueById(o.symptoms, "pat-name") || "zzz"]);
-    }
-    if (sortType === SortType.Created) {
-      result = _.orderBy(result, [(o) => o.createdAt], ["desc"]);
-    }
-    if (sortDir === SortDir.Asc) _.reverse(result);
-    return result;
-  }, [history, query, sortType, sortDir]);
 
   return (
     <Stack aria-label="diseases-page" flex={1} p={2} gap={2} position="relative">
@@ -90,6 +72,7 @@ export default function HistoryPage() {
           disableUnderline: true,
         }}
       />
+
       <Box display="flex" flexWrap="wrap" gap={2}>
         <Button
           color="primary"
@@ -138,16 +121,67 @@ export default function HistoryPage() {
           </Tooltip>
         </Box>
       </Box>
-      <List sx={{ gap: 1, display: "flex", flexDirection: "column" }}>
-        {list.map((item, i) => (
-          <HistoryItem key={i} index={i} {...item} />
-        ))}
-      </List>
+
+      <HistoryList query={deferredQuery} sortType={sortType} sortDir={sortDir} />
     </Stack>
   );
 }
 
-const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
+const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortType: SortType; sortDir: SortDir }) => {
+  const history = useStore((s) => s.history);
+
+  const list = useMemo(() => {
+    // search
+    let result = history.filter((h) => {
+      const patName = getSymptomValueById<string>(h.symptoms, "pat-name");
+      const matchPatName = patName?.includes(query);
+      const matchUUID = h.uuid.includes(query);
+      return matchPatName || matchUUID;
+    });
+    // sort - type, dir
+    if (sortType === SortType.AZ) {
+      result = _.sortBy(result, [(o) => getSymptomValueById(o.symptoms, "pat-name") || "zzz"]);
+    }
+    if (sortType === SortType.Created) {
+      result = _.orderBy(result, [(o) => o.createdAt], ["desc"]);
+    }
+    if (sortDir === SortDir.Asc) _.reverse(result);
+    return result;
+  }, [history, query, sortType, sortDir]);
+
+  const [selection, setSelection] = useState<number[]>([]);
+
+  const handleSelect = (e: MouseEvent, i: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("here", i);
+    setSelection((s) => {
+      if (s.includes(i)) return _.filter(s, (x) => x !== i);
+      return _.uniq([...s, i]);
+    });
+  };
+
+  return (
+    <List sx={{ gap: 1, display: "flex", flexDirection: "column" }}>
+      {list.map((item, i) => (
+        <HistoryItem
+          key={i}
+          index={i}
+          selected={selection.includes(i)}
+          handleSelect={(e) => handleSelect(e, i)}
+          {...item}
+        />
+      ))}
+    </List>
+  );
+});
+
+const HistoryItem = ({
+  index,
+  selected,
+  handleSelect,
+  ...item
+}: IHistoryItem & { index: number; selected: boolean; handleSelect: MouseEventHandler }) => {
   const navigate = useNavigate();
   const removeHistory = useStore((s) => s.removeHistory);
   const loadHistory = useStore((s) => s.loadHistory);
@@ -192,33 +226,32 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
         alignItems: "center",
         backgroundColor: "#ffffff08",
         borderRadius: 3,
+        border: selected ? "2px dashed #fff5" : undefined,
+        boxSizing: "border-box",
         cursor: "pointer",
         "&:hover": {
           backgroundColor: "#ffffff12",
         },
       }}
-      onClick={!isDraft ? handleLoad : handleEdit}
+      onClick={handleEdit}
+      onContextMenu={handleSelect}
       secondaryAction={
-        <Box display="flex" flexDirection="row" gap={1}>
+        <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
           {!isDraft && !reportDisabled && (
             <Tooltip title="Report">
               <IconButton size="small" color="primary" onClick={handleReport}>
-                <PrintRounded fontSize="small" />
+                <FcPrint fontSize="1.25rem" />
               </IconButton>
             </Tooltip>
           )}
           {!isDraft && (
-            <Tooltip title="Results">
+            <Tooltip title="Results" onClick={handleLoad}>
               <IconButton size="small" color="success">
-                <Visibility fontSize="small" />
+                <FcAreaChart fontSize="1.25rem" />
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title="Edit">
-            <IconButton size="small" color="warning" onClick={handleEdit}>
-              <EditRounded fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          <Box flex="0 0 1px" sx={{ height: "1.5rem", bgcolor: "#fff2" }} />
           <Tooltip title="Delete">
             <IconButton size="small" onClick={handleRemove}>
               <FcFullTrash fontSize="large" filter="hue-rotate(90deg)" />
@@ -235,7 +268,7 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
           bottom: 0,
           width: 7,
           mr: 1,
-          bgcolor: reportDisabled ? "warning.dark" : "primary.dark",
+          bgcolor: isDraft ? "#fff2" : reportDisabled ? "warning.dark" : "primary.dark",
           borderTopLeftRadius: 20,
           borderBottomLeftRadius: 20,
         }}
