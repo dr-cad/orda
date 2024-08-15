@@ -78,7 +78,7 @@ export default function HistoryPage() {
         sx={{ top: 20, zIndex: 99 }}
         size="small"
         type="text"
-        placeholder="Search a name"
+        placeholder="Search by name or id"
         value={query}
         onChange={(e) => handleChange(e.target.value)}
         InputProps={{
