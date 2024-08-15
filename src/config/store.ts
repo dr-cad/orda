@@ -11,18 +11,19 @@ import getRawSymptoms, { recursivelyResetItem, recursivelyUpdateParents } from "
 import { IHistoryItem, ISymptom, Value } from "../types/interfaces";
 
 export interface Store {
+  checkSpace: (need?: number) => boolean;
   // buffer
   uuid: string;
   symptoms: ISymptom[];
   createdAt: number | null;
   updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
-  save: () => IHistoryItem[] | null;
-  reset: () => void;
+  save: () => IHistoryItem[] | null; // buffer -> hisory
+  reset: () => void; // save, ~buffer
   // history
   history: IHistoryItem[];
-  addHistory: (item: IHistoryItem) => IHistoryItem[] | null;
-  removeHistory: (uuid: string) => void;
-  loadHistory: (item: IHistoryItem, overwrite?: boolean) => void;
+  addHistory: (item: IHistoryItem) => IHistoryItem[] | null; // check space, +history
+  removeHistory: (uuid: string) => void; // -history
+  loadHistory: (item: IHistoryItem, overwrite?: boolean) => void; // history -> buffer
   // app ui
   collapsed: boolean;
   toggleExpanded: (id: string, open?: boolean) => void;
@@ -41,6 +42,14 @@ export interface Store {
 export const useStore = create(
   persist<Store>(
     (set, get) => ({
+      checkSpace: (needed = 10 * 1024) => {
+        if (calcStorageSpace().free < needed) {
+          get().showSnackbar(`Unable to save! No space left`, "error.main");
+          return false;
+        }
+        return true;
+      },
+
       // buffer
       uuid: uuid4(),
       symptoms: getRawSymptoms(),
@@ -104,10 +113,8 @@ export const useStore = create(
       // history
       history: [],
       addHistory: (item) => {
-        if (calcStorageSpace().free < JSON.stringify(item.symptoms).length) {
-          get().showSnackbar(`Unable to save! No space left`, "error.main");
-          return null;
-        }
+        const free = get().checkSpace(JSON.stringify(item.symptoms).length);
+        if (!free) return null;
         // update
         set(
           produce((s: Store) => {
@@ -141,7 +148,7 @@ export const useStore = create(
         // saves and updates buffer
         // check not same uuid loading
         if (item.uuid === get().uuid) {
-          get().showSnackbar("Record already loaded!", "warning.main");
+          console.log("Record already loaded!");
           return;
         }
         // save first
@@ -210,7 +217,10 @@ export const useStore = create(
       // app settings
       autoBackup: false,
     }),
-    { name: "app-storage", storage: createJSONStorage(() => localStorage) }
+    {
+      name: "app-storage",
+      storage: createJSONStorage(() => localStorage, {}),
+    }
   )
 );
 

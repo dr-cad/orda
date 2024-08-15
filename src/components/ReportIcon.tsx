@@ -1,11 +1,11 @@
-import { PrintOutlined } from "@mui/icons-material";
-import { IconButton, Tooltip } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 import { useMemo } from "react";
+import { FcPrint } from "react-icons/fc";
 import { NavLink } from "react-router-dom";
 import { useStore } from "../config/store";
+import { getSymptomsErrors } from "../lib/symptoms";
 import { getId } from "../lib/utils";
 import { IHistoryItem } from "../types/interfaces";
-import { getSymptomsErrors } from "../lib/symptoms";
 
 export default function ReportIcon() {
   const symptoms = useStore((s) => s.symptoms);
@@ -19,15 +19,22 @@ export default function ReportIcon() {
     <Tooltip title={!disabled ? "Print Report" : "Please fill the requirements to print report"}>
       {disabled ? (
         <span>
-          <IconButton disabled>
-            <PrintOutlined />
-          </IconButton>
+          <Button
+            disabled
+            startIcon={<FcPrint />}
+            color="inherit"
+            sx={{ borderRadius: 4, px: 2, lineHeight: "0.5em", color: "info.light" }}>
+            Report
+          </Button>
         </span>
       ) : (
         <NavLink to={"/report/" + getId(item.uuid)}>
-          <IconButton>
-            <PrintOutlined />
-          </IconButton>
+          <Button
+            startIcon={<FcPrint />}
+            color="inherit"
+            sx={{ borderRadius: 4, px: 2, lineHeight: "0.5em", color: "info.light" }}>
+            Report
+          </Button>
         </NavLink>
       )}
     </Tooltip>

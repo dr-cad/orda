@@ -26,6 +26,17 @@ const theme = createTheme({
     ].join(","),
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          lineHeight: "0.25em",
+          paddingLeft: "0.5rem",
+          paddingRight: "0.5rem",
+          borderRadius: 10,
+          textTransform: "none",
+        },
+      },
+    },
     MuiToggleButton: {
       styleOverrides: {
         root: {

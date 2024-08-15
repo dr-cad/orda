@@ -1,13 +1,6 @@
-import {
-  AddRounded,
-  HistoryRounded,
-  HomeOutlined,
-  ListAltOutlined,
-  SaveOutlined,
-  UploadFileOutlined,
-} from "@mui/icons-material";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
+import { FcDataBackup, FcImport, FcInternal, FcPlus, FcSurvey } from "react-icons/fc";
 import { NavLink, useLocation } from "react-router-dom";
 import { appName } from "../config/strings";
 import useAppHistory from "../hooks/history";
@@ -45,30 +38,31 @@ export default function Header() {
         {inList && (
           <Button
             onClick={() => handleNewRecord()}
-            startIcon={<AddRounded style={{ fontSize: "1rem" }} />}
-            sx={{ borderRadius: 4, fontSize: "0.75rem" }}>
-            New
+            startIcon={<FcPlus />}
+            color="success"
+            sx={{ borderRadius: 4, textTransform: "none", px: 2, lineHeight: "0.5em" }}>
+            Create
           </Button>
         )}
         {inResult && <ReportIcon />}
         {inReport && (
           <NavLink to="/history" replace>
             <IconButton>
-              <HomeOutlined />
+              <FcDataBackup />
             </IconButton>
           </NavLink>
         )}
         {inHistory && (
           <Tooltip title="Import History">
             <IconButton onClick={handleImportHistory}>
-              <UploadFileOutlined />
+              <FcImport filter="hue-rotate(180deg)" />
             </IconButton>
           </Tooltip>
         )}
         {inHistory && (
           <Tooltip title="Export History">
             <IconButton onClick={handleExportHistory}>
-              <SaveOutlined />
+              <FcInternal />
             </IconButton>
           </Tooltip>
         )}
@@ -84,8 +78,8 @@ export default function Header() {
       <Stack flex="0 1 100%" gap={0.25} direction="row" justifyContent="flex-end" alignItems="center">
         {(inList || inResult) && (
           <NavLink to="/history">
-            <IconButton>
-              <HistoryRounded />
+            <IconButton size="medium">
+              <FcDataBackup />
             </IconButton>
           </NavLink>
         )}
@@ -93,7 +87,7 @@ export default function Header() {
           <NavLink to="/list/1">
             <Tooltip title="Back to List">
               <IconButton>
-                <ListAltOutlined />
+                <FcSurvey />
               </IconButton>
             </Tooltip>
           </NavLink>

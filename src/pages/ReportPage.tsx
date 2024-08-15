@@ -1,7 +1,8 @@
-import { ChevronRightRounded, ImageOutlined, PrintOutlined, ShareOutlined } from "@mui/icons-material";
-import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import { ChevronRightRounded } from "@mui/icons-material";
+import { Box, Button, IconButton, Stack } from "@mui/material";
 import moment from "moment";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FcCamera, FcPrint, FcShare } from "react-icons/fc";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import BarChart from "../components/BarChart";
@@ -218,20 +219,14 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
       </div>
 
       <Box display="flex" justifyContent="center" gap={2}>
-        <Button onClick={handlePrint} startIcon={<PrintOutlined />} sx={{ borderRadius: 2, px: 2 }}>
-          <Typography fontSize="0.65rem" className="text-ellipsis">
-            Print
-          </Typography>
+        <Button onClick={handlePrint} color="inherit" startIcon={<FcPrint />} sx={{ fontSize: "0.65rem" }}>
+          Print
         </Button>
-        <Button onClick={handleDownload} startIcon={<ImageOutlined />} sx={{ borderRadius: 2, px: 2 }}>
-          <Typography fontSize="0.65rem" className="text-ellipsis">
-            Save
-          </Typography>
+        <Button onClick={handleDownload} color="inherit" startIcon={<FcCamera />} sx={{ fontSize: "0.65rem" }}>
+          Save
         </Button>
-        <Button onClick={handleShare} startIcon={<ShareOutlined />} sx={{ borderRadius: 2, px: 2 }}>
-          <Typography fontSize="0.65rem" className="text-ellipsis">
-            Share
-          </Typography>
+        <Button onClick={handleShare} color="inherit" startIcon={<FcShare />} sx={{ fontSize: "0.65rem" }}>
+          Share
         </Button>
       </Box>
     </Stack>

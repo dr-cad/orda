@@ -1,14 +1,4 @@
-import {
-  AddRounded,
-  CalendarMonth,
-  DeleteRounded,
-  EditRounded,
-  PrintRounded,
-  SearchRounded,
-  SortByAlpha,
-  SwapVert,
-  Visibility,
-} from "@mui/icons-material";
+import { EditRounded, PrintRounded, Visibility } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -24,6 +14,16 @@ import {
 import _ from "lodash";
 import moment from "moment";
 import { MouseEvent, useMemo, useState } from "react";
+import {
+  FcAlphabeticalSortingAz,
+  FcAlphabeticalSortingZa,
+  FcCalendar,
+  FcDown,
+  FcFullTrash,
+  FcPlus,
+  FcSearch,
+  FcUp,
+} from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
 import { appName } from "../config/strings";
@@ -83,8 +83,8 @@ export default function HistoryPage() {
         onChange={(e) => handleChange(e.target.value)}
         InputProps={{
           endAdornment: (
-            <InputAdornment position="end" sx={{ opacity: 0.15 }}>
-              <SearchRounded />
+            <InputAdornment position="end" sx={{ opacity: 0.85 }}>
+              <FcSearch fontSize="1.25rem" filter="brightness(1.5)" />
             </InputAdornment>
           ),
           disableUnderline: true,
@@ -95,7 +95,7 @@ export default function HistoryPage() {
           color="primary"
           variant="contained"
           onClick={() => handleNewRecord()}
-          startIcon={<AddRounded />}
+          startIcon={<FcPlus />}
           sx={{ borderRadius: 4, px: 2 }}>
           New Record
         </Button>
@@ -106,28 +106,34 @@ export default function HistoryPage() {
           <Tooltip title="By name">
             <IconButton
               size="small"
-              sx={{ color: sortType === SortType.AZ ? "#fff" : "#fff5" }}
+              sx={{
+                filter: sortType === SortType.AZ ? "none" : "grayscale(1)",
+                fontSize: "1.25rem",
+              }}
               color="inherit"
               onClick={() => setSortType(SortType.AZ)}>
-              <SortByAlpha fontSize="small" />
+              {sortDir === SortDir.Asc ? <FcAlphabeticalSortingAz /> : <FcAlphabeticalSortingZa />}
             </IconButton>
           </Tooltip>
           <Tooltip title="By date">
             <IconButton
               size="small"
-              sx={{ color: sortType === SortType.Created ? "#fff" : "#fff5" }}
+              sx={{
+                filter: sortType === SortType.Created ? "none" : "grayscale(1)",
+                fontSize: "1.25rem",
+              }}
               color="inherit"
               onClick={() => setSortType(SortType.Created)}>
-              <CalendarMonth fontSize="small" />
+              <FcCalendar filter="hue-rotate(180deg)" />
             </IconButton>
           </Tooltip>
           <Tooltip title={sortDir === SortDir.Desc ? "Descending" : "Ascending"}>
             <IconButton
               size="small"
-              sx={{ color: sortDir === SortDir.Desc ? "#fff" : "#fff5" }}
               color="inherit"
+              sx={{ fontSize: "1.25rem" }}
               onClick={() => setSortDir((s) => (s === SortDir.Desc ? SortDir.Asc : SortDir.Desc))}>
-              <SwapVert fontSize="small" />
+              {sortDir === SortDir.Desc ? <FcDown /> : <FcUp />}
             </IconButton>
           </Tooltip>
         </Box>
@@ -214,13 +220,26 @@ const HistoryItem = ({ index, ...item }: IHistoryItem & { index: number }) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete">
-            <IconButton size="small" color="error" onClick={handleRemove}>
-              <DeleteRounded fontSize="small" />
+            <IconButton size="small" onClick={handleRemove}>
+              <FcFullTrash fontSize="large" filter="hue-rotate(90deg)" />
             </IconButton>
           </Tooltip>
         </Box>
       }>
-      <Box flex="0 0 8px" />
+      <Box flex="0 0 6px" />
+      <Box
+        sx={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 7,
+          mr: 1,
+          bgcolor: reportDisabled ? "warning.dark" : "primary.dark",
+          borderTopLeftRadius: 20,
+          borderBottomLeftRadius: 20,
+        }}
+      />
       <ListItemText
         primary={title.toString()}
         secondary={isDraft ? "(unsaved draft)" : moment(item.createdAt).format("DD MMM YYYY")}
