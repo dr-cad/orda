@@ -9,8 +9,9 @@ import {
   FcSearch,
   FcUp,
 } from "react-icons/fc";
-import HistoryList, { SortDir, SortType } from "../components/HistoryList";
+import HistoryList from "../components/HistoryList";
 import useAppHistory from "../hooks/history";
+import { SortDir, SortType } from "../types/interfaces";
 
 export default function HistoryPage() {
   const [query, setQuery] = useState("");

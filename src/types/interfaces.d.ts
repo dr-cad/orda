@@ -1,13 +1,33 @@
 // types
 
 import { AlertColor } from "@mui/material";
-import { SId } from "./sids";
+import { SId } from "./sid";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export enum AppMode {
   Preval = "prevalance",
   Raw = "raw",
+}
+
+export enum Keys {
+  title = "title",
+  raw = "Pattern match",
+  pval = "Prevalance data",
+}
+
+export type BarDatum = {
+  [k in Keys]: string | number;
+};
+
+export enum SortType {
+  Created,
+  AZ,
+}
+
+export enum SortDir {
+  Desc = "desc",
+  Asc = "asc",
 }
 
 export enum Feature {
@@ -93,7 +113,7 @@ export interface IError {
 }
 
 export interface IReport {
-  sid?: string;
+  sid?: SId;
   ranges?: (IRange & { text: string })[];
   text?: string | string[];
 }

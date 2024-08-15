@@ -59,8 +59,8 @@ export const useStore = create(
         let result = undefined;
         set(
           produce((s: Store) => {
-            let arr: ISymptom[] = s.symptoms;
-            let item = arr.find((i) => i.id === id);
+            const arr: ISymptom[] = s.symptoms; // reference
+            const item = arr.find((i) => i.id === id);
             if (item) {
               // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
               const hasInput = item.type === "string" || item.type === "number" || item.type === "range";
@@ -134,7 +134,7 @@ export const useStore = create(
               return;
             }
             const existingItem = s.history[existing];
-            let newItem = { ...item };
+            const newItem = { ...item };
             if (_.isEqual(existingItem.symptoms, item.symptoms)) {
               // if symptoms unchanged, use any available scores
               newItem.scores = newItem.scores || existingItem.scores;

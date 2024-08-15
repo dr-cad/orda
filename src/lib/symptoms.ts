@@ -134,7 +134,7 @@ export function getSymptomsErrors(symptoms: ISymptom[]): IError[] {
  */
 export function recursivelyResetItem(arr: ISymptom[], id: string) {
   // populate item
-  let item = arr.find((x) => x.id === id);
+  const item = arr.find((x) => x.id === id);
   // reset if found
   if (item) {
     console.log("Removing", item.id);
@@ -166,7 +166,7 @@ export function recursivelyUpdateParents(arr: ISymptom[], id: string) {
       // set ancestors whom have value
       // it works: because it fills from inner parents to outer ones
       const item = arr.find((item) => item.id === option);
-      if (!!item?.value) parent.value = true;
+      if (item?.value) parent.value = true;
     }
     recursivelyUpdateParents(arr, parent.id);
   }

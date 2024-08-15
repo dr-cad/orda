@@ -9,6 +9,7 @@ import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { FilePond, registerPlugin } from "react-filepond";
 
+import { CircularProgress } from "@mui/material";
 import sha256 from "crypto-js/sha256";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -17,7 +18,6 @@ import { useSymptomValue } from "../hooks/symptom";
 import { makeDeleteRequest, makeUploadRequest } from "../lib/cloudinary";
 import { parseImages, stringifyImages } from "../lib/image";
 import { ICImage } from "../types/interfaces";
-import { CircularProgress } from "@mui/material";
 
 registerPlugin(
   // plugins
@@ -39,7 +39,11 @@ export default function ImagePicker() {
   const [files, setFiles] = useState<ActualFileObject[]>();
   const initialized = useRef(false);
 
+  const imagesSet = useRef(false);
   useEffect(() => {
+    if (imagesSet.current) return;
+    imagesSet.current = true;
+
     const setImagesOnInit = async () => {
       const list = await Promise.all(
         imagesParsed.map(async (image) => {
@@ -56,7 +60,7 @@ export default function ImagePicker() {
     };
 
     setImagesOnInit();
-  }, []);
+  }, [imagesParsed]);
 
   // cloudinary + store
 
@@ -125,6 +129,8 @@ export default function ImagePicker() {
   useEffect(() => {
     // on-demand revalidation for upload - based on count and init
     if (initialized.current) updateImages();
+    // FIXME
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files?.length]);
 
   const onFilesUpdate = async (newFiles: FilePondFile[]) => {

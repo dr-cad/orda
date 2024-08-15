@@ -8,17 +8,7 @@ import { useStore } from "../config/store";
 import { appName } from "../config/strings";
 import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
-import { IHistoryItem } from "../types/interfaces";
-
-export enum SortType {
-  Created,
-  AZ,
-}
-
-export enum SortDir {
-  Desc = "desc",
-  Asc = "asc",
-}
+import { IHistoryItem, SortDir, SortType } from "../types/interfaces";
 
 const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortType: SortType; sortDir: SortDir }) => {
   const history = useStore((s) => s.history);
@@ -57,13 +47,7 @@ const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortTyp
   return (
     <List sx={{ gap: 1, display: "flex", flexDirection: "column" }}>
       {list.map((item, i) => (
-        <HistoryItem
-          key={i}
-          index={i}
-          selected={selection.includes(i)}
-          handleSelect={(e) => handleSelect(e, i)}
-          {...item}
-        />
+        <HistoryItem key={i} selected={selection.includes(i)} handleSelect={(e) => handleSelect(e, i)} {...item} />
       ))}
     </List>
   );
@@ -72,11 +56,10 @@ const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortTyp
 export default HistoryList;
 
 const HistoryItem = ({
-  index,
   selected,
   handleSelect,
   ...item
-}: IHistoryItem & { index: number; selected: boolean; handleSelect: MouseEventHandler }) => {
+}: IHistoryItem & { selected: boolean; handleSelect: MouseEventHandler }) => {
   const navigate = useNavigate();
   const removeHistory = useStore((s) => s.removeHistory);
   const loadHistory = useStore((s) => s.loadHistory);

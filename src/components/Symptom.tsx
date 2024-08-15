@@ -127,7 +127,7 @@ const Input = ({ symptom }: IInnerProps) => {
   const [value, setValue] = useState<Value | undefined>(symptom.value);
 
   const t0 = useRef<number>();
-  const throttle = (fn: Function) => {
+  const throttle = (fn: () => void) => {
     window.clearTimeout(t0.current);
     t0.current = window.setTimeout(fn, 1000);
   };

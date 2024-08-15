@@ -28,7 +28,7 @@ export default function ReportPage() {
   const item = useMemo(() => (id ? history.find((x) => x.uuid.startsWith(id)) : undefined), [history, id]);
 
   if (!item || !item.scores) return null;
-  const disabled = useMemo(() => getSymptomsErrors(item.symptoms).length, [item.symptoms]);
+  const disabled = getSymptomsErrors(item.symptoms).length;
   if (disabled) return <Navigate to="/result" replace />;
   return <ReportPageContent id={id!} item={item} />;
 }
@@ -151,9 +151,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
             </section>
 
             {images && image && (
-              <section
-                className="pat-images"
-                onClick={() => setPanaromicImageIndex((s) => (s + 1) % images.length)}>
+              <section className="pat-images" onClick={() => setPanaromicImageIndex((s) => (s + 1) % images.length)}>
                 <img alt={patName} src={image.url} />
                 {images.length > 1 && (
                   <IconButton

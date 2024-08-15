@@ -9,7 +9,7 @@ export async function exportHistory(history: IHistoryItem[]) {
   downloadFile(`${prefix} ${new Date().toLocaleString()}.json`, data);
 }
 
-export async function importHistory(addHistory: Store["addHistory"], callback: Function) {
+export async function importHistory(addHistory: Store["addHistory"], callback: () => void) {
   const input = document.createElement("input");
   input.type = "file";
   input.multiple = false;

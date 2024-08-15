@@ -1,14 +1,5 @@
 import { ResponsiveBar, ResponsiveBarSvgProps } from "@nivo/bar";
-
-export enum Keys {
-  title = "title",
-  raw = "Pattern match",
-  pval = "Prevalance data",
-}
-
-export type BarDatum = {
-  [k in Keys]: string | number;
-};
+import { BarDatum, Keys } from "../types/interfaces";
 
 type Props = ResponsiveBarSvgProps<BarDatum> & {
   darkMode?: boolean;
