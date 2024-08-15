@@ -163,7 +163,7 @@ const HistoryItem = ({
           bottom: 0,
           width: 7,
           mr: 1,
-          bgcolor: isDraft ? "#fff2" : reportDisabled ? "warning.dark" : "primary.dark",
+          bgcolor: isDraft ? "warning.dark" : reportDisabled ? "primary.dark" : "success.dark",
           borderTopLeftRadius: 20,
           borderBottomLeftRadius: 20,
         }}

@@ -44,7 +44,7 @@ export default function HistoryPage() {
           color="primary"
           variant="contained"
           onClick={() => handleNewRecord()}
-          startIcon={<FcPlus />}
+          startIcon={<FcPlus filter="contrast(4) hue-rotate(300deg)" />}
           sx={{ borderRadius: 4, px: 2 }}>
           New Record
         </Button>

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import sha256 from "crypto-js/sha256";
 import { produce } from "immer";
 import _ from "lodash";
@@ -146,8 +147,9 @@ export const useStore = create(
               return;
             }
             // else, the item is outdated and can't be imported
-            console.log({ item, newItem, newer: existingItem.createdAt });
+            console.log({ item, existingItem });
             s.snackbar = { message: `Record outdated! Can't import`, color: "error.main" };
+            Sentry.captureException({ item, existingItem });
           })
         );
         return get().history;

@@ -9,7 +9,7 @@ import ResultPage from "./pages/ResultPage";
 import SymptomsPage from "./pages/SymptomsPage";
 
 export default function App() {
-  if (import.meta.env.PROD || true) clarity.init("nj04qzc3hn");
+  if (import.meta.env.PROD) clarity.init("nj04qzc3hn");
   const history = useStore((s) => s.history);
 
   return (
