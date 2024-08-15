@@ -43,7 +43,7 @@ function Symptom({ id, parent }: IProps) {
 
   const [mt, mb] = useMemo(() => {
     const firstOption = parent.options!.indexOf(id) === 0;
-    const space = expandable ? (parent.page ? (firstOption ? 0 : 4) : 1) : 0;
+    const space = expandable ? (parent.page ? (firstOption ? 0 : 4) : 1) : 1;
     return [space, expandable ? space : 0];
   }, [expandable, id, parent.options, parent.page]);
 
@@ -64,15 +64,7 @@ function Symptom({ id, parent }: IProps) {
           </Fragment>
         )
       }
-      sx={{
-        mt,
-        mb,
-        "&:hover > .MuiTreeItem-content > .MuiTreeItem-label > .MuiFormControlLabel-root > .header-bold": {
-          textDecoration: "underline",
-          textDecorationColor: "#8ad4ff",
-          textUnderlineOffset: 7,
-        },
-      }}
+      sx={{ mt, mb }}
       className={isEnumParent ? "enum-parent" : ""}
     />
   );
@@ -86,13 +78,15 @@ const Label = ({ symptom, parent }: IInnerProps) => {
   return (
     <FormControlLabel
       value={symptom.id}
+      sx={{ alignItems: "flex-start" }}
       label={
         <Typography
           className={bold ? "header header-bold" : "header"}
           sx={{
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             fontWeight: bold ? 800 : 400,
+            lineHeight: "1.3em",
           }}
           color={symptom.value ? (isEnumParent ? "warning.light" : "primary") : undefined}>
           {symptom.name}
@@ -103,9 +97,9 @@ const Label = ({ symptom, parent }: IInnerProps) => {
         noButton ? (
           <Box sx={{ width: 12 }} />
         ) : parent.type === "enum" && parent.options?.length !== 1 ? (
-          <Radio size="small" checked={!!symptom.value} />
+          <Radio sx={{ py: 0 }} size="small" checked={!!symptom.value} />
         ) : (
-          <Checkbox size="small" checked={!!symptom.value} />
+          <Checkbox sx={{ py: 0 }} size="small" checked={!!symptom.value} />
         )
       }
     />

@@ -27,9 +27,13 @@ export const StyledTreeItem = styled(CustomTreeItem)(({ theme }) => ({
   [`& .${treeItemClasses.iconContainer}`]: {
     marginLeft: 4,
     marginRight: 6,
+    marginTop: 6,
   },
   [`& .${treeItemClasses.iconContainer}:has(> .close)`]: {
     display: "none",
+  },
+  [`& .${treeItemClasses.content}`]: {
+    alignItems: "flex-start",
   },
   [`& .${treeItemClasses.group}`]: {
     marginLeft: 19,
@@ -41,6 +45,11 @@ export const StyledTreeItem = styled(CustomTreeItem)(({ theme }) => ({
   },
   [`&.enum-parent .${treeItemClasses.group}:hover`]: {
     borderLeftColor: `${theme.palette.warning.light} !important`,
+  },
+  "&:hover > .MuiTreeItem-content > .MuiTreeItem-label > .MuiFormControlLabel-root > .header-bold": {
+    textDecoration: "underline",
+    textDecorationColor: "#8ad4ff",
+    textUnderlineOffset: 7,
   },
 }));
 
