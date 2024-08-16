@@ -13,7 +13,7 @@ const pickFromRange = (ranges: IReport["ranges"], v: IRange) => {
   let to = "";
 
   for (const range of ranges!) {
-    if (!from && v.a < range.b) from = range.text;
+    if (!from && v.a < range.b) from = range.text; // yes it's correct
     if (!to && v.b <= range.b) to = range.text;
   }
 
