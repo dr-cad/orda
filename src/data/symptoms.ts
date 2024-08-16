@@ -299,7 +299,7 @@ const symptoms: ISymptomRaw[] = [
     id: "type",
     name: "Type",
     type: "enum",
-    options: ["solitary", "multiple-seprate", "diffuse"],
+    options: ["solitary", "multiple-separate", "diffuse"],
     required: true,
   },
   {
@@ -467,7 +467,7 @@ const symptoms: ISymptomRaw[] = [
     name: "Solitary",
   },
   {
-    id: "multiple-seprate",
+    id: "multiple-separate",
     name: "Multiple seprate",
   },
   {

@@ -97,7 +97,7 @@ export type SId =
   | "periapical"
   | "related"
   | "solitary"
-  | "multiple-seprate"
+  | "multiple-separate"
   | "diffuse"
   | "int-struct"
   | "radiopaque"

@@ -14,7 +14,7 @@ const report: IReport[] = [
   { sid: "bilateral", text: "bilateral," },
 
   { sid: "solitary", text: "solitary," },
-  { sid: "multiple-seprate", text: "multiple," },
+  { sid: "multiple-separate", text: "multiple," },
   { sid: "diffuse", text: "generalized diffuse," },
 
   { sid: "unilocular", text: "unilocular radiolucent" },
