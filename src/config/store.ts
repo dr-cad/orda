@@ -83,7 +83,13 @@ export const useStore = create(
         // adds buffer to history with new scores - if needed
         // check if symptoms are not empty, if empty ignore saving
         const symptoms = get().symptoms;
-        if (_.isEqual(symptoms, getRawSymptoms())) return get().history; // ignore - ok
+        if (_.isEqual(symptoms, getRawSymptoms())) {
+          if (!draft) {
+            get().showSnackbar("Nothing to save", "warning.main");
+            return null;
+          }
+          return get().history; // ignore - ok
+        }
         // save data and tell
         const newScores = draft ? null : getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
         const newDate = new Date().getTime();
