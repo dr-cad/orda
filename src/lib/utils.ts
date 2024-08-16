@@ -6,4 +6,3 @@ export const getFilename = (type: "Report" | "Result", fullname: string, uuid: s
   `${type} - ${fullname} - ${getId(uuid)}.${postfix}`;
 
 export const calc = (n: number, frac = 16) => Number(n.toFixed(frac));
-// export const calc = (n: number) => n;
