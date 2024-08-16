@@ -59,21 +59,27 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
   return 1;
 };
 
+const FIX_MATH_CALC = 100;
+
 // nominator
 const getDiseaseProbablity = (disease: IDisease, symptoms: ISymptom[]): number => {
   console.groupCollapsed("Disease", disease.name);
-  const mul = disease.factors.reduce((v, factor) => calc(v * getSymptomProbablity(factor, symptoms)), 1);
+  const mul = disease.factors.reduce((v, factor) => v * getSymptomProbablity(factor, symptoms) * FIX_MATH_CALC, 1);
   console.groupEnd();
   return mul; // P(Di) * ∏j{P(Sj|Di)}
 };
 
+const getDiseaseProbablity_FIX = (disease: IDisease, symptoms: ISymptom[]): number =>
+  getDiseaseProbablity(disease, symptoms) * FIX_MATH_CALC;
+
 export default function getScores({ diseases, symptoms }: IProps): IScoredDisease[] {
-  const nominators: number[] = diseases.map((disease) => getDiseaseProbablity(disease, symptoms));
+  const nominators: number[] = diseases.map((disease) => getDiseaseProbablity_FIX(disease, symptoms));
   const dinaminator = nominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
   const pnominators: number[] = diseases.map((disease) =>
-    calc(disease.preval * getDiseaseProbablity(disease, symptoms))
+    calc(disease.preval * getDiseaseProbablity_FIX(disease, symptoms))
   );
   const pdinaminator = pnominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
+  console.log(nominators, dinaminator, pnominators, pdinaminator);
   return diseases.map((disease, i) => ({
     ...disease,
     value: calc(nominators[i] / dinaminator),
