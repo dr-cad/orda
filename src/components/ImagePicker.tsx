@@ -37,34 +37,37 @@ export default function ImagePicker() {
 
   const filepond = useRef<FilePond>(null);
   const [files, setFiles] = useState<ActualFileObject[]>();
+  const [progress, setProgress] = useState(0);
   const initialized = useRef(false);
+  const imagesSet = useRef(false); // makes sure images are loaded only once
 
-  const imagesSet = useRef(false);
   useEffect(() => {
     if (imagesSet.current) return;
     imagesSet.current = true;
 
     const setImagesOnInit = async () => {
-      const list = await Promise.all(
-        imagesParsed.map(async (image) => {
-          const res = await fetch(image.url);
-          return new File([await res.blob()], image.hash, { type: "image/jpeg" });
-        })
-      );
+      try {
+        const list = await Promise.all(
+          imagesParsed.map(async (image) => {
+            const res = await fetch(image.url);
+            return new File([await res.blob()], image.hash, { type: "image/jpeg" });
+          })
+        );
 
-      setFiles(list);
+        setFiles(list);
 
-      setTimeout(() => {
-        initialized.current = true;
-      }, 500);
+        setTimeout(() => {
+          initialized.current = true;
+        }, 500);
+      } catch (e) {
+        console.error(e);
+      }
     };
 
     setImagesOnInit();
   }, [imagesParsed]);
 
   // cloudinary + store
-
-  const [progress, setProgress] = useState(0);
 
   const updateImages = async () => {
     const newImages: ICImage[] = [];
@@ -128,14 +131,19 @@ export default function ImagePicker() {
 
   useEffect(() => {
     // on-demand revalidation for upload - based on count and init
-    if (initialized.current) updateImages();
-    // FIXME
+    if (files && initialized.current) updateImages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files?.length]);
 
   const onFilesUpdate = async (newFiles: FilePondFile[]) => {
-    console.log({ newFiles });
-    setFiles(newFiles.map((f) => f.file));
+    console.log("update", { newFiles });
+    const newFilesHashed = [];
+    for (const f of newFiles) {
+      const hash = await fileHash(f.file);
+      if (f.file.name === hash) newFilesHashed.push(f.file);
+      else newFilesHashed.push(new File([f.file], hash, { type: f.file.type }));
+    }
+    setFiles(newFilesHashed);
   };
 
   return (
@@ -169,6 +177,14 @@ export default function ImagePicker() {
         name="files" /* sets the file input name, it's filepond by default */
         labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
         onupdatefiles={onFilesUpdate}
+        onaddfile={(e, file) => {
+          console.log("add", { e, file });
+        }}
+        beforeAddFile={async (file) => {
+          console.log("before add", { file });
+          return true;
+        }}
+        onremovefile={(e, file) => console.log("remove", { e, file })}
         // allowReorder
         allowMultiple
         acceptedFileTypes={["image/jpeg"]} // FIXME not working
