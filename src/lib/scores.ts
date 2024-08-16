@@ -1,5 +1,6 @@
-import { IDisease, IDiseaseFactor, IScoredDisease, ISymptom } from "../types/interfaces";
 import _ from "lodash";
+import { IDisease, IDiseaseFactor, IScoredDisease, ISymptom } from "../types/interfaces";
+import { calc } from "./utils";
 
 interface IProps {
   symptoms: ISymptom[];
@@ -8,11 +9,11 @@ interface IProps {
 
 export const epsilon = 0.01; // NOTICE lower number may cause NaN issue
 const inactive = epsilon; // any fucking number - no matter
-const manipulateRate = (rate: number) => (rate === -1 ? epsilon : rate);
+const getRate = (rate: number) => (rate === -1 ? epsilon : rate);
 
 const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
   // This will check if ranges-array exists and sort them by their rate
-  const dfranges = factor.ranges ? _.orderBy(factor.ranges, (a) => manipulateRate(a.rate), "desc") : null; // dfranges = disease factor ranges
+  const dfranges = factor.ranges ? _.orderBy(factor.ranges, (a) => getRate(a.rate), "desc") : null; // dfranges = disease factor ranges
 
   for (const symptom of symptoms) {
     if (symptom.id === factor.sid) {
@@ -35,7 +36,7 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
               return inactive;
             }
             if (symptom.value.a >= range.a && symptom.value.b <= range.b) {
-              return manipulateRate(range.rate);
+              return getRate(range.rate);
             }
           }
           return inactive; // TODO
@@ -43,12 +44,12 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
           if (!Array.isArray(dfranges)) return 1;
           for (const range of dfranges) {
             if ((symptom.value! as number) >= range.a && (symptom.value! as number) <= range.b) {
-              return manipulateRate(range.rate);
+              return getRate(range.rate);
             }
           }
           return inactive;
         default:
-          if (symptom.value) return manipulateRate(factor.rate!);
+          if (symptom.value) return getRate(factor.rate!);
           return inactive;
       }
     }
@@ -61,19 +62,21 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
 // nominator
 const getDiseaseProbablity = (disease: IDisease, symptoms: ISymptom[]): number => {
   console.groupCollapsed("Disease", disease.name);
-  const mul = disease.factors.reduce((v, factor) => v * getSymptomProbablity(factor, symptoms), 1);
+  const mul = disease.factors.reduce((v, factor) => calc(v * getSymptomProbablity(factor, symptoms)), 1);
   console.groupEnd();
   return mul; // P(Di) * ∏j{P(Sj|Di)}
 };
 
 export default function getScores({ diseases, symptoms }: IProps): IScoredDisease[] {
   const nominators: number[] = diseases.map((disease) => getDiseaseProbablity(disease, symptoms));
-  const dinaminator = nominators.reduce((a, b) => a + b, 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
-  const pnominators: number[] = diseases.map((disease) => disease.preval * getDiseaseProbablity(disease, symptoms));
-  const pdinaminator = pnominators.reduce((a, b) => a + b, 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
+  const dinaminator = nominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
+  const pnominators: number[] = diseases.map((disease) =>
+    calc(disease.preval * getDiseaseProbablity(disease, symptoms))
+  );
+  const pdinaminator = pnominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
   return diseases.map((disease, i) => ({
     ...disease,
-    value: nominators[i] / dinaminator,
-    pvalue: pnominators[i] / pdinaminator,
+    value: calc(nominators[i] / dinaminator),
+    pvalue: calc(pnominators[i] / pdinaminator),
   }));
 }
