@@ -1,12 +1,12 @@
 import { ChevronRightRounded } from "@mui/icons-material";
 import { Box, Button, IconButton, Stack } from "@mui/material";
 import moment from "moment";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { FcCamera, FcPrint, FcShare } from "react-icons/fc";
+import { RiCollapseDiagonalLine, RiExpandDiagonalLine } from "react-icons/ri";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import BarChart from "../components/BarChart";
-import "../config/report.css";
 import { useStore } from "../config/store";
 import { appName, email, orgName, siteURL } from "../config/strings";
 import useReportFindings from "../hooks/report";
@@ -16,6 +16,8 @@ import { handleDownloadImage, handleShareImage } from "../lib/share";
 import { getSymptomsErrors } from "../lib/symptoms";
 import { getFilename, sleep } from "../lib/utils";
 import { AppMode, ICImage, IHistoryItem } from "../types/interfaces";
+
+import "../config/report.css";
 
 type Mode = "print" | "image";
 
@@ -79,6 +81,7 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
   // ui values
 
   const [panaromicImageIndex, setPanaromicImageIndex] = useState(0);
+  const [fit, setFit] = useState<CSSProperties["objectFit"]>("cover");
 
   const patName = useSymptomValueOf<string>(item.symptoms, "pat-name");
   const patMale = useSymptomValueOf<string>(item.symptoms, "pat-male");
@@ -150,12 +153,12 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
               </div>
             </section>
 
-            {images && image && (
-              <section className="pat-images" onClick={() => setPanaromicImageIndex((s) => (s + 1) % images.length)}>
-                <img alt={patName} src={image.url} />
-                {images.length > 1 && (
+            {image && (
+              <section className="pat-images" onClick={() => setPanaromicImageIndex((s) => (s + 1) % images!.length)}>
+                <img alt={patName} src={image.url} style={{ objectFit: fit }} />
+                {images!.length > 1 && (
                   <IconButton
-                    className="next-btn no-print"
+                    className="btn-next no-print"
                     sx={{
                       backgroundColor: "#0008",
                       "&:hover": { backgroundColor: "#0005" },
@@ -163,6 +166,18 @@ function ReportPageContent({ id, item }: { id: string; item: IHistoryItem }) {
                     <ChevronRightRounded />
                   </IconButton>
                 )}
+                <IconButton
+                  className="btn-fit no-print"
+                  sx={{
+                    backgroundColor: "#0008",
+                    "&:hover": { backgroundColor: "#0005" },
+                  }}>
+                  {fit === "cover" ? (
+                    <RiCollapseDiagonalLine onClick={() => setFit("contain")} />
+                  ) : (
+                    <RiExpandDiagonalLine onClick={() => setFit("cover")} />
+                  )}
+                </IconButton>
               </section>
             )}
 

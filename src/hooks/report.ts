@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { useMemo } from "react";
 import report from "../data/report";
 import { getSymptomValueById } from "../lib/symptoms";
 import { IRange, IReport, ISymptom } from "../types/interfaces";
@@ -22,16 +23,18 @@ const pickFromRange = (ranges: IReport["ranges"], v: IRange) => {
 };
 
 export default function useReportFindings(sypmtoms: ISymptom[]) {
-  let output = "";
-  for (const r of report) {
-    const spaceBefore = report.indexOf(r) === 0 ? "" : " ";
-    if (!r.sid) {
-      output += spaceBefore + pickText(r.text!);
-      continue;
+  return useMemo(() => {
+    let output = "";
+    for (const r of report) {
+      const spaceBefore = report.indexOf(r) === 0 ? "" : " ";
+      if (!r.sid) {
+        output += spaceBefore + pickText(r.text!);
+        continue;
+      }
+      const v = getSymptomValueById(sypmtoms, r.sid);
+      if (v && r.text) output += spaceBefore + pickText(r.text);
+      if (r.ranges && v) output += spaceBefore + pickFromRange(r.ranges, v as IRange);
     }
-    const v = getSymptomValueById(sypmtoms, r.sid);
-    if (v && r.text) output += spaceBefore + pickText(r.text);
-    if (r.ranges && v) output += spaceBefore + pickFromRange(r.ranges, v as IRange);
-  }
-  return output + ".";
+    return output + ".";
+  }, [sypmtoms]);
 }

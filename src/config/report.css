@@ -62,6 +62,7 @@
 }
 
 .report .info {
+  position: relative;
 }
 
 .report .pat-name {
@@ -119,9 +120,15 @@
   object-position: center center;
 }
 
-.report .pat-images .next-btn {
+.report .pat-images .btn-next {
   position: absolute;
   bottom: 1rem;
+}
+
+.report .pat-images .btn-fit {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .report section.advice {
