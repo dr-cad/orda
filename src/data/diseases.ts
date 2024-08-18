@@ -1898,7 +1898,7 @@ const diseases: IDisease[] = [
   {
     id: "osteoblastoma",
     name: "Osteoblastoma",
-    preval: 0.007,
+    preval: 0.008,
     factors: [
       {
         sid: "pat-age",
