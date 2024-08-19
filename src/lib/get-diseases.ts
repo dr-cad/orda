@@ -1,39 +1,39 @@
-import rawSymptoms from "../data/symptoms";
-import { IDisease } from "../types/interfaces";
-import { decode } from "./base64";
+import rawDiseases from "../data/diseases.ts";
+import { IDisease } from "../types/interfaces.ts";
+import { encode } from "./base64.ts";
+import getRawSymptoms from "./get-symptoms.ts";
 
-// ssg encoding for sensetive data
-const rawDiseases = import.meta.compileTime<string>("../data/diseases.ts");
+const rawSymptoms = getRawSymptoms().data;
 
-export default function getRawDiseases() {
-  const data: IDisease[] = decode(rawDiseases);
+function getRawDiseases() {
+  const data: IDisease[] = rawDiseases;
 
   const validate = () => {
     const idRepo: string[] = [];
     for (const item of data) {
       if (!item.id) {
-        return { item, message: "No Id defined" };
+        throw { item, message: "No Id defined" };
       }
       if (/[A-Z]/.test(item.id)) {
-        return { item, message: "Id includes Uppercase!" };
+        throw { item, message: "Id includes Uppercase!" };
       }
       if (item.id.includes(" ")) {
-        return {
+        throw {
           item,
           message: "Id includes Space letter, consider using '-' instead",
         };
       }
 
       if (idRepo.includes(item.id)) {
-        return { item, message: "Duplicate id found: " + item.id };
-      } else {
-        idRepo.push(item.id);
+        throw { item, message: "Duplicate id found: " + item.id };
       }
+
+      idRepo.push(item.id);
 
       if (item.factors) {
         for (const factor of item.factors) {
           if (!rawSymptoms.find((x) => x.id === factor.sid)) {
-            return {
+            throw {
               item,
               message: "Couldnt find factor with Id: " + factor.sid,
             };
@@ -41,15 +41,15 @@ export default function getRawDiseases() {
         }
       }
     }
-    return null;
   };
 
-  const error = validate();
-
-  if (error) {
+  try {
+    validate();
+    return data;
+  } catch (error) {
     console.log("Diseases data not valid", error);
     return [];
   }
-
-  return data;
 }
+
+export default () => ({ data: encode(getRawDiseases()) });

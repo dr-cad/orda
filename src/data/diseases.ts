@@ -1,4 +1,3 @@
-import { encode } from "../lib/base64";
 import { IDisease } from "../types/interfaces";
 
 const diseases: IDisease[] = [
@@ -2572,5 +2571,4 @@ const diseases: IDisease[] = [
   },
 ];
 
-const encodedDiseases = encode(diseases);
-export default async () => ({ data: encodedDiseases });
+export default diseases;

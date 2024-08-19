@@ -5,10 +5,10 @@ import _ from "lodash";
 import uuid4 from "uuid4";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import getRawDiseases from "../lib/diseases";
+import { rawDiseases, rawSymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
 import { calcStorageSpace } from "../lib/storage";
-import getRawSymptoms, { recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
+import { recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
 import { IHistoryItem, ISymptom, Value } from "../types/interfaces";
 
 export interface Store {
@@ -53,7 +53,7 @@ export const useStore = create(
 
       // buffer
       uuid: uuid4(),
-      symptoms: getRawSymptoms(),
+      symptoms: rawSymptoms,
       createdAt: null,
       updateSymptom: (id, value) => {
         let result = undefined;
@@ -83,7 +83,7 @@ export const useStore = create(
         // adds buffer to history with new scores - if needed
         // check if symptoms are not empty, if empty ignore saving
         const symptoms = get().symptoms;
-        if (_.isEqual(symptoms, getRawSymptoms())) {
+        if (_.isEqual(symptoms, rawSymptoms)) {
           if (!draft) {
             get().showSnackbar("Nothing to save", "warning.main");
             return null;
@@ -92,7 +92,7 @@ export const useStore = create(
         }
         // save data and tell
         const newDate = new Date().getTime();
-        const newScores = draft ? null : getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
+        const newScores = draft ? null : getScores({ diseases: rawDiseases, symptoms }); // heavy calculations
         const newItem: IHistoryItem = {
           symptoms,
           scores: newScores,
@@ -120,7 +120,7 @@ export const useStore = create(
         // update buffer
         set({
           uuid: uuid4(),
-          symptoms: getRawSymptoms(),
+          symptoms: rawSymptoms,
           createdAt: null,
         });
       },
