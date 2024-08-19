@@ -1,4 +1,4 @@
-import { Feature, ISymptomRaw } from "../types/interfaces";
+import { Feature, ISymptomRaw } from "../types";
 
 const symptoms: ISymptomRaw[] = [
   {

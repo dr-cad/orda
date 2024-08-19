@@ -3,7 +3,7 @@ import _ from "lodash";
 import { Fragment, MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../config/store";
 import { digestSymptom } from "../lib/symptoms";
-import { IRange, ISymptom, Value } from "../types/interfaces";
+import { IRange, ISymptom, Value } from "../types";
 import Features from "./Features";
 import { StyledTreeItem } from "./styled";
 

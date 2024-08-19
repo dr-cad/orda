@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import AnaLocImage from "../assets/ana-loc.webp";
 import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
-import { IRange } from "../types/interfaces";
+import { IRange } from "../types";
 
 enum AnaLocation {
   Root = "ana-location",

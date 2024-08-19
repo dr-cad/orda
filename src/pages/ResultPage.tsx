@@ -11,7 +11,7 @@ import useScores from "../hooks/scores";
 import { handleShareImage, takeScreenshoot } from "../lib/share";
 import { getSymptomValueById, getSymptomsErrors } from "../lib/symptoms";
 import { getFilename } from "../lib/utils";
-import { AppMode, IHistoryItem, Keys } from "../types/interfaces";
+import { AppMode, IHistoryItem, Keys } from "../types";
 
 export default function ResultPage() {
   const { id } = useParams();

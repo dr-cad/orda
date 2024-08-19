@@ -1,5 +1,5 @@
 import { ListItem, ListItemText, Typography } from "@mui/material";
-import { AppMode, IDisease } from "../types/interfaces";
+import { AppMode, IDiseaseScored } from "../types";
 
 export default function DiseaseScore({
   value,
@@ -7,7 +7,7 @@ export default function DiseaseScore({
   pvalue,
   index,
   mode,
-}: IDisease & { index: number; mode: AppMode }) {
+}: IDiseaseScored & { index: number; mode: AppMode }) {
   return (
     <>
       <ListItem

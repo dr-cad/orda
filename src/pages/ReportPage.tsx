@@ -15,7 +15,7 @@ import { useSymptomValueOf } from "../hooks/symptom";
 import { handleDownloadImage, handleShareImage } from "../lib/share";
 import { getSymptomsErrors } from "../lib/symptoms";
 import { getFilename, sleep } from "../lib/utils";
-import { AppMode, ICImage, IHistoryItem } from "../types/interfaces";
+import { AppMode, ICImage, IHistoryItem } from "../types";
 
 import "../config/report.css";
 

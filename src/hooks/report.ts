@@ -2,7 +2,7 @@ import _ from "lodash";
 import { useMemo } from "react";
 import report from "../data/report";
 import { getSymptomValueById } from "../lib/symptoms";
-import { IRange, IReport, ISymptom } from "../types/interfaces";
+import { IRange, IReport, ISymptom } from "../types";
 
 const pickText = (text: string | string[]) => {
   if (typeof text === "string") return text;

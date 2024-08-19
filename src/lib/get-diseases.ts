@@ -1,12 +1,12 @@
 import rawDiseases from "../data/diseases.ts";
-import { IRawDisease } from "../types/interfaces.ts";
+import { IDisease } from "../types/index.ts";
 import { encode } from "./base64.ts";
-import getRawSymptoms from "./get-symptoms.ts";
+import getSymptoms from "./get-symptoms.ts";
 
-const rawSymptoms = getRawSymptoms().data;
+const rawSymptoms = getSymptoms().data;
 
-function getRawDiseases() {
-  const data: IRawDisease[] = rawDiseases;
+function getDiseases() {
+  const data: IDisease[] = rawDiseases;
 
   const validate = () => {
     const idRepo: string[] = [];
@@ -52,4 +52,4 @@ function getRawDiseases() {
   return data;
 }
 
-export default () => ({ data: encode(getRawDiseases()) });
+export default () => ({ data: encode(getDiseases()) });

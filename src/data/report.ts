@@ -1,4 +1,4 @@
-import { IReport } from "../types/interfaces";
+import { IReport } from "../types";
 
 const report: IReport[] = [
   {

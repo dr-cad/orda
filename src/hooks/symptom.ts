@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useStore } from "../config/store";
 import { getSymptomValueById } from "../lib/symptoms";
-import { ISymptom } from "../types/interfaces";
+import { ISymptom } from "../types";
 
 export function useSymptomValue<T>(sid: string): T | undefined {
   const symptoms = useStore((s) => s.symptoms);

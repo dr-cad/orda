@@ -1,5 +1,5 @@
 import rawSymptoms from "../data/symptoms";
-import { ISymptom, ISymptomRaw } from "../types/interfaces";
+import { ISymptom, ISymptomRaw } from "../types";
 
 const MAX_OPTIONS_TO_OPEN = 3;
 
@@ -8,7 +8,7 @@ const symptomTypes = ["string", "number", "range", "date", "enum", "none"];
 // TODO according to commit 32dc533, we need new validation, which ensures that input items (string, number, range), don't inlcude children
 // TODO page items should not have any type! - also define a new type "page" for that
 
-function getRawSymptoms(): ISymptom[] {
+function getSymptoms(): ISymptom[] {
   const data: ISymptomRaw[] = rawSymptoms;
 
   const validate = () => {
@@ -78,4 +78,4 @@ function getRawSymptoms(): ISymptom[] {
   return dataMapped;
 }
 
-export default () => ({ data: getRawSymptoms() });
+export default () => ({ data: getSymptoms() });

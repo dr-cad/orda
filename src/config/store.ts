@@ -9,7 +9,7 @@ import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
 import { calcStorageSpace } from "../lib/storage";
 import { recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
-import { IHistoryItem, ISymptom, Value } from "../types/interfaces";
+import { IHistoryItem, ISymptom, Value } from "../types";
 
 export interface Store {
   checkSpace: (need?: number) => boolean;

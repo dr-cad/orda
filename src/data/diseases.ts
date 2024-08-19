@@ -1,6 +1,6 @@
-import { IRawDisease } from "../types/interfaces";
+import { IDisease } from "../types";
 
-const diseases: IRawDisease[] = [
+const diseases: IDisease[] = [
   {
     id: "radicular",
     name: "Radicular Cyst",

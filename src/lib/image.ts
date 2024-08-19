@@ -1,4 +1,4 @@
-import { ICImage } from "../types/interfaces";
+import { ICImage } from "../types";
 
 export const parseImages = (str: string | undefined): ICImage[] => {
   return str ? JSON.parse(str) : [];

@@ -1,5 +1,5 @@
 import { ResponsiveBar, ResponsiveBarSvgProps } from "@nivo/bar";
-import { BarDatum, Keys } from "../types/interfaces";
+import { BarDatum, Keys } from "../types";
 
 type Props = ResponsiveBarSvgProps<BarDatum> & {
   darkMode?: boolean;

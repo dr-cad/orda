@@ -17,7 +17,7 @@ import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
 import { makeDeleteRequest, makeUploadRequest } from "../lib/cloudinary";
 import { parseImages, stringifyImages } from "../lib/image";
-import { ICImage } from "../types/interfaces";
+import { ICImage } from "../types";
 
 registerPlugin(
   // plugins

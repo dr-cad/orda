@@ -8,7 +8,7 @@ import { useStore } from "../config/store";
 import { appName } from "../config/strings";
 import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
-import { IHistoryItem, SortDir, SortType } from "../types/interfaces";
+import { IHistoryItem, SortDir, SortType } from "../types";
 
 const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortType: SortType; sortDir: SortDir }) => {
   const history = useStore((s) => s.history);

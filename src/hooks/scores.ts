@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { IDisease } from "../types/interfaces";
-import { AppMode, BarDatum, Keys } from "./../types/interfaces";
+import { IDiseaseScored } from "../types";
+import { AppMode, BarDatum, Keys } from "../types";
 
-export default function useScores(scores: IDisease[], mode = AppMode.Raw, limit = 5) {
+export default function useScores(scores: IDiseaseScored[], mode = AppMode.Raw, limit = 5) {
   const output = useMemo(
     () =>
       [...scores]

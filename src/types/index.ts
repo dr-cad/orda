@@ -1,9 +1,9 @@
-// types
-
 import { AlertColor } from "@mui/material";
 import { SId } from "./sid";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+// enums
 
 export enum AppMode {
   Preval = "prevalance",
@@ -35,6 +35,8 @@ export enum Feature {
   DentPicker = "dent-picker",
   ImagePicker = "image-picker",
 }
+
+// types
 
 export type Value = string | number | IRange | Date | boolean;
 
@@ -68,19 +70,6 @@ export interface ISymptom extends ISymptomRaw {
   type: SymptomType;
 }
 
-export interface IRawDisease {
-  id: string;
-  name: string;
-  preval: number;
-  factors: IDiseaseFactor[];
-}
-
-export interface IDiseaseFactor {
-  sid: SId;
-  rate?: number;
-  ranges?: IFactorRange[];
-}
-
 export interface IRange {
   a: number;
   b: number;
@@ -90,7 +79,20 @@ export interface IFactorRange extends IRange {
   rate: number;
 }
 
-export interface IDisease extends IRawDisease {
+export interface IDiseaseFactor {
+  sid: SId;
+  rate?: number;
+  ranges?: IFactorRange[];
+}
+
+export interface IDisease {
+  id: string;
+  name: string;
+  preval: number;
+  factors: IDiseaseFactor[];
+}
+
+export interface IDiseaseScored extends IDisease {
   value: number;
   pvalue: number;
 }
@@ -100,7 +102,7 @@ export interface IHistoryItem {
   createdAt: number;
   updatedAt: number;
   symptoms: ISymptom[];
-  scores: IDisease[] | null;
+  scores: IDiseaseScored[] | null;
   hash: string;
   hash2: string;
 }

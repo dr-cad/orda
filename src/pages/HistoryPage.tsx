@@ -11,7 +11,7 @@ import {
 } from "react-icons/fc";
 import HistoryList from "../components/HistoryList";
 import useAppHistory from "../hooks/history";
-import { SortDir, SortType } from "../types/interfaces";
+import { SortDir, SortType } from "../types";
 
 export default function HistoryPage() {
   const [query, setQuery] = useState("");

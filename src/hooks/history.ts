@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useStore } from "../config/store";
 import { exportHistory, importHistory } from "../lib/history";
-import { IHistoryItem } from "../types/interfaces";
+import { IHistoryItem } from "../types";
 
 export default function useAppHistory() {
   const nav = useNavigate();

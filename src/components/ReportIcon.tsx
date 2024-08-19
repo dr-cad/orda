@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import { useStore } from "../config/store";
 import { getSymptomsErrors } from "../lib/symptoms";
 import { getId } from "../lib/utils";
-import { IHistoryItem } from "../types/interfaces";
+import { IHistoryItem } from "../types";
 
 export default function ReportIcon() {
   const symptoms = useStore((s) => s.symptoms);

@@ -1,4 +1,4 @@
-import { IError, ISymptom } from "../types/interfaces";
+import { IError, ISymptom } from "../types";
 
 export function getSymptomValueById<T>(symptoms: ISymptom[], sid: string): T | undefined {
   return symptoms.find((s) => s.id === sid)?.value as never;

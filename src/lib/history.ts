@@ -1,6 +1,6 @@
 import { Store } from "../config/store";
 import { appName } from "../config/strings";
-import { IHistoryItem } from "../types/interfaces";
+import { IHistoryItem } from "../types";
 import { downloadFile } from "./share";
 
 export async function exportHistory(history: IHistoryItem[]) {

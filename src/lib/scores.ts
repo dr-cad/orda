@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { IRawDisease, IDiseaseFactor, IDisease, ISymptom } from "../types/interfaces";
+import { IDisease, IDiseaseFactor, IDiseaseScored, ISymptom } from "../types";
 import { calc } from "./utils";
 
 interface IProps {
   symptoms: ISymptom[];
-  diseases: IRawDisease[];
+  diseases: IDisease[];
 }
 
 export const epsilon = 0.01; // NOTICE lower number may cause NaN issue
@@ -63,17 +63,17 @@ const FIX_FRAC = 100;
 // const FIX_FRAC = 1;
 
 // nominator
-const getDiseaseProbablity = (disease: IRawDisease, symptoms: ISymptom[]): number => {
+const getDiseaseProbablity = (disease: IDisease, symptoms: ISymptom[]): number => {
   console.groupCollapsed("Disease", disease.name);
   const mul = disease.factors.reduce((v, factor) => v * getSymptomProbablity(factor, symptoms) * FIX_FRAC, 1);
   console.groupEnd();
   return mul; // P(Di) * ∏j{P(Sj|Di)}
 };
 
-const getDiseaseProbablity_FIX_FRAC = (disease: IRawDisease, symptoms: ISymptom[]): number =>
+const getDiseaseProbablity_FIX_FRAC = (disease: IDisease, symptoms: ISymptom[]): number =>
   getDiseaseProbablity(disease, symptoms) * FIX_FRAC;
 
-export default function getScores({ diseases, symptoms }: IProps): IDisease[] {
+export default function getScores({ diseases, symptoms }: IProps): IDiseaseScored[] {
   const nominators: number[] = diseases.map((disease) => getDiseaseProbablity_FIX_FRAC(disease, symptoms));
   const dinaminator = nominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
   const pnominators: number[] = diseases.map((disease) =>
