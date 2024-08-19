@@ -1,9 +1,10 @@
 import rawDiseases from "../data/diseases";
 import rawSymptoms from "../data/symptoms";
 import { IDisease } from "../types/interfaces";
+import { decode } from "./base64";
 
 export default function getRawDiseases() {
-  const data: IDisease[] = rawDiseases;
+  const data: IDisease[] = decode(rawDiseases);
 
   const validate = () => {
     const idRepo: string[] = [];
