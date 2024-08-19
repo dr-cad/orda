@@ -2573,4 +2573,4 @@ const diseases: IDisease[] = [
 ];
 
 const encodedDiseases = encode(diseases);
-export default encodedDiseases;
+export default async () => ({ data: encodedDiseases });

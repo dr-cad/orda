@@ -91,8 +91,8 @@ export const useStore = create(
           return get().history; // ignore - ok
         }
         // save data and tell
-        const newScores = draft ? null : getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
         const newDate = new Date().getTime();
+        const newScores = draft ? null : getScores({ diseases: getRawDiseases(), symptoms }); // heavy calculations
         const newItem: IHistoryItem = {
           symptoms,
           scores: newScores,

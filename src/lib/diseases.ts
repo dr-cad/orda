@@ -1,7 +1,9 @@
-import rawDiseases from "../data/diseases";
 import rawSymptoms from "../data/symptoms";
 import { IDisease } from "../types/interfaces";
 import { decode } from "./base64";
+
+// ssg encoding for sensetive data
+const rawDiseases = import.meta.compileTime<string>("../data/diseases.ts");
 
 export default function getRawDiseases() {
   const data: IDisease[] = decode(rawDiseases);

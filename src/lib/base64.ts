@@ -3,5 +3,5 @@ export function encode<T>(input: T) {
 }
 
 export function decode<T>(input: string) {
-  return JSON.parse(btoa(input)) as T;
+  return JSON.parse(atob(input)) as T;
 }
