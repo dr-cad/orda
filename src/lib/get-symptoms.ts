@@ -3,11 +3,6 @@ import { ISymptom, ISymptomRaw } from "../types/interfaces";
 
 const MAX_OPTIONS_TO_OPEN = 3;
 
-type ValidationError = {
-  item: ISymptomRaw;
-  message: string;
-};
-
 const symptomTypes = ["string", "number", "range", "date", "enum", "none"];
 
 // TODO according to commit 32dc533, we need new validation, which ensures that input items (string, number, range), don't inlcude children
@@ -16,18 +11,18 @@ const symptomTypes = ["string", "number", "range", "date", "enum", "none"];
 function getRawSymptoms(): ISymptom[] {
   const data: ISymptomRaw[] = rawSymptoms;
 
-  const validate = (): ValidationError | null => {
+  const validate = () => {
     const idRepo: string[] = [];
     for (const item of data) {
       // validate item.id
       if (!item.id) {
-        return { item, message: "No Id defined" };
+        throw { item, message: "No Id defined" };
       }
       if (/[A-Z]/.test(item.id)) {
-        return { item, message: "Id includes Uppercase!" };
+        throw { item, message: "Id includes Uppercase!" };
       }
       if (item.id.includes(" ")) {
-        return {
+        throw {
           item,
           message: "Id includes Space letter, consider using '-' instead",
         };
@@ -35,7 +30,7 @@ function getRawSymptoms(): ISymptom[] {
 
       // check duplicate
       if (idRepo.includes(item.id)) {
-        return { item, message: "Duplicate id found: " + item.id };
+        throw { item, message: "Duplicate id found: " + item.id };
       } else {
         idRepo.push(item.id);
       }
@@ -44,24 +39,23 @@ function getRawSymptoms(): ISymptom[] {
       if (item.options) {
         for (const childId of item.options) {
           if (!data.find((x) => x.id === childId)) {
-            return { item, message: "Couldnt find child with Id: " + childId };
+            throw { item, message: "Couldnt find child with Id: " + childId };
           }
         }
       }
 
       // validate type string
       if (item.type && !symptomTypes.includes(item.type)) {
-        return { item, message: "Symptom type is invalid: " + item.type };
+        throw { item, message: "Symptom type is invalid: " + item.type };
       }
 
       // TODO validate if range has min max
     }
-    return null;
   };
 
-  const error = validate();
-
-  if (error) {
+  try {
+    validate();
+  } catch (error) {
     console.log("Symptom not valid", error);
     return [];
   }

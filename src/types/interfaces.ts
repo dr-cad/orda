@@ -68,7 +68,7 @@ export interface ISymptom extends ISymptomRaw {
   type: SymptomType;
 }
 
-export interface IDisease {
+export interface IRawDisease {
   id: string;
   name: string;
   preval: number;
@@ -90,7 +90,7 @@ export interface IFactorRange extends IRange {
   rate: number;
 }
 
-export interface IScoredDisease extends IDisease {
+export interface IDisease extends IRawDisease {
   value: number;
   pvalue: number;
 }
@@ -100,7 +100,7 @@ export interface IHistoryItem {
   createdAt: number;
   updatedAt: number;
   symptoms: ISymptom[];
-  scores: IScoredDisease[] | null;
+  scores: IDisease[] | null;
   hash: string;
   hash2: string;
 }

@@ -1,8 +1,10 @@
-import { IDisease, ISymptom } from "../types/interfaces";
+import { IRawDisease, ISymptom } from "../types/interfaces";
 import { decode } from "./base64";
 
-const rawSymptoms: ISymptom[] = import.meta.compileTime<any>("./get-symptoms.ts");
-const rawDiseasesEncoded = import.meta.compileTime<string>("./get-diseases.ts");
-const rawDiseases: IDisease[] = decode(rawDiseasesEncoded);
+// ssg encoding for sensetive data + validation on compile time
 
-export { rawDiseases, rawSymptoms };
+const emptySymptoms: ISymptom[] = import.meta.compileTime<any>("./get-symptoms.ts");
+const emptyDiseasesEncoded = import.meta.compileTime<string>("./get-diseases.ts");
+const emptyDiseases: IRawDisease[] = decode(emptyDiseasesEncoded);
+
+export { emptyDiseases, emptySymptoms };

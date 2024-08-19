@@ -5,7 +5,7 @@ import _ from "lodash";
 import uuid4 from "uuid4";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { rawDiseases, rawSymptoms } from "../lib/raw";
+import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
 import { calcStorageSpace } from "../lib/storage";
 import { recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
@@ -53,7 +53,7 @@ export const useStore = create(
 
       // buffer
       uuid: uuid4(),
-      symptoms: rawSymptoms,
+      symptoms: emptySymptoms,
       createdAt: null,
       updateSymptom: (id, value) => {
         let result = undefined;
@@ -83,7 +83,7 @@ export const useStore = create(
         // adds buffer to history with new scores - if needed
         // check if symptoms are not empty, if empty ignore saving
         const symptoms = get().symptoms;
-        if (_.isEqual(symptoms, rawSymptoms)) {
+        if (_.isEqual(symptoms, emptySymptoms)) {
           if (!draft) {
             get().showSnackbar("Nothing to save", "warning.main");
             return null;
@@ -92,7 +92,7 @@ export const useStore = create(
         }
         // save data and tell
         const newDate = new Date().getTime();
-        const newScores = draft ? null : getScores({ diseases: rawDiseases, symptoms }); // heavy calculations
+        const newScores = draft ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
         const newItem: IHistoryItem = {
           symptoms,
           scores: newScores,
@@ -120,7 +120,7 @@ export const useStore = create(
         // update buffer
         set({
           uuid: uuid4(),
-          symptoms: rawSymptoms,
+          symptoms: emptySymptoms,
           createdAt: null,
         });
       },
