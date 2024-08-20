@@ -10,6 +10,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 20, b: 60, rate: 0.75 },
+          { a: 15, b: 75, rate: 0.50 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -132,9 +133,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -146,6 +145,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 18, b: 40, rate: 0.6 },
+          { a: 14, b: 50, rate: 0.50 },
           { a: 0, b: 100, rate: 0.4 },
         ],
       },
@@ -271,9 +271,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: 0 },
     ],
   },
   {
@@ -285,6 +283,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 20, b: 60, rate: 0.7 },
+          { a: 15, b: 75, rate: 0.50 },
           { a: 0, b: 100, rate: 0.3 },
         ],
       },
@@ -405,9 +404,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -419,6 +416,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 10, b: 30, rate: 0.7 },
+          { a: 2, b: 40, rate: 0.50 },
           { a: 0, b: 100, rate: 0.3 },
         ],
       },
@@ -498,7 +496,7 @@ const diseases: IDisease[] = [
       },
       {
         sid: "both",
-        ranges: [{ a: 1, b: 12, rate: 0.09 }],
+        ranges: [{ a: 1, b: 12, rate: -1 }],
       },
       { sid: "unilateral", rate: 0.95 },
       { sid: "bilateral", rate: 0.05 },
@@ -538,9 +536,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -552,6 +548,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 20, b: 50, rate: 0.75 },
+          { a: 15, b: 65, rate: 0.50 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -672,9 +669,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -686,6 +681,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 18, b: 40, rate: 0.75 },
+          { a: 14, b: 50, rate: 0.50 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -806,9 +802,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -819,9 +813,9 @@ const diseases: IDisease[] = [
       {
         sid: "pat-age",
         ranges: [
-          { a: 10, b: 30, rate: 0.6 },
-          { a: 10, b: 50, rate: 0.3 },
-          { a: 0, b: 100, rate: 0.1 },
+          { a: 10, b: 30, rate: 0.75 },
+          { a: 8, b: 40, rate: 0.50 },
+          { a: 0, b: 100, rate: 0.25 },
         ],
       },
       { sid: "pat-male", rate: 0.45 },
@@ -943,9 +937,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: 0.05 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: 0.05 },
     ],
   },
   {
@@ -957,6 +949,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 0, b: 10, rate: 0.75 },
+          { a: 0, b: 15, rate: 0.50 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -1075,9 +1068,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: 0.1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: 0.1 },
     ],
   },
   {
@@ -1088,9 +1079,9 @@ const diseases: IDisease[] = [
       {
         sid: "pat-age",
         ranges: [
-          { a: 0, b: 20, rate: 0.6 },
-          { a: 0, b: 40, rate: 0.3 },
-          { a: 0, b: 100, rate: 0.1 },
+          { a: 0, b: 20, rate: 0.75 },
+          { a: 0, b: 25, rate: 0.50 },
+          { a: 0, b: 100, rate: 0.25 },
         ],
       },
       { sid: "pat-male", rate: 0.45 },
@@ -1212,20 +1203,19 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: 0 },
     ],
   },
   {
     id: "cherubism",
     name: "Cherubism",
-    preval: 0.001,
+    preval: 0.005,
     factors: [
       {
         sid: "pat-age",
         ranges: [
           { a: 2, b: 6, rate: 0.8 },
+          { a: 1, b: 8, rate: 0.5 },
           { a: 0, b: 20, rate: 0.2 },
         ],
       },
@@ -1276,9 +1266,9 @@ const diseases: IDisease[] = [
           { a: 0, b: 5, rate: 0.2 },
         ],
       },
-      { sid: "round", rate: 0.8 },
+      { sid: "round", rate: 0.7 },
       { sid: "scalloped", rate: -1 },
-      { sid: "irregular", rate: 0.2 },
+      { sid: "irregular", rate: 0.3 },
       { sid: "non-corticated", rate: 0.7 },
       { sid: "corticated", rate: 0.2 },
       { sid: "sclerotic", rate: -1 },
@@ -1306,10 +1296,10 @@ const diseases: IDisease[] = [
       {
         sid: "both",
         ranges: [
-          { a: 2, b: 4, rate: 0.6 },
-          { a: 1, b: 7, rate: 0.3 },
-          { a: 1, b: 10, rate: 0.15 },
-          { a: 1, b: 12, rate: 0.075 },
+          { a: 2, b: 4, rate: 0.64 },
+          { a: 1, b: 7, rate: 0.40 },
+          { a: 1, b: 10, rate: 0.16 },
+          { a: 1, b: 12, rate: 0.08 },
         ],
       },
       { sid: "unilateral", rate: 0 },
@@ -1350,9 +1340,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -1364,7 +1352,9 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 0, b: 6, rate: 0.7 },
+          { a: 1, b: 8, rate: 0.5 },
           { a: 50, b: 100, rate: 0.7 },
+          { a: 1, b: 8, rate: 0.5 },
           { a: 0, b: 100, rate: 0.3 },
         ],
       },
@@ -1484,9 +1474,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -1498,6 +1486,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 10, b: 20, rate: 0.8 },
+          { a: 8, b: 25, rate: 0.5 },
           { a: 0, b: 100, rate: 0.2 },
         ],
       },
@@ -1618,9 +1607,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -1632,6 +1619,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 0, b: 30, rate: 0.7 },
+          { a: 0, b: 40, rate: 0.5 },
           { a: 0, b: 100, rate: 0.3 },
         ],
       },
@@ -1752,9 +1740,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -1765,8 +1751,9 @@ const diseases: IDisease[] = [
       {
         sid: "pat-age",
         ranges: [
-          { a: 0, b: 100, rate: 0.3 },
-          { a: 40, b: 100, rate: 0.7 },
+          { a: 0, b: 100, rate: 0.25 },
+          { a: 30, b: 100, rate: 0.5 },
+          { a: 40, b: 100, rate: 0.75 },
         ],
       },
       { sid: "pat-male", rate: 0.6 },
@@ -1890,9 +1877,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -1903,8 +1888,9 @@ const diseases: IDisease[] = [
       {
         sid: "pat-age",
         ranges: [
-          { a: 10, b: 30, rate: 0.7 },
-          { a: 0, b: 100, rate: 0.3 },
+          { a: 10, b: 30, rate: 0.75 },
+          { a: 8, b: 40, rate: 0.5 },
+          { a: 0, b: 100, rate: 0.25 },
         ],
       },
       { sid: "pat-male", rate: 0.65 },
@@ -2024,9 +2010,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
   {
@@ -2037,7 +2021,8 @@ const diseases: IDisease[] = [
       {
         sid: "pat-age",
         ranges: [
-          { a: 30, b: 50, rate: 0.75 },
+          { a: 35, b: 55, rate: 0.75 },
+          { a: 30, b: 70, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -2158,9 +2143,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: 0.2 },
-      { sid: "hair", rate: 0.2 },
-      { sid: "divergnet", rate: 0.2 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: 0.2 },
     ],
   },
   {
@@ -2172,6 +2155,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 35, b: 55, rate: 0.75 },
+          { a: 30, b: 70, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -2294,9 +2278,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: 0.15 },
-      { sid: "divergnet", rate: 0.15 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: 0.15 },
     ],
   },
   {
@@ -2308,6 +2290,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 40, b: 70, rate: 0.75 },
+          { a: 30, b: 90, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -2429,9 +2412,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: 0.15 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: 0.15 },
     ],
   },
   {
@@ -2443,6 +2424,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 35, b: 70, rate: 0.75 },
+          { a: 30, b: 90, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -2564,9 +2546,7 @@ const diseases: IDisease[] = [
       { sid: "solid", rate: -1 },
       { sid: "compelx", rate: -1 },
       { sid: "codman", rate: -1 },
-      { sid: "hair", rate: -1 },
-      { sid: "divergnet", rate: -1 },
-      { sid: "sloping", rate: -1 },
+      { sid: "spiculated", rate: -1 },
     ],
   },
 ];

@@ -142,6 +142,3 @@ export type SId =
   | "compelx"
   | "codman"
   | "spiculated"
-  | "hair"
-  | "divergnet"
-  | "sloping";

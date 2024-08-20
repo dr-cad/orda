@@ -670,21 +670,7 @@ const symptoms: ISymptomRaw[] = [
   },
   {
     id: "spiculated",
-    name: "Spiculated",
-    type: "enum",
-    options: ["hair", "divergnet", "sloping"],
-  },
-  {
-    id: "hair",
-    name: "Hair-on-end",
-  },
-  {
-    id: "divergnet",
-    name: "Divergent(Sunburst)",
-  },
-  {
-    id: "sloping",
-    name: "Sloping(velvet)",
+    name: "Spiculated or Sunburst",
   },
 ] as const;
 
