@@ -64,9 +64,9 @@ const diseases: IDisease[] = [
       { sid: "round", rate: 0.8 },
       { sid: "scalloped", rate: -1 },
       { sid: "irregular", rate: 0.2 },
-      { sid: "non-corticated", rate: 0.075 },
+      { sid: "non-corticated", rate: 0.1 },
       { sid: "corticated", rate: 0.85 },
-      { sid: "sclerotic", rate: 0.075 },
+      { sid: "sclerotic", rate: 0.05 },
       { sid: "soft-capsule", rate: -1 },
       { sid: "blending", rate: -1 },
       { sid: "invasive", rate: -1 },
@@ -339,9 +339,9 @@ const diseases: IDisease[] = [
       { sid: "irregular", rate: 0.2 },
       { sid: "non-corticated", rate: 0.15 },
       { sid: "corticated", rate: 0.05 },
-      { sid: "sclerotic", rate: -1 },
+      { sid: "sclerotic", rate: 0.05 },
       { sid: "soft-capsule", rate: -1 },
-      { sid: "blending", rate: 0.8 },
+      { sid: "blending", rate: 0.75 },
       { sid: "invasive", rate: -1 },
       {
         sid: "maxilla",
@@ -1209,7 +1209,7 @@ const diseases: IDisease[] = [
   {
     id: "cherubism",
     name: "Cherubism",
-    preval: 0.005,
+    preval: 0.007,
     factors: [
       {
         sid: "pat-age",
@@ -1278,27 +1278,27 @@ const diseases: IDisease[] = [
       {
         sid: "maxilla",
         ranges: [
-          { a: 3, b: 4, rate: 0.2 },
-          { a: 1, b: 7, rate: 0.1 },
-          { a: 1, b: 10, rate: 0.05 },
-          { a: 1, b: 12, rate: 0.025 },
+          { a: 3, b: 4, rate: 0.21 },
+          { a: 1, b: 7, rate: 0.15 },
+          { a: 1, b: 9, rate: 0.09 },
+          { a: 1, b: 12, rate: 0.03 },
         ],
       },
       {
         sid: "mandible",
         ranges: [
-          { a: 2, b: 4, rate: 0.3 },
-          { a: 1, b: 7, rate: 0.15 },
-          { a: 1, b: 10, rate: 0.075 },
-          { a: 1, b: 12, rate: 0.0375 },
+          { a: 2, b: 4, rate: 0.49 },
+          { a: 1, b: 7, rate: 0.35 },
+          { a: 1, b: 9, rate: 0.21 },
+          { a: 1, b: 12, rate: 0.07 },
         ],
       },
       {
         sid: "both",
         ranges: [
-          { a: 2, b: 4, rate: 0.64 },
+          { a: 2, b: 4, rate: 0.56 },
           { a: 1, b: 7, rate: 0.40 },
-          { a: 1, b: 10, rate: 0.16 },
+          { a: 1, b: 9, rate: 0.24 },
           { a: 1, b: 12, rate: 0.08 },
         ],
       },
