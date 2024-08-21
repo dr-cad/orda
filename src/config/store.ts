@@ -8,7 +8,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
 import { calcStorageSpace } from "../lib/storage";
-import { recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
+import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
 import { IHistoryItem, ISymptom, Value } from "../types";
 
 export interface Store {
@@ -63,7 +63,7 @@ export const useStore = create(
             const item = arr.find((i) => i.id === id);
             if (item) {
               // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
-              const hasInput = item.type === "string" || item.type === "number" || item.type === "range";
+              const { hasInput } = digestSymptom(item);
               // if unset occured and has options -> reset item -r
               if (!value && !hasInput) recursivelyResetItem(arr, item.id);
               // update/reset value

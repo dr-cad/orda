@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { IDisease, IDiseaseFactor, IDiseaseScored, ISymptom } from "../types";
+import { IDisease, IDiseaseFactor, IDiseaseScored, ISymptom, SymptomType } from "../types";
 import { calc } from "./utils";
 
 interface IProps {
@@ -18,7 +18,7 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
   for (const symptom of symptoms) {
     if (symptom.id === factor.sid) {
       switch (symptom.type) {
-        case "range":
+        case SymptomType.Range:
           if (!Array.isArray(dfranges)) return 1;
           for (const range of dfranges) {
             if (
@@ -40,7 +40,7 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
             }
           }
           return inactive; // TODO
-        case "number":
+        case SymptomType.Number:
           if (!Array.isArray(dfranges)) return 1;
           for (const range of dfranges) {
             if ((symptom.value! as number) >= range.a && (symptom.value! as number) <= range.b) {

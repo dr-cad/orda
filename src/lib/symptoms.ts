@@ -1,4 +1,4 @@
-import { IError, ISymptom } from "../types";
+import { IError, ISymptom, SymptomType } from "../types";
 
 export function getSymptomValueById<T>(symptoms: ISymptom[], sid: string): T | undefined {
   return symptoms.find((s) => s.id === sid)?.value as never;
@@ -6,12 +6,13 @@ export function getSymptomValueById<T>(symptoms: ISymptom[], sid: string): T | u
 
 export function digestSymptom(symptom?: ISymptom) {
   if (!symptom) return {};
-  const inputable = symptom.type !== "enum" && symptom.type !== "none";
+  const inputable = symptom.type !== SymptomType.Enum && symptom.type !== SymptomType.None;
   const hasInput = !symptom.noInput && inputable;
   const hasDesc = !!symptom.desc;
   const hasOptions = Array.isArray(symptom.options) && symptom.options.length !== 0;
   const expandable = !!symptom && (hasDesc || hasInput || hasOptions);
-  const isEnumParent = symptom.type === "enum" && Array.isArray(symptom.options) && symptom.options?.length > 1;
+  const isEnumParent =
+    symptom.type === SymptomType.Enum && Array.isArray(symptom.options) && symptom.options?.length > 1;
   return { inputable, hasInput, hasDesc, hasOptions, expandable, isEnumParent };
 }
 
@@ -79,7 +80,7 @@ export function recursivelyUpdateParents(arr: ISymptom[], id: string) {
     parent.value = false;
     for (const option of parent.options ?? []) {
       // reset siblings of enum parent
-      if (parent.type === "enum" && option !== id) recursivelyResetItem(arr, option);
+      if (parent.type === SymptomType.Enum && option !== id) recursivelyResetItem(arr, option);
       // set ancestors whom have value
       // it works: because it fills from inner parents to outer ones
       const item = arr.find((item) => item.id === option);

@@ -1,4 +1,4 @@
-import { Feature, ISymptomRaw } from "../types";
+import { Feature, ISymptomRaw, SymptomType } from "../types";
 
 const symptoms: ISymptomRaw[] = [
   {
@@ -12,7 +12,7 @@ const symptoms: ISymptomRaw[] = [
     name: "Full Name",
     desc: { feature: Feature.DuplicateNameChecker },
     required: true,
-    type: "string",
+    type: SymptomType.String,
     open: true,
     omitHash: true,
   },
@@ -20,14 +20,14 @@ const symptoms: ISymptomRaw[] = [
     id: "pat-age",
     name: "Age",
     required: true,
-    type: "number",
+    type: SymptomType.Number,
     open: true,
   },
   {
     id: "pat-gender",
     name: "Gender",
     required: true,
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["pat-male", "pat-female"],
     open: true,
   },
@@ -43,7 +43,7 @@ const symptoms: ISymptomRaw[] = [
     id: "pat-images",
     name: "Panaromic Images",
     desc: { feature: Feature.ImagePicker },
-    type: "string",
+    type: SymptomType.String,
     required: true,
     open: true,
     noInput: true,
@@ -113,7 +113,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "calcium",
     name: "Calcium",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["increase-1", "decrease-1"],
   },
   {
@@ -127,7 +127,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "phosphorus",
     name: "Phosphorus",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["increase-2", "decrease-2"],
   },
   {
@@ -141,7 +141,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "alkaline",
     name: "Alkaline phosphatase",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["increase-3", "decrease-3"],
   },
   {
@@ -159,7 +159,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "onset-course",
     name: "Onset and course",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["slow-0", "moderate-0", "rapid-0"],
   },
   {
@@ -202,7 +202,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "vitality",
     name: "Tooth vitality",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["nonvital"],
   },
   {
@@ -212,7 +212,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "percussion",
     name: "Percussion",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["pain-1", "pump"],
   },
   {
@@ -230,7 +230,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "aspiration",
     name: "Aspiration",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["negative", "positive"],
   },
   {
@@ -240,7 +240,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "positive",
     name: "Positive",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["blood", "serosanguinous", "serum", "cheesy-mat", "pus"],
   },
   {
@@ -270,7 +270,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "consist",
     name: "Consistancy",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["soft", "rubbery", "firm", "bony-hard"],
   },
   {
@@ -298,7 +298,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "type",
     name: "Type",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["solitary", "multiple-separate", "diffuse"],
     required: true,
   },
@@ -310,12 +310,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "size",
     name: "Size",
-    type: "number",
+    type: SymptomType.Number,
   },
   {
     id: "shape",
     name: "Shape",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["round", "scalloped", "irregular"],
     required: true,
   },
@@ -335,13 +335,13 @@ const symptoms: ISymptomRaw[] = [
     id: "periphery",
     name: "Periphery",
     required: true,
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["well-defined", "ill-defined"],
   },
   {
     id: "well-defined",
     name: "Well-defined",
-    type: "enum",
+    type: SymptomType.Enum,
     open: true,
     options: ["non-corticated", "corticated", "sclerotic", "soft-capsule"],
   },
@@ -364,7 +364,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "ill-defined",
     name: "Ill-defined",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["blending", "invasive"],
   },
   {
@@ -389,41 +389,41 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "ana-location",
     name: "Anatomic Location",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["maxilla", "mandible", "both"],
   },
   {
     id: "maxilla",
     name: "Maxilla",
-    type: "range",
+    type: SymptomType.Range,
     min: 1,
     max: 12,
   },
   {
     id: "mandible",
     name: "Mandible",
-    type: "range",
+    type: SymptomType.Range,
     min: 1,
     max: 12,
   },
   {
     id: "both",
     name: "Both",
-    type: "range",
+    type: SymptomType.Range,
     min: 1,
     max: 12,
   },
   {
     id: "side",
     name: "Side",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["unilateral", "bilateral"],
     required: true,
   },
   {
     id: "unilateral",
     name: "Unilateral",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["unilateral-right", "unilateral-left"],
     open: true,
   },
@@ -442,7 +442,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "relation-tooth",
     name: "Epicenter of lesion",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["periapical", "pericoronal", "interradicular", "related"],
     required: true,
   },
@@ -478,13 +478,13 @@ const symptoms: ISymptomRaw[] = [
     id: "int-struct",
     name: "Internal structure",
     required: true,
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["radiolucent", "mixed", "radiopaque"],
   },
   {
     id: "radiopaque",
     name: "Radiopaque",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["radiopaue-zone", "radiopaque-nozone"],
   },
   {
@@ -498,14 +498,14 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "radiolucent",
     name: "Radiolucent",
-    type: "enum",
+    type: SymptomType.Enum,
     open: true,
     options: ["unilocular", "multilocular", "rarefaction"],
   },
   {
     id: "unilocular",
     name: "Unilocular",
-    type: "enum",
+    type: SymptomType.Enum,
     open: false,
     options: ["uni1", "uni2"],
   },
@@ -520,14 +520,14 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "multilocular",
     name: "Multilocular",
-    type: "enum",
+    type: SymptomType.Enum,
     open: false,
     options: ["linear", "curved"],
   },
   {
     id: "linear",
     name: "Curved and Linear septa",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["wispy1", "coarse1"],
   },
   {
@@ -541,7 +541,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "curved",
     name: "Curved septa",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["wispy2", "coarse2"],
   },
   {
@@ -614,7 +614,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "corital-bone",
     name: "Cortial bone (Jaws and maxillary sinus)",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["expand", "destruct-3", "extend"],
   },
   {
@@ -645,7 +645,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "periosteal-reaction",
     name: "Periosteal reaction",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["single", "onion", "solid", "spiculated", "compelx", "codman"],
   },
   {
@@ -671,7 +671,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "spiculated",
     name: "Spiculated",
-    type: "enum",
+    type: SymptomType.Enum,
     options: ["hair", "divergnet", "sloping"],
   },
   {

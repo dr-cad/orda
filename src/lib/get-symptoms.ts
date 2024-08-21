@@ -1,9 +1,7 @@
 import rawSymptoms from "../data/symptoms";
-import { ISymptom, ISymptomRaw } from "../types";
+import { ISymptom, ISymptomRaw, SymptomType } from "../types";
 
 const MAX_OPTIONS_TO_OPEN = 3;
-
-const symptomTypes = ["string", "number", "range", "date", "enum", "none"];
 
 // TODO according to commit 32dc533, we need new validation, which ensures that input items (string, number, range), don't inlcude children
 // TODO page items should not have any type! - also define a new type "page" for that
@@ -44,11 +42,6 @@ function getSymptoms(): ISymptom[] {
         }
       }
 
-      // validate type string
-      if (item.type && !symptomTypes.includes(item.type)) {
-        throw { item, message: "Symptom type is invalid: " + item.type };
-      }
-
       // TODO validate if range has min max
     }
   };
@@ -66,11 +59,14 @@ function getSymptoms(): ISymptom[] {
   // fill empty types with none
   const dataMapped = dataFiltered.map<ISymptom>((item) => {
     const hasEnoughChildren = Array.isArray(item.options) && item.options.length < MAX_OPTIONS_TO_OPEN;
-    const hasEnumParent = !!dataFiltered.find((parent) => parent.options?.includes(item.id) && parent.type === "enum");
-    const isOpen = typeof item.open === "boolean" ? item.open : hasEnoughChildren || !hasEnumParent; // TODO also if not boolean, close level-3 parents (hint: page>level-1>level-2>level-3)
+    const hasEnumParent = !!dataFiltered.find(
+      (parent) => parent.options?.includes(item.id) && parent.type === SymptomType.Enum
+    );
+    // TODO also if not boolean, close level-3 parents (hint: page>level-1>level-2>level-3)
+    const isOpen = typeof item.open === "boolean" ? item.open : hasEnoughChildren || !hasEnumParent;
     return {
       ...item,
-      type: item.type ? item.type : "none",
+      type: item.type ? item.type : SymptomType.None,
       open: isOpen,
     };
   });

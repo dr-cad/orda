@@ -3,7 +3,7 @@ import { SId } from "./sid";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-// enums
+// ui
 
 export enum AppMode {
   Preval = "prevalance",
@@ -38,8 +38,6 @@ export enum Feature {
 
 // types
 
-export type Value = string | number | IRange | Date | boolean;
-
 export type Desc = {
   title?: string;
   image?: string;
@@ -47,7 +45,16 @@ export type Desc = {
   params?: any[]; // passed to feature component
 };
 
-export type SymptomType = "string" | "number" | "range" | "date" | "enum" | "none";
+export type Value = string | number | IRange | Date | boolean;
+
+export enum SymptomType {
+  String = "string",
+  Number = "number",
+  Range = "range",
+  Date = "date",
+  Enum = "enum",
+  None = "none",
+}
 
 export interface ISymptomRaw {
   id: SId;
@@ -68,6 +75,7 @@ export interface ISymptomRaw {
 
 export interface ISymptom extends ISymptomRaw {
   type: SymptomType;
+  value?: Value; // default or changed or reset
 }
 
 export interface IRange {

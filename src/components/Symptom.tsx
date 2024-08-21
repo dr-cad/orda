@@ -3,7 +3,7 @@ import _ from "lodash";
 import { Fragment, MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../config/store";
 import { digestSymptom } from "../lib/symptoms";
-import { IRange, ISymptom, Value } from "../types";
+import { IRange, ISymptom, SymptomType, Value } from "../types";
 import Features from "./Features";
 import { StyledTreeItem } from "./styled";
 
@@ -34,7 +34,7 @@ function Symptom({ id, parent }: IProps) {
       e.preventDefault();
       e.stopPropagation();
       if (!symptom) return;
-      const isBoolLeaf = (parent.type === "enum" || symptom.type === "none") && !symptom.options;
+      const isBoolLeaf = (parent.type === SymptomType.Enum || symptom.type === SymptomType.None) && !symptom.options;
       if (isBoolLeaf) updateSymptom(id, !symptom.value); // for radio or checkbox
       toggleExpanded(symptom.id);
     },
@@ -96,7 +96,7 @@ const Label = ({ symptom, parent }: IInnerProps) => {
       control={
         noButton ? (
           <Box sx={{ width: 12 }} />
-        ) : parent.type === "enum" && parent.options?.length !== 1 ? (
+        ) : parent.type === SymptomType.Enum && parent.options?.length !== 1 ? (
           <Radio sx={{ py: 0 }} size="small" checked={!!symptom.value} />
         ) : (
           <Checkbox sx={{ py: 0 }} size="small" checked={!!symptom.value} />
@@ -143,7 +143,7 @@ const Input = ({ symptom }: IInnerProps) => {
 
   return (
     <Stack p={2}>
-      {symptom.type === "string" ? (
+      {symptom.type === SymptomType.String ? (
         <TextField
           id={symptom.id + "-textfield"}
           size="small"
@@ -152,7 +152,7 @@ const Input = ({ symptom }: IInnerProps) => {
           value={value}
           onChange={(e) => handleChange(e.target.value)}
         />
-      ) : symptom.type === "number" ? (
+      ) : symptom.type === SymptomType.Number ? (
         <TextField
           id={symptom.id + "-textfield"}
           size="small"
@@ -161,7 +161,7 @@ const Input = ({ symptom }: IInnerProps) => {
           value={value}
           onChange={(e) => handleChange(e.target.value)}
         />
-      ) : symptom.type === "range" ? (
+      ) : symptom.type === SymptomType.Range ? (
         <Stack direction="row" gap={1}>
           <TextField
             id={symptom.id + "-textfield-1"}
