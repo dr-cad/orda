@@ -1209,7 +1209,7 @@ const diseases: IDisease[] = [
   {
     id: "cherubism",
     name: "Cherubism",
-    preval: 0.007,
+    preval: 0.009,
     factors: [
       {
         sid: "pat-age",
@@ -1266,9 +1266,9 @@ const diseases: IDisease[] = [
           { a: 0, b: 5, rate: 0.2 },
         ],
       },
-      { sid: "round", rate: 0.7 },
+      { sid: "round", rate: 0.50 },
       { sid: "scalloped", rate: -1 },
-      { sid: "irregular", rate: 0.3 },
+      { sid: "irregular", rate: 0.50 },
       { sid: "non-corticated", rate: 0.7 },
       { sid: "corticated", rate: 0.2 },
       { sid: "sclerotic", rate: -1 },
