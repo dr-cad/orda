@@ -488,10 +488,10 @@ const diseases: IDisease[] = [
       {
         sid: "mandible",
         ranges: [
-          { a: 2, b: 4, rate: 0.63 },
-          { a: 2, b: 7, rate: 0.45 },
-          { a: 2, b: 9, rate: 0.27 },
-          { a: 1, b: 12, rate: 0.09 },
+          { a: 2, b: 4, rate: 0.07 },
+          { a: 2, b: 7, rate: 0.05 },
+          { a: 2, b: 9, rate: 0.03 },
+          { a: 1, b: 12, rate: -1 },
         ],
       },
       {
@@ -1209,7 +1209,7 @@ const diseases: IDisease[] = [
   {
     id: "cherubism",
     name: "Cherubism",
-    preval: 0.009,
+    preval: 0.001,
     factors: [
       {
         sid: "pat-age",
@@ -1219,8 +1219,8 @@ const diseases: IDisease[] = [
           { a: 0, b: 20, rate: 0.2 },
         ],
       },
-      { sid: "pat-male", rate: -1 },
-      { sid: "pat-female", rate: -1 },
+      { sid: "pat-male", rate: 0.50 },
+      { sid: "pat-female", rate: 0.50 },
       { sid: "recent-gingival", rate: -1 },
       { sid: "lymph", rate: 0.15 },
       { sid: "impact", rate: -1 },
@@ -1315,10 +1315,10 @@ const diseases: IDisease[] = [
       { sid: "radiopaque-nozone", rate: -1 },
       { sid: "uni1", rate: 0.2 },
       { sid: "uni2", rate: -1 },
-      { sid: "wispy1", rate: 0.8 },
-      { sid: "coarse1", rate: -1 },
-      { sid: "wispy2", rate: 0.8 },
-      { sid: "coarse2", rate: -1 },
+      { sid: "wispy1", rate: 0.7 },
+      { sid: "coarse1", rate: 0.1 },
+      { sid: "wispy2", rate: 0.7 },
+      { sid: "coarse2", rate: 0.1 },
       { sid: "rarefaction", rate: -1 },
       { sid: "mixed", rate: -1 },
       { sid: "eruption", rate: -1 },
