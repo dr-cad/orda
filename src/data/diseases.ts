@@ -1948,7 +1948,7 @@ const diseases: IDisease[] = [
       { sid: "sclerotic", rate: -1 },
       { sid: "soft-capsule", rate: 0.6 },
       { sid: "blending", rate: 0.2 },
-      { sid: "invasive", rate: -1 },
+      { sid: "invasive", rate: 0 },
       {
         sid: "maxilla",
         ranges: [
