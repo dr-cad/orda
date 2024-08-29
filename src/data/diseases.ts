@@ -2284,7 +2284,7 @@ const diseases: IDisease[] = [
   {
     id: "metastatic",
     name: "Metastatic Tumors",
-    preval: 0.0001,
+    preval: 0.0005,
     factors: [
       {
         sid: "pat-age",
