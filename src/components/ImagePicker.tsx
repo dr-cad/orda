@@ -9,10 +9,10 @@ import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { FilePond, registerPlugin } from "react-filepond";
 
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Tooltip } from "@mui/material";
 import sha256 from "crypto-js/sha256";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IoCloudDone } from "react-icons/io5";
+import { TbCloudCancel, TbCloudCheck } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
@@ -39,6 +39,7 @@ export default function ImagePicker() {
   const filepond = useRef<FilePond>(null);
   const [files, setFiles] = useState<ActualFileObject[]>();
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string>();
   const initialized = useRef(false);
   const imagesSet = useRef(false); // makes sure images are loaded only once
 
@@ -122,6 +123,7 @@ export default function ImagePicker() {
           },
           errorCallback: (error) => {
             console.error("cloud:upload", { error });
+            setError(error);
             reject(error);
           },
         })
@@ -174,7 +176,19 @@ export default function ImagePicker() {
       )}
 
       {!!imagesRaw && !progress && (
-        <IoCloudDone size="1.5rem" color="#4fe2a5" style={{ position: "fixed", top: "-1.5rem", right: "1rem" }} />
+        <TbCloudCheck //
+          size="1.5rem"
+          color="#4fe2a5"
+          style={{ position: "fixed", top: "-1.5rem", right: "1rem" }}
+        />
+      )}
+
+      {!!error && (
+        <Tooltip title={error}>
+          <div style={{ position: "fixed", top: "-1.5rem", right: "1rem" }}>
+            <TbCloudCancel size="1.5rem" color="#e24f5b" cursor="pointer" />
+          </div>
+        </Tooltip>
       )}
 
       <FilePond
