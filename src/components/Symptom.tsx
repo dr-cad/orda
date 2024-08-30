@@ -1,6 +1,15 @@
 import { Box, Checkbox, FormControlLabel, Radio, Stack, TextField, Typography } from "@mui/material";
 import _ from "lodash";
-import { Fragment, MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChangeEventHandler,
+  Fragment,
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useStore } from "../config/store";
 import { digestSymptom } from "../lib/symptoms";
 import { IRange, ISymptom, SymptomType, Value } from "../types";
@@ -141,6 +150,40 @@ const Input = ({ symptom }: IInnerProps) => {
     [symptom.id, updateSymptom]
   );
 
+  const handleChangeRangeA: ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      const v = parseInt(e.target.value);
+      const lim = (symptom.value as IRange)?.b;
+      const [min, max] = [symptom.min!, symptom.max!];
+      setValue({ a: v, b: lim });
+      if (!v) return;
+      throttle(() => {
+        handleChange({
+          a: _.clamp(v || min, min, lim || max),
+          b: lim,
+        });
+      });
+    },
+    [handleChange, symptom.max, symptom.min, symptom.value]
+  );
+
+  const handleChangeRangeB: ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      const v = parseInt(e.target.value);
+      const lim = (symptom.value as IRange)?.a;
+      const [min, max] = [symptom.min!, symptom.max!];
+      setValue({ a: lim, b: v });
+      if (!v) return;
+      throttle(() => {
+        handleChange({
+          a: lim,
+          b: _.clamp(v || max, lim || min, max),
+        });
+      });
+    },
+    [handleChange, symptom.max, symptom.min, symptom.value]
+  );
+
   return (
     <Stack p={2}>
       {symptom.type === SymptomType.String ? (
@@ -169,19 +212,7 @@ const Input = ({ symptom }: IInnerProps) => {
             type="tel"
             placeholder="Start"
             value={(value as IRange)?.a || ""}
-            onChange={(e) => {
-              const v = parseInt(e.target.value);
-              const lim = (symptom.value as IRange)?.b;
-              const [min, max] = [symptom.min!, symptom.max!];
-              setValue({ a: v, b: lim });
-              if (!v) return;
-              throttle(() => {
-                handleChange({
-                  a: _.clamp(v || min, min, lim || max),
-                  b: lim,
-                });
-              });
-            }}
+            onChange={handleChangeRangeA}
           />
           <TextField
             id={symptom.id + "-textfield-2"}
@@ -189,19 +220,7 @@ const Input = ({ symptom }: IInnerProps) => {
             type="tel"
             placeholder="End"
             value={(value as IRange)?.b || ""}
-            onChange={(e) => {
-              const v = parseInt(e.target.value);
-              const lim = (symptom.value as IRange)?.a;
-              const [min, max] = [symptom.min!, symptom.max!];
-              setValue({ a: lim, b: v });
-              if (!v) return;
-              throttle(() => {
-                handleChange({
-                  a: lim,
-                  b: _.clamp(v || max, lim || min, max),
-                });
-              });
-            }}
+            onChange={handleChangeRangeB}
           />
         </Stack>
       ) : null}

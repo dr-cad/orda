@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: "autoUpdate",
-        devOptions: { enabled: true },
+        devOptions: { enabled: false },
         workbox: { globPatterns: ["**/*"] },
         includeAssets: ["**/*"],
         manifest: false,

@@ -45,16 +45,21 @@ export type Desc = {
   params?: any[]; // passed to feature component
 };
 
-export type Value = string | number | IRange | Date | boolean;
-
 export enum SymptomType {
   String = "string",
   Number = "number",
   Range = "range",
-  Date = "date",
+  Date = "date", // not used yet
   Enum = "enum",
   None = "none",
 }
+
+export type Value =
+  | string
+  | number
+  | IRange
+  | Date // not used yet
+  | boolean;
 
 export interface ISymptomRaw {
   id: SId;

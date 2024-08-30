@@ -12,6 +12,7 @@ import { FilePond, registerPlugin } from "react-filepond";
 import { CircularProgress } from "@mui/material";
 import sha256 from "crypto-js/sha256";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { IoCloudDone } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
@@ -109,6 +110,7 @@ export default function ImagePicker() {
             setProgress(percent);
           },
           successCallback: (data) => {
+            console.log("here");
             newImages.push({
               hash,
               url: data.url.replace("http://", "https://"),
@@ -167,8 +169,12 @@ export default function ImagePicker() {
           value={progress}
           variant={progress >= 100 ? "indeterminate" : "determinate"}
           color={progress >= 100 ? "success" : "primary"}
-          sx={{ position: "fixed", top: 0, right: "1rem" }}
+          sx={{ position: "fixed", top: "-1.5rem", right: "1rem" }}
         />
+      )}
+
+      {!!imagesRaw && !progress && (
+        <IoCloudDone size="1.5rem" color="#4fe2a5" style={{ position: "fixed", top: "-1.5rem", right: "1rem" }} />
       )}
 
       <FilePond
@@ -177,14 +183,6 @@ export default function ImagePicker() {
         name="files" /* sets the file input name, it's filepond by default */
         labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
         onupdatefiles={onFilesUpdate}
-        onaddfile={(e, file) => {
-          console.log("add", { e, file });
-        }}
-        beforeAddFile={async (file) => {
-          console.log("before add", { file });
-          return true;
-        }}
-        onremovefile={(e, file) => console.log("remove", { e, file })}
         // allowReorder
         allowMultiple
         acceptedFileTypes={["image/jpeg"]} // FIXME not working

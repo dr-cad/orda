@@ -23,6 +23,11 @@ export function getSymptomPage(symptoms: ISymptom[], symptom: ISymptom): number 
   return undefined;
 }
 
+/**
+ * find any issue validating valued symptoms
+ * @param symptoms list of all symptoms
+ * @returns error
+ */
 export function getSymptomsErrors(symptoms: ISymptom[]): IError[] {
   const errors: IError[] = [];
 

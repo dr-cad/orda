@@ -27,33 +27,37 @@ export const makeUploadRequest = ({
   successCallback: (data: IResponseData) => void;
   errorCallback: (message: string) => void;
 }) => {
-  const url = `${baseUrl}/image/upload`;
+  try {
+    const url = `${baseUrl}/image/upload`;
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", uploadPreset);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
 
-  const request = new XMLHttpRequest();
-  request.open("POST", url);
+    const request = new XMLHttpRequest();
+    request.open("POST", url);
 
-  request.upload.onprogress = (e) => {
-    progressCallback(e.lengthComputable, e.loaded, e.total);
-  };
+    request.upload.onprogress = (e) => {
+      progressCallback(e.lengthComputable, e.loaded, e.total);
+    };
 
-  request.onload = () => {
-    const data: IResponseData = JSON.parse(request.response);
-    if (request.status >= 200 && request.status < 300) {
-      successCallback(data);
-    } else {
-      errorCallback(request.responseText);
-    }
-  };
+    request.onload = () => {
+      const data: IResponseData = JSON.parse(request.response);
+      if (request.status >= 200 && request.status < 300) {
+        successCallback(data);
+      } else {
+        errorCallback(request.responseText);
+      }
+    };
 
-  request.send(formData);
+    request.send(formData);
 
-  return () => {
-    request.abort();
-  };
+    return () => {
+      request.abort();
+    };
+  } catch (e) {
+    console.log("cloud:error", e);
+  }
 };
 
 export const makeDeleteRequest = ({
