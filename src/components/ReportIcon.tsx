@@ -2,14 +2,14 @@ import { Button, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { FcPrint } from "react-icons/fc";
 import { NavLink } from "react-router-dom";
-import { useStore } from "../config/store";
+import { useBufferStore, usePersistStore } from "../config/store";
 import { getSymptomsErrors } from "../lib/symptoms";
 import { getId } from "../lib/utils";
 import { IHistoryItem } from "../types";
 
 export default function ReportIcon() {
-  const symptoms = useStore((s) => s.symptoms);
-  const history = useStore((s) => s.history);
+  const symptoms = useBufferStore((s) => s.symptoms);
+  const history = usePersistStore((s) => s.history);
   const item: IHistoryItem = useMemo(() => history[0], [history]);
   const disabled = useMemo(() => getSymptomsErrors(symptoms).length, [symptoms]);
 

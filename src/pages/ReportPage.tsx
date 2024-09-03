@@ -7,7 +7,7 @@ import { RiCollapseDiagonalLine, RiExpandDiagonalLine } from "react-icons/ri";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import BarChart from "../components/BarChart";
-import { useStore } from "../config/store";
+import { usePersistStore } from "../config/store";
 import { appName, email, orgName, siteURL } from "../config/strings";
 import useReportFindings from "../hooks/report";
 import useScores from "../hooks/scores";
@@ -25,7 +25,7 @@ const CONTENT_WIDTH = 595;
 
 export default function ReportPage() {
   const { id } = useParams();
-  const history = useStore((s) => s.history);
+  const history = usePersistStore((s) => s.history);
 
   const item = useMemo(() => (id ? history.find((x) => x.uuid.startsWith(id)) : undefined), [history, id]);
 

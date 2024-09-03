@@ -14,7 +14,7 @@ import sha256 from "crypto-js/sha256";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TbCloudCancel, TbCloudCheck } from "react-icons/tb";
 import { Link } from "react-router-dom";
-import { useStore } from "../config/store";
+import { useBufferStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
 import { makeDeleteRequest, makeUploadRequest } from "../lib/cloudinary";
 import { parseImages, stringifyImages } from "../lib/image";
@@ -32,7 +32,7 @@ const maxFiles = 10;
 const maxFileSize = 1500 * 1024; // 1.5MB < 2.5MB cloudinary limit
 
 export default function ImagePicker() {
-  const updateSymptom = useStore((s) => s.updateSymptom);
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
   const imagesRaw: string | undefined = useSymptomValue(sid);
   const imagesParsed = useMemo(() => parseImages(imagesRaw), [imagesRaw]);
 

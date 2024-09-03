@@ -1,4 +1,4 @@
-import { Store } from "../config/store";
+import { PersistStore } from "../config/store";
 import { appName } from "../config/strings";
 import { IHistoryItem } from "../types";
 import { downloadFile } from "./share";
@@ -9,7 +9,7 @@ export async function exportHistory(history: IHistoryItem[]) {
   downloadFile(`${prefix} ${new Date().toLocaleString()}.json`, data);
 }
 
-export async function importHistory(addHistory: Store["addHistory"], callback: () => void) {
+export async function importHistory(addHistory: PersistStore["addHistory"], callback: () => void) {
   const input = document.createElement("input");
   input.type = "file";
   input.multiple = false;

@@ -11,7 +11,7 @@ import { calcStorageSpace } from "../lib/storage";
 import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
 import { IHistoryItem, ISymptom, Value } from "../types";
 
-export interface Store {
+export interface BufferStore {
   checkSpace: (need?: number) => boolean;
   // buffer
   uuid: string;
@@ -21,9 +21,6 @@ export interface Store {
   save: (draft?: boolean) => IHistoryItem[] | null; // buffer -> hisory
   reset: () => void; // save, ~buffer
   // history
-  history: IHistoryItem[];
-  addHistory: (item: IHistoryItem) => IHistoryItem[] | null; // check space, +history
-  removeHistory: (uuid: string) => void; // -history
   loadHistory: (item: IHistoryItem, overwrite?: boolean) => void; // history -> buffer
   // app ui
   collapsed: boolean;
@@ -31,17 +28,13 @@ export interface Store {
   collapseAll: () => void;
   expandAll: () => void;
   // app features
-  initialized: boolean;
-  setInitialized: () => void;
   snackbar: { message: string; color?: string } | null;
   showSnackbar: (message: string, color?: string) => void;
   hideSnackbar: () => void;
-  // app settings
-  autoBackup: boolean;
 }
 
-export const useStore = create(
-  persist<Store>(
+export const useBufferStore = create(
+  persist<BufferStore>(
     (set, get) => ({
       checkSpace: (needed = 10 * 1024) => {
         if (calcStorageSpace().free < needed) {
@@ -58,7 +51,7 @@ export const useStore = create(
       updateSymptom: (id, value) => {
         let result = undefined;
         set(
-          produce((s: Store) => {
+          produce((s: BufferStore) => {
             const arr: ISymptom[] = s.symptoms; // reference
             const item = arr.find((i) => i.id === id);
             if (item) {
@@ -88,7 +81,7 @@ export const useStore = create(
             get().showSnackbar("Nothing to save", "warning.main");
             return null;
           }
-          return get().history; // ignore - ok
+          return usePersistStore.getState().history; // ignore - ok
         }
         // save data and tell
         const newDate = new Date().getTime();
@@ -110,7 +103,7 @@ export const useStore = create(
           console.log(e);
         }
 
-        return get().addHistory(newItem);
+        return usePersistStore.getState().addHistory(newItem);
       },
       reset: () => {
         // saves and resets buffer
@@ -126,49 +119,6 @@ export const useStore = create(
       },
 
       // history
-      history: [],
-      addHistory: (item) => {
-        const free = get().checkSpace(JSON.stringify(item.symptoms).length);
-        if (!free) return null;
-        // update
-        set(
-          produce((s: Store) => {
-            const existing = s.history.findIndex((r) => r.uuid === item.uuid);
-            if (existing < 0) {
-              s.history.unshift(item);
-              s.snackbar = { message: `Record saved!`, color: "success.main" };
-              return;
-            }
-            const existingItem = s.history[existing];
-            const newItem = { ...item };
-            if (_.isEqual(existingItem.symptoms, item.symptoms)) {
-              // if symptoms unchanged, use any available scores
-              newItem.scores = newItem.scores || existingItem.scores;
-            }
-            if (item.updatedAt > existingItem.updatedAt) {
-              // if same uuid and newer -> replace previous
-              s.history.splice(existing, 1); // remove outdated
-              s.history.unshift(newItem); // add new item
-              s.snackbar = { message: `Record updated!`, color: "primary.main" };
-              return;
-            }
-            // else, the item is outdated and can't be imported
-            console.log({ item, existingItem });
-            s.snackbar = { message: `Record outdated! Can't import`, color: "error.main" };
-            Sentry.captureException({ item, existingItem });
-          })
-        );
-        return get().history;
-      },
-      removeHistory: (uuid) => {
-        set(
-          produce((s: Store) => {
-            const index = s.history.findIndex((x) => x.uuid === uuid);
-            if (index > -1) s.history.splice(index, 1);
-          })
-        );
-        get().showSnackbar("History record removed!");
-      },
       loadHistory: (item, overwrite) => {
         // saves and updates buffer
         // check not same uuid loading
@@ -191,11 +141,20 @@ export const useStore = create(
       },
 
       // app ui
+      snackbar: null,
+      showSnackbar: (message: string, color?: string) => {
+        set({ snackbar: { message, color } });
+      },
+      hideSnackbar: () => {
+        set({ snackbar: null });
+      },
+
+      // app ui
       collapsed: false,
       toggleExpanded: (id, open) => {
         // for single item
         set(
-          produce((s: Store) => {
+          produce((s: BufferStore) => {
             const item = s.symptoms.find((item) => item.id === id);
             if (!item) return; // TODO handle
             if (typeof open !== "undefined") {
@@ -208,7 +167,7 @@ export const useStore = create(
       },
       collapseAll: () => {
         set(
-          produce((s: Store) => {
+          produce((s: BufferStore) => {
             s.collapsed = true;
             s.symptoms.forEach((item) => {
               if (!item.value) item.open = false;
@@ -218,7 +177,7 @@ export const useStore = create(
       },
       expandAll: () => {
         set(
-          produce((s: Store) => {
+          produce((s: BufferStore) => {
             s.collapsed = false;
             s.symptoms.forEach((item) => {
               item.open = true;
@@ -226,19 +185,72 @@ export const useStore = create(
           })
         );
       },
+    }),
+    {
+      name: "buffer-storage",
+      storage: createJSONStorage(() => localStorage, {}),
+    }
+  )
+);
 
-      // app ui
-      initialized: false,
-      setInitialized: () => {
-        set({ initialized: true });
+export interface PersistStore {
+  // history
+  history: IHistoryItem[];
+  addHistory: (item: IHistoryItem) => IHistoryItem[] | null; // check space, +history
+  removeHistory: (uuid: string) => void; // -history
+  // app settings
+  autoBackup: boolean;
+}
+
+export const usePersistStore = create(
+  persist<PersistStore>(
+    (set, get) => ({
+      // history
+      history: [],
+      addHistory: (item) => {
+        const buffer = useBufferStore.getState();
+        const free = buffer.checkSpace(JSON.stringify(item.symptoms).length);
+        if (!free) return null;
+        // update
+        set(
+          produce((s: PersistStore) => {
+            const existing = s.history.findIndex((r) => r.uuid === item.uuid);
+            if (existing < 0) {
+              s.history.unshift(item);
+              buffer.showSnackbar("Record saved!", "success.main");
+              return;
+            }
+            const existingItem = s.history[existing];
+            const newItem = { ...item };
+            if (_.isEqual(existingItem.symptoms, item.symptoms)) {
+              // if symptoms unchanged, use any available scores
+              newItem.scores = newItem.scores || existingItem.scores;
+            }
+            if (item.updatedAt > existingItem.updatedAt) {
+              // if same uuid and newer -> replace previous
+              s.history.splice(existing, 1); // remove outdated
+              s.history.unshift(newItem); // add new item
+              buffer.showSnackbar("Record updated!", "primary.main");
+              return;
+            }
+            // else, the item is outdated and can't be imported
+            console.log({ item, existingItem });
+            buffer.showSnackbar("Record outdated! Can't import", "error.main");
+            Sentry.captureException({ item, existingItem });
+          })
+        );
+        return get().history;
       },
-      snackbar: null,
-      showSnackbar: (message: string, color?: string) => {
-        set({ snackbar: { message, color } });
+      removeHistory: (uuid) => {
+        set(
+          produce((s: PersistStore) => {
+            const index = s.history.findIndex((x) => x.uuid === uuid);
+            if (index > -1) s.history.splice(index, 1);
+          })
+        );
+        useBufferStore.getState().showSnackbar("History record removed!");
       },
-      hideSnackbar: () => {
-        set({ snackbar: null });
-      },
+
       // app settings
       autoBackup: false,
     }),

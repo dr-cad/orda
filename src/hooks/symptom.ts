@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useStore } from "../config/store";
+import { useBufferStore } from "../config/store";
 import { getSymptomValueById } from "../lib/symptoms";
 import { ISymptom } from "../types";
 
 export function useSymptomValue<T>(sid: string): T | undefined {
-  const symptoms = useStore((s) => s.symptoms);
+  const symptoms = useBufferStore((s) => s.symptoms);
   const value = useMemo(() => getSymptomValueById(symptoms, sid), [sid, symptoms]);
   return value as never;
 }

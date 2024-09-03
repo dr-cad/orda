@@ -3,7 +3,7 @@ import { IconButton, Tooltip } from "@mui/material";
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import AnaLocImage from "../assets/ana-loc.webp";
-import { useStore } from "../config/store";
+import { useBufferStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
 import { IRange } from "../types";
 
@@ -54,8 +54,8 @@ const points: IPoint[] = [
 ];
 
 export default function DentPicker() {
-  const updateSymptom = useStore((s) => s.updateSymptom);
-  const toggleExpanded = useStore((s) => s.toggleExpanded);
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
+  const toggleExpanded = useBufferStore((s) => s.toggleExpanded);
   const { max, man, both } = useAnaLoc();
 
   const [start, setStart] = useState<IPoint>(); // tmp cache

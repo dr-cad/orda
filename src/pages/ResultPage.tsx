@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import BarChart from "../components/BarChart";
 import DiseaseScore from "../components/DiseaseScore";
-import { useStore } from "../config/store";
+import { useBufferStore } from "../config/store";
 import { appName } from "../config/strings";
 import { useHistoryItem } from "../hooks/history";
 import useScores from "../hooks/scores";
@@ -25,7 +25,7 @@ export function ResultPageContent({ id, item }: { id: string; item: IHistoryItem
   const _chartBox = useRef();
 
   const [mode, setMode] = useState(AppMode.Preval);
-  const symptoms = useStore((s) => s.symptoms);
+  const symptoms = useBufferStore((s) => s.symptoms);
 
   const { scores, barChartData } = useScores(item.scores!, mode);
   const errors = useMemo(() => getSymptomsErrors(symptoms), [symptoms]);

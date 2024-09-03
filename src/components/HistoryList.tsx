@@ -6,7 +6,7 @@ import { FcAreaChart, FcFullTrash, FcPrint } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
-import { useStore } from "../config/store";
+import { useBufferStore, usePersistStore } from "../config/store";
 import { appName } from "../config/strings";
 import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
@@ -16,7 +16,7 @@ const GUTTER_SIZE = 6;
 const ITEM_HEIGHT = 64;
 
 const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortType: SortType; sortDir: SortDir }) => {
-  const history = useStore((s) => s.history);
+  const history = usePersistStore((s) => s.history);
 
   const list = useMemo(() => {
     // search
@@ -96,8 +96,8 @@ const HistoryItem = ({
   ...item
 }: IHistoryItem & { style: CSSProperties; selected: boolean; handleSelect: MouseEventHandler }) => {
   const navigate = useNavigate();
-  const removeHistory = useStore((s) => s.removeHistory);
-  const loadHistory = useStore((s) => s.loadHistory);
+  const removeHistory = usePersistStore((s) => s.removeHistory);
+  const loadHistory = useBufferStore((s) => s.loadHistory);
   const reportDisabled = useMemo(() => getSymptomsErrors(item.symptoms).length, [item.symptoms]);
 
   const title = useMemo(() => {

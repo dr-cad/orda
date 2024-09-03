@@ -1,9 +1,9 @@
 import { Snackbar as MuiSnackbar } from "@mui/material";
-import { useStore } from "../config/store";
+import { useBufferStore } from "../config/store";
 
 export default function Snackbar() {
-  const snackbar = useStore((s) => s.snackbar);
-  const hideSnackbar = useStore((s) => s.hideSnackbar);
+  const snackbar = useBufferStore((s) => s.snackbar);
+  const hideSnackbar = useBufferStore((s) => s.hideSnackbar);
 
   return (
     <MuiSnackbar

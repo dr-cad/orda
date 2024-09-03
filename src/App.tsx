@@ -1,7 +1,7 @@
 import { clarity } from "react-microsoft-clarity";
 import { Navigate, Route, Routes } from "react-router-dom";
 import PageLayout from "./components/PageLayout";
-import { useStore } from "./config/store";
+import { usePersistStore } from "./config/store";
 import HistoryPage from "./pages/HistoryPage";
 import IntroPage from "./pages/IntroPage";
 import ReportPage from "./pages/ReportPage";
@@ -10,7 +10,7 @@ import SymptomsPage from "./pages/SymptomsPage";
 
 export default function App() {
   if (import.meta.env.PROD) clarity.init("nj04qzc3hn");
-  const history = useStore((s) => s.history);
+  const history = usePersistStore((s) => s.history);
 
   return (
     <Routes>

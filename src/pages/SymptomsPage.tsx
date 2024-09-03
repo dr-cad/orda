@@ -4,15 +4,15 @@ import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import SymptomsGroup from "../components/Symptom";
 import { CloseSquare, MinusSquare, PlusSquare } from "../components/styled";
-import { useStore } from "../config/store";
+import { useBufferStore } from "../config/store";
 import { usePageIndex } from "../hooks/pages";
 
 function SymptomsPage() {
   const { currPage } = usePageIndex();
-  const collapsed = useStore((s) => s.collapsed);
-  const collapseAll = useStore((s) => s.collapseAll);
-  const expandAll = useStore((s) => s.expandAll);
-  const symptoms = useStore((s) => s.symptoms);
+  const collapsed = useBufferStore((s) => s.collapsed);
+  const collapseAll = useBufferStore((s) => s.collapseAll);
+  const expandAll = useBufferStore((s) => s.expandAll);
+  const symptoms = useBufferStore((s) => s.symptoms);
 
   const expanded = useMemo(() => {
     const expandedSet = new Set<string>();

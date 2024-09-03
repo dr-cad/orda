@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useStore } from "../config/store";
+import { useBufferStore, usePersistStore } from "../config/store";
 import { exportHistory, importHistory } from "../lib/history";
 import { IHistoryItem } from "../types";
 
@@ -7,10 +7,10 @@ export default function useAppHistory() {
   const nav = useNavigate();
   const { pathname } = useLocation();
 
-  const history = useStore((s) => s.history);
-  const addHistory = useStore((s) => s.addHistory);
-  const reset = useStore((s) => s.reset);
-  const showSnackbar = useStore((s) => s.showSnackbar);
+  const history = usePersistStore((s) => s.history);
+  const addHistory = usePersistStore((s) => s.addHistory);
+  const reset = useBufferStore((s) => s.reset);
+  const showSnackbar = useBufferStore((s) => s.showSnackbar);
 
   const handleExportHistory: React.MouseEventHandler = (e) => {
     e.preventDefault();
@@ -37,8 +37,8 @@ export default function useAppHistory() {
 }
 
 export function useHistoryItem(id?: string): IHistoryItem | undefined {
-  const history = useStore((s) => s.history);
-  const showSnackbar = useStore((s) => s.showSnackbar);
+  const history = usePersistStore((s) => s.history);
+  const showSnackbar = useBufferStore((s) => s.showSnackbar);
 
   if (!id) {
     showSnackbar("History item id not provided!", "error.main");

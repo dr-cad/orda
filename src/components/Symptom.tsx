@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useStore } from "../config/store";
+import { useBufferStore } from "../config/store";
 import { digestSymptom } from "../lib/symptoms";
 import { IRange, ISymptom, SymptomType, Value } from "../types";
 import Features from "./Features";
@@ -31,9 +31,9 @@ function useDigestSymptom(symptom: ISymptom | undefined) {
 }
 
 function Symptom({ id, parent }: IProps) {
-  const toggleExpanded = useStore((s) => s.toggleExpanded);
-  const symptoms = useStore((s) => s.symptoms);
-  const updateSymptom = useStore((s) => s.updateSymptom);
+  const toggleExpanded = useBufferStore((s) => s.toggleExpanded);
+  const symptoms = useBufferStore((s) => s.symptoms);
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
 
   const symptom = useMemo(() => symptoms.find((i) => i.id === id), [id, symptoms]);
   const { expandable, isEnumParent, hasInput, hasDesc, hasOptions } = useDigestSymptom(symptom);
@@ -132,7 +132,7 @@ const Desc = (symptom: ISymptom) => {
 };
 
 const Input = ({ symptom }: IInnerProps) => {
-  const updateSymptom = useStore((s) => s.updateSymptom);
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
   const [value, setValue] = useState<Value | undefined>(symptom.value);
 
   const t0 = useRef<number>();
