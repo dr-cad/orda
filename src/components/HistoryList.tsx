@@ -55,6 +55,7 @@ const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortTyp
         <FixedSizeList //
           height={height}
           width={width}
+          overscanCount={8}
           innerElementType={innerElementType}
           itemCount={list.length}
           itemSize={ITEM_HEIGHT}>
