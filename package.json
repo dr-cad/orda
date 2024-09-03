@@ -67,6 +67,7 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "husky": "^9.1.4",
     "lint-staged": "^15.2.9",
+    "micromatch": "^4.0.8",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
     "vite-plugin-compile-time": "^0.2.1",
