@@ -21,10 +21,10 @@ export default function HistoryPage() {
   const { handleNewRecord } = useAppHistory();
 
   return (
-    <Stack aria-label="diseases-page" flex={1} p={2} gap={2} position="relative">
+    <Stack aria-label="diseases-page" flex={1} gap={2} position="relative">
       <TextField
         className="sticky blur-bg"
-        sx={{ top: 20, zIndex: 99, pt: 1 }}
+        sx={{ top: 20, zIndex: 99, pt: 1, mx: 2, mt: 2 }}
         size="small"
         type="text"
         placeholder="Search by name or id"
@@ -40,7 +40,7 @@ export default function HistoryPage() {
         }}
       />
 
-      <Box display="flex" flexWrap="wrap" gap={2}>
+      <Box display="flex" flexWrap="wrap" gap={2} mx={2}>
         <Button
           color="primary"
           variant="contained"
@@ -89,7 +89,9 @@ export default function HistoryPage() {
         </Box>
       </Box>
 
-      <HistoryList query={deferredQuery} sortType={sortType} sortDir={sortDir} />
+      <Box flex={1}>
+        <HistoryList query={deferredQuery} sortType={sortType} sortDir={sortDir} />
+      </Box>
     </Stack>
   );
 }

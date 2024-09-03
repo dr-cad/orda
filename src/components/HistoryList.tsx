@@ -1,14 +1,19 @@
-import { Box, IconButton, List, ListItem, ListItemText, Tooltip } from "@mui/material";
+import { Box, IconButton, ListItem, ListItemText, Tooltip } from "@mui/material";
 import _ from "lodash";
 import moment from "moment";
-import { memo, MouseEvent, MouseEventHandler, useMemo, useState } from "react";
+import { CSSProperties, forwardRef, memo, MouseEvent, MouseEventHandler, useMemo, useState } from "react";
 import { FcAreaChart, FcFullTrash, FcPrint } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList } from "react-window";
 import { useStore } from "../config/store";
 import { appName } from "../config/strings";
 import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
 import { IHistoryItem, SortDir, SortType } from "../types";
+
+const GUTTER_SIZE = 6;
+const ITEM_HEIGHT = 64;
 
 const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortType: SortType; sortDir: SortDir }) => {
   const history = useStore((s) => s.history);
@@ -45,21 +50,50 @@ const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortTyp
   };
 
   return (
-    <List sx={{ gap: 1, display: "flex", flexDirection: "column" }}>
-      {list.map((item, i) => (
-        <HistoryItem key={i} selected={selection.includes(i)} handleSelect={(e) => handleSelect(e, i)} {...item} />
-      ))}
-    </List>
+    <AutoSizer>
+      {({ height, width }) => (
+        <FixedSizeList //
+          height={height}
+          width={width}
+          innerElementType={innerElementType}
+          itemCount={list.length}
+          itemSize={ITEM_HEIGHT}>
+          {({ index: i, style }) => (
+            <HistoryItem
+              style={style}
+              selected={selection.includes(i)}
+              handleSelect={(e) => handleSelect(e, i)}
+              {...list[i]}
+            />
+          )}
+        </FixedSizeList>
+      )}
+    </AutoSizer>
   );
 });
 
 export default HistoryList;
 
+const innerElementType = forwardRef<HTMLDivElement, JSX.IntrinsicElements["div"]>(({ style, ...rest }, ref) => (
+  <div
+    ref={ref}
+    style={{
+      ...style,
+      height: Number(style?.height ?? 0) + 16,
+      paddingTop: GUTTER_SIZE,
+      paddingRight: 16,
+      paddingLeft: 16,
+    }}
+    {...rest}
+  />
+));
+
 const HistoryItem = ({
+  style,
   selected,
   handleSelect,
   ...item
-}: IHistoryItem & { selected: boolean; handleSelect: MouseEventHandler }) => {
+}: IHistoryItem & { style: CSSProperties; selected: boolean; handleSelect: MouseEventHandler }) => {
   const navigate = useNavigate();
   const removeHistory = useStore((s) => s.removeHistory);
   const loadHistory = useStore((s) => s.loadHistory);
@@ -110,6 +144,14 @@ const HistoryItem = ({
         "&:hover": {
           backgroundColor: "#ffffff12",
         },
+      }}
+      style={{
+        ...style,
+        top: Number(style.top!) + GUTTER_SIZE + 0,
+        height: Number(style.height!) - GUTTER_SIZE,
+        width: "auto",
+        right: 16,
+        left: 16,
       }}
       onClick={handleEdit}
       onContextMenu={handleSelect}
