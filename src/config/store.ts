@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/react";
 import sha256 from "crypto-js/sha256";
 import { produce } from "immer";
 import _ from "lodash";
+import LZString from "lz-string";
 import uuid4 from "uuid4";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -12,6 +13,18 @@ import { calcStorageSpace } from "../lib/storage";
 import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
 import { IHistoryItem, ISymptom, Value } from "../types";
 import { VERSION } from "./strings";
+
+function createStorage<T>(compression?: boolean) {
+  return createJSONStorage<T>(
+    () => localStorage,
+    compression
+      ? {
+          reviver: (_key, value) => JSON.parse(LZString.decompress(value as string)),
+          replacer: (_key, value) => LZString.compress(JSON.stringify(value)),
+        }
+      : {}
+  );
+}
 
 export interface BufferStore {
   checkSpace: (need?: number) => boolean;
@@ -189,10 +202,7 @@ export const useBufferStore = create(
         );
       },
     }),
-    {
-      name: "buffer-storage",
-      storage: createJSONStorage(() => localStorage, {}),
-    }
+    { name: "buffer-storage", storage: createStorage() }
   )
 );
 
@@ -257,10 +267,7 @@ export const usePersistStore = create(
       // app settings
       autoBackup: false,
     }),
-    {
-      name: "app-storage",
-      storage: createJSONStorage(() => localStorage, {}),
-    }
+    { name: "app-storage", storage: createStorage(true) }
   )
 );
 
