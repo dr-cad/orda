@@ -1,9 +1,15 @@
-import { AlertColor } from "@mui/material";
+import { AlertColor, AlertProps } from "@mui/material";
 import { SId } from "./sid";
 
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 // ui
+
+export interface ISnackbar {
+  message: string;
+  severity?: AlertProps["severity"];
+  progress?: number;
+}
 
 export enum AppMode {
   Preval = "prevalance",

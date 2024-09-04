@@ -22,8 +22,10 @@ export default function useAppHistory() {
   const handleImportHistory: React.MouseEventHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    importHistory(addHistory, () => {
-      showSnackbar("History file imported successfully!");
+    importHistory(addHistory, (progress) => {
+      if (progress === 0) showSnackbar("Importing history file...");
+      else if (progress === 1) showSnackbar("History file imported successfully!", "success");
+      else showSnackbar("Importing history file...", "info", progress * 100);
     });
     if (!pathname.startsWith("/history")) nav("/history");
   };
@@ -41,12 +43,12 @@ export function useHistoryItem(id?: string): IHistoryItem | undefined {
   const showSnackbar = useBufferStore((s) => s.showSnackbar);
 
   if (!id) {
-    showSnackbar("History item id not provided!", "error.main");
+    showSnackbar("History item id not provided!", "error");
     return;
   }
   const item = history.find((r) => r.uuid.startsWith(id));
   if (!item) {
-    showSnackbar("Can't find history record item!", "error.main");
+    showSnackbar("Can't find history record item!", "error");
     return;
   }
   return item;

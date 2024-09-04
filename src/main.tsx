@@ -5,6 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import Snackbar from "./components/Snackbar";
 import theme from "./config/theme";
 import "./index.css";
 
@@ -28,6 +29,7 @@ root.render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
+      <Snackbar />
     </ThemeProvider>
     <Analytics />
   </React.StrictMode>

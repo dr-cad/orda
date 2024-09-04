@@ -1,3 +1,4 @@
+import { AlertProps } from "@mui/material";
 import * as Sentry from "@sentry/react";
 import sha256 from "crypto-js/sha256";
 import { produce } from "immer";
@@ -28,8 +29,8 @@ export interface BufferStore {
   collapseAll: () => void;
   expandAll: () => void;
   // app features
-  snackbar: { message: string; color?: string } | null;
-  showSnackbar: (message: string, color?: string) => void;
+  snackbar: { message: string; severity?: AlertProps["severity"]; progress?: number } | null;
+  showSnackbar: (message: string, severity?: AlertProps["severity"], progress?: number) => void;
   hideSnackbar: () => void;
 }
 
@@ -38,7 +39,7 @@ export const useBufferStore = create(
     (set, get) => ({
       checkSpace: (needed = 10 * 1024) => {
         if (calcStorageSpace().free < needed) {
-          get().showSnackbar(`Unable to save! No space left`, "error.main");
+          get().showSnackbar(`Unable to save! No space left`, "error");
           return false;
         }
         return true;
@@ -78,7 +79,7 @@ export const useBufferStore = create(
         const symptoms = get().symptoms;
         if (_.isEqual(symptoms, emptySymptoms)) {
           if (!draft) {
-            get().showSnackbar("Nothing to save", "warning.main");
+            get().showSnackbar("Nothing to save", "warning");
             return null;
           }
           return usePersistStore.getState().history; // ignore - ok
@@ -142,8 +143,8 @@ export const useBufferStore = create(
 
       // app ui
       snackbar: null,
-      showSnackbar: (message: string, color?: string) => {
-        set({ snackbar: { message, color } });
+      showSnackbar: (message, severity, progress) => {
+        set({ snackbar: { message, severity, progress } });
       },
       hideSnackbar: () => {
         set({ snackbar: null });
@@ -217,7 +218,7 @@ export const usePersistStore = create(
             const existing = s.history.findIndex((r) => r.uuid === item.uuid);
             if (existing < 0) {
               s.history.unshift(item);
-              buffer.showSnackbar("Record saved!", "success.main");
+              buffer.showSnackbar("Record saved!", "success");
               return;
             }
             const existingItem = s.history[existing];
@@ -230,12 +231,12 @@ export const usePersistStore = create(
               // if same uuid and newer -> replace previous
               s.history.splice(existing, 1); // remove outdated
               s.history.unshift(newItem); // add new item
-              buffer.showSnackbar("Record updated!", "primary.main");
+              buffer.showSnackbar("Record updated!", "info");
               return;
             }
             // else, the item is outdated and can't be imported
             console.log({ item, existingItem });
-            buffer.showSnackbar("Record outdated! Can't import", "error.main");
+            buffer.showSnackbar("Record outdated! Can't import", "error");
             Sentry.captureException({ item, existingItem });
           })
         );
@@ -264,6 +265,6 @@ export const usePersistStore = create(
 // TODO add a middleware for storage which checks left space using below code
 // calculate available space for saving draft
 // if (calcStorageSpace().free < SAVE_DRAFT_SPACE_LEFT) {
-//   get().showSnackbar(`Unable to save! No space left`, "error.main");
+//   get().showSnackbar(`Unable to save! No space left`, "error");
 //   return null;
 // }
