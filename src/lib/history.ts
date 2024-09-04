@@ -28,14 +28,20 @@ export async function importHistory(addHistory: PersistStore["addHistory"], call
         callback(0);
         const data = JSON.parse(content!.toString());
         if (!Array.isArray(data)) throw new Error("wrong content");
-        data.reverse().forEach((item, i) =>
-          setTimeout(() => {
-            const history = addHistory(item);
-            const progress = (i + 1) / data.length;
-            console.log(progress, history?.length);
-            callback(progress);
-            // if (!history) throw new Error("Couldn't import item");
-          })
+        await Promise.all(
+          data.reverse().map(
+            (item, i) =>
+              new Promise((resolve) =>
+                setTimeout(() => {
+                  const history = addHistory(item);
+                  const progress = (i + 1) / data.length;
+                  console.log(progress, history?.length);
+                  callback(progress);
+                  if (!history) console.error("Couldn't import item", i);
+                  resolve(progress);
+                })
+              )
+          )
         );
       } catch (e) {
         if (e instanceof Error) {
