@@ -134,6 +134,8 @@ const HistoryItem = ({
   const outdated = v !== VERSION;
 
   const color = isDraft ? "warning" : outdated ? "error" : reportDisabled ? "primary" : "success";
+  const caption =
+    moment(item.createdAt).format("DD MMM YYYY") + (isDraft ? " (draft)" : outdated ? ` (outdated) v${v}` : "");
 
   return (
     <ListItem
@@ -199,10 +201,8 @@ const HistoryItem = ({
         }}
       />
       <ListItemText
-        primary={title.toString()}
-        secondary={
-          moment(item.createdAt).format("DD MMM YYYY") + (isDraft ? " (draft)" : outdated ? ` (outdated) v${v}` : "")
-        }
+        primary={title}
+        secondary={caption}
         secondaryTypographyProps={{
           fontSize: "0.65rem",
           color: color + ".light",
