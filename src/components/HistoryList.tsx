@@ -130,7 +130,8 @@ const HistoryItem = ({
   };
 
   const isDraft = !item.scores;
-  const outdated = item.v !== VERSION;
+  const v = item.v ?? "0";
+  const outdated = v !== VERSION;
 
   const color = isDraft ? "warning" : outdated ? "error" : reportDisabled ? "primary" : "success";
 
@@ -200,8 +201,7 @@ const HistoryItem = ({
       <ListItemText
         primary={title.toString()}
         secondary={
-          moment(item.createdAt).format("DD MMM YYYY") +
-          (isDraft ? " (draft)" : outdated ? ` (outdated) v${item.v ?? 0}` : "")
+          moment(item.createdAt).format("DD MMM YYYY") + (isDraft ? " (draft)" : outdated ? ` (outdated) v${v}` : "")
         }
         secondaryTypographyProps={{
           fontSize: "0.65rem",
