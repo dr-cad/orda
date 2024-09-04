@@ -11,6 +11,7 @@ import getScores from "../lib/scores";
 import { calcStorageSpace } from "../lib/storage";
 import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
 import { IHistoryItem, ISymptom, Value } from "../types";
+import { VERSION } from "./strings";
 
 export interface BufferStore {
   checkSpace: (need?: number) => boolean;
@@ -95,6 +96,7 @@ export const useBufferStore = create(
           hash2: sha256(JSON.stringify(newScores)).toString(),
           createdAt: get().createdAt || newDate,
           updatedAt: newDate,
+          v: VERSION,
         };
 
         try {

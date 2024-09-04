@@ -117,6 +117,7 @@ export interface IDiseaseScored extends IDisease {
 }
 
 export interface IHistoryItem {
+  v: string; // for version mismatch
   uuid: string;
   createdAt: number;
   updatedAt: number;

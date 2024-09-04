@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
 import { useBufferStore, usePersistStore } from "../config/store";
-import { appName } from "../config/strings";
+import { appName, VERSION } from "../config/strings";
 import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
 import { IHistoryItem, SortDir, SortType } from "../types";
@@ -130,6 +130,9 @@ const HistoryItem = ({
   };
 
   const isDraft = !item.scores;
+  const outdated = item.v !== VERSION;
+
+  const color = isDraft ? "warning" : outdated ? "error" : reportDisabled ? "primary" : "success";
 
   return (
     <ListItem
@@ -189,15 +192,22 @@ const HistoryItem = ({
           bottom: 0,
           width: 7,
           mr: 1,
-          bgcolor: isDraft ? "warning.dark" : reportDisabled ? "primary.dark" : "success.dark",
+          bgcolor: color + ".main",
           borderTopLeftRadius: 20,
           borderBottomLeftRadius: 20,
         }}
       />
       <ListItemText
         primary={title.toString()}
-        secondary={isDraft ? "(unsaved draft)" : moment(item.createdAt).format("DD MMM YYYY")}
-        secondaryTypographyProps={{ fontSize: "0.65rem", color: isDraft ? "warning.main" : "#fff6" }}
+        secondary={
+          moment(item.createdAt).format("DD MMM YYYY") +
+          (isDraft ? " (draft)" : outdated ? ` (outdated) v${item.v ?? 0}` : "")
+        }
+        secondaryTypographyProps={{
+          fontSize: "0.65rem",
+          color: color + ".light",
+          sx: { opacity: 0.75 },
+        }}
       />
     </ListItem>
   );
