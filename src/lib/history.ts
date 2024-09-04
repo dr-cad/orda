@@ -1,3 +1,4 @@
+import LZString from "lz-string";
 import { PersistStore } from "../config/store";
 import { appName } from "../config/strings";
 import { IHistoryItem } from "../types";
@@ -5,8 +6,8 @@ import { downloadFile } from "./share";
 
 export async function exportHistory(history: IHistoryItem[]) {
   const prefix = appName;
-  const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history));
-  downloadFile(`${prefix} ${new Date().toLocaleString()}.json`, data);
+  const data = "data:text/plain;charset=utf-8," + LZString.compressToEncodedURIComponent(JSON.stringify(history));
+  downloadFile(`${prefix} ${new Date().toLocaleString()}.doctor`, data);
 }
 
 type ProgressCallback = (progress: number) => void;
@@ -15,7 +16,7 @@ export async function importHistory(addHistory: PersistStore["addHistory"], call
   const input = document.createElement("input");
   input.type = "file";
   input.multiple = false;
-  input.accept = "application/json";
+  input.accept = ".doctor";
   input.onchange = (e) => {
     // callback(0);
     const file = (e.target as any).files[0];
@@ -26,7 +27,7 @@ export async function importHistory(addHistory: PersistStore["addHistory"], call
         const content = ev.target!.result;
         if (!content) throw new Error("empty file");
         callback(0);
-        const data = JSON.parse(content!.toString());
+        const data = JSON.parse(LZString.decompressFromEncodedURIComponent(content!.toString()));
         if (!Array.isArray(data)) throw new Error("wrong content");
         await Promise.all(
           data.reverse().map(

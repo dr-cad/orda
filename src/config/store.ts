@@ -14,10 +14,10 @@ import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from ".
 import { IHistoryItem, ISymptom, Value } from "../types";
 import { VERSION } from "./strings";
 
-function createStorage<T>(compression?: boolean) {
+function createStorage<T>(compress?: boolean) {
   return createJSONStorage<T>(
     () => localStorage,
-    compression
+    compress
       ? {
           reviver: (_key, value) => JSON.parse(LZString.decompress(value as string)),
           replacer: (_key, value) => LZString.compress(JSON.stringify(value)),
