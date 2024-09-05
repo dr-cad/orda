@@ -1,15 +1,13 @@
 import { Button, Tooltip } from "@mui/material";
-import { useMemo } from "react";
 import { FcPrint } from "react-icons/fc";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
+import { useHistoryItem } from "../hooks/history";
 import { getId } from "../lib/utils";
-import { usePersistStore } from "../store";
-import { IHistoryItem } from "../types";
 
 export default function ReportIcon() {
-  const history = usePersistStore((s) => s.history);
-  const item: IHistoryItem = useMemo(() => history[0], [history]); // FIXME use route params instead of index
-  const disabled = item.errors?.length;
+  const { id } = useParams();
+  const item = useHistoryItem(id);
+  const disabled = !!item?.errors?.length;
 
   if (!item) return null;
 
