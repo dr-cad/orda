@@ -7,7 +7,7 @@ import { IHistoryItem } from "../types";
 import { useAppStore } from "./app";
 import { createStorage } from "./create";
 
-// TODO instead of persist use custom subscriber to save directly to indexeddb
+// TODO create custom persist middleware that doesn't use stringify
 
 export interface PersistStore {
   // history
@@ -31,7 +31,7 @@ export const usePersistStore = create(
               const existing = s.history.findIndex((r) => r.uuid === item.uuid);
               if (existing < 0) {
                 s.history.unshift(item);
-                app.showSnackbar("Record saved!", "success");
+                if (!callback) app.showSnackbar("Record saved!", "success");
                 return;
               }
               const existingItem = s.history[existing];
@@ -44,7 +44,7 @@ export const usePersistStore = create(
                 // if same uuid and newer -> replace previous
                 s.history.splice(existing, 1); // remove outdated
                 s.history.unshift(newItem); // add new item
-                app.showSnackbar("Record updated!", "info");
+                if (!callback) app.showSnackbar("Record updated!", "info");
                 return;
               }
               // else, the item is outdated and can't be imported
