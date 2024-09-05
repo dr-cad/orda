@@ -35,13 +35,10 @@ export async function importHistory(callback: ProgressCallback) {
         if (!Array.isArray(data)) throw new Error("wrong content");
         const items = data.reverse();
         const addHistory = usePersistStore.getState().addHistory;
-        await new Promise((resolve) =>
-          setTimeout(() => {
-            const history = addHistory(items, true, (i) => callback((i + 1) / data.length));
-            if (!history) console.error("Couldn't import history");
-            resolve(null);
-          })
-        );
+        setTimeout(() => {
+          const history = addHistory(items, true, (i) => callback((i + 1) / data.length));
+          if (!history) console.error("Couldn't import history");
+        });
       } catch (e) {
         if (e instanceof Error) {
           console.log(e.message);

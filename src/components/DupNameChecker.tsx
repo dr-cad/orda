@@ -15,9 +15,9 @@ export default function DupNameChecker() {
     [history, patName]
   );
 
-  const load = () => {
+  const load = async () => {
     if (index < 0) return;
-    loadHistory(history[index], true);
+    await loadHistory(history[index], true);
   };
 
   if (!patName || index < 0 || patName.length < 3 || uuid === history[index].uuid) {

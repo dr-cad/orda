@@ -29,8 +29,8 @@ export default function useAppHistory() {
     if (!pathname.startsWith("/history")) nav("/history");
   };
 
-  const handleNewRecord = () => {
-    reset();
+  const handleNewRecord = async () => {
+    await reset();
     nav("/list/1");
   };
 

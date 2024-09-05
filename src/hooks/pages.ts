@@ -33,9 +33,9 @@ export function usePageIndex() {
     if (canGoForward) nav("/list/" + (pageIndex + 2));
   };
 
-  const handleResult = () => {
+  const handleResult = async () => {
     // add to history
-    const history = save(false);
+    const history = await save(false);
     if (!history) return;
     // download a backup file
     if (autoBackup) exportHistory(history);

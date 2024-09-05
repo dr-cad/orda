@@ -104,10 +104,10 @@ const HistoryItem = ({
     return getSymptomValueById<string>(item.symptoms, "pat-name") || appName;
   }, [item.symptoms]);
 
-  const handleLoadAndGo = (e: MouseEvent, to: string) => {
+  const handleLoadAndGo = async (e: MouseEvent, to: string) => {
     e.preventDefault();
     e.stopPropagation();
-    loadHistory(item);
+    await loadHistory(item);
     navigate(to);
   };
 

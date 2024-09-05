@@ -26,7 +26,7 @@ function createStorage<T>(compress?: boolean) {
           },
           setItem: (key, value) => {
             // dont return the setItem function or no async ejection would happen
-            localforage.setItem(key, LZString.compress(value));
+            return localforage.setItem(key, LZString.compress(value));
           },
           removeItem: localforage.removeItem,
         }
@@ -41,10 +41,10 @@ export interface BufferStore {
   symptoms: ISymptom[];
   createdAt: number | null;
   updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
-  save: (draft?: boolean) => IHistoryItem[] | null; // buffer -> hisory
-  reset: () => void; // save, ~buffer
+  save: (draft?: boolean) => Promise<IHistoryItem[] | null>; // buffer -> hisory
+  reset: () => Promise<void>; // save, ~buffer
   // history
-  loadHistory: (item: IHistoryItem, overwrite?: boolean) => void; // history -> buffer
+  loadHistory: (item: IHistoryItem, overwrite?: boolean) => Promise<void>; // history -> buffer
   // app ui
   collapsed: boolean;
   toggleExpanded: (id: string, open?: boolean) => void;
@@ -95,7 +95,7 @@ export const useBufferStore = create(
         );
         return result;
       },
-      save: (draft = true) => {
+      save: async (draft = true) => {
         // adds buffer to history with new scores - if needed
         // check if symptoms are not empty, if empty ignore saving
         const symptoms = get().symptoms;
@@ -127,12 +127,12 @@ export const useBufferStore = create(
           console.log(e);
         }
 
-        return usePersistStore.getState().addHistory([newItem]);
+        return await usePersistStore.getState().addHistory([newItem]);
       },
-      reset: () => {
+      reset: async () => {
         // saves and resets buffer
         // save first
-        if (!get().save()) return;
+        if (!(await get().save())) return;
         console.log("RESET");
         // update buffer
         set({
@@ -143,7 +143,7 @@ export const useBufferStore = create(
       },
 
       // history
-      loadHistory: (item, overwrite) => {
+      loadHistory: async (item, overwrite) => {
         // saves and updates buffer
         // check not same uuid loading
         if (item.uuid === get().uuid) {
@@ -151,7 +151,7 @@ export const useBufferStore = create(
           return;
         }
         // save first
-        if (!overwrite && !get().save()) return;
+        if (!overwrite && !(await get().save())) return;
         // load item
         console.log("BEFORE", (JSON.stringify(get().symptoms).length / 1024).toFixed(2));
         console.log("AFTER", (JSON.stringify(item.symptoms).length / 1024).toFixed(2));
@@ -217,7 +217,11 @@ export const useBufferStore = create(
 export interface PersistStore {
   // history
   history: IHistoryItem[];
-  addHistory: (items: IHistoryItem[], noCheck?: boolean, callback?: (index: number) => void) => IHistoryItem[] | null; // check space, +history
+  addHistory: (
+    items: IHistoryItem[],
+    noCheck?: boolean,
+    callback?: (index: number) => void
+  ) => Promise<IHistoryItem[] | null>; // check space, +history
   removeHistory: (uuid: string) => void; // -history
   // app settings
   autoBackup: boolean;
@@ -228,7 +232,7 @@ export const usePersistStore = create(
     (set, get) => ({
       // history
       history: [],
-      addHistory: (items, noCheck?, callback?) => {
+      addHistory: async (items, noCheck?, callback?) => {
         const buffer = useBufferStore.getState();
         if (!noCheck) {
           const free = buffer.checkSpace();
