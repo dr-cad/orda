@@ -2,6 +2,7 @@ import { AlertProps } from "@mui/material";
 import * as Sentry from "@sentry/react";
 import sha256 from "crypto-js/sha256";
 import { produce } from "immer";
+import localforage from "localforage";
 import _ from "lodash";
 import LZString from "lz-string";
 import uuid4 from "uuid4";
@@ -15,14 +16,21 @@ import { IHistoryItem, ISymptom, Value } from "../types";
 import { VERSION } from "./strings";
 
 function createStorage<T>(compress?: boolean) {
-  return createJSONStorage<T>(
-    () => localStorage,
+  return createJSONStorage<T>(() =>
     compress
       ? {
-          reviver: (_key, value) => JSON.parse(LZString.decompress(value as string)),
-          replacer: (_key, value) => LZString.compress(JSON.stringify(value)),
+          getItem: async (key) => {
+            const value = await localforage.getItem<string>(key);
+            if (value) return LZString.decompress(value);
+            return value;
+          },
+          setItem: (key, value) => {
+            // dont return the setItem function or no async ejection would happen
+            localforage.setItem(key, LZString.compress(value));
+          },
+          removeItem: localforage.removeItem,
         }
-      : {}
+      : localStorage
   );
 }
 
@@ -119,7 +127,7 @@ export const useBufferStore = create(
           console.log(e);
         }
 
-        return usePersistStore.getState().addHistory(newItem);
+        return usePersistStore.getState().addHistory([newItem]);
       },
       reset: () => {
         // saves and resets buffer
@@ -209,7 +217,7 @@ export const useBufferStore = create(
 export interface PersistStore {
   // history
   history: IHistoryItem[];
-  addHistory: (item: IHistoryItem) => IHistoryItem[] | null; // check space, +history
+  addHistory: (items: IHistoryItem[], noCheck?: boolean, callback?: (index: number) => void) => IHistoryItem[] | null; // check space, +history
   removeHistory: (uuid: string) => void; // -history
   // app settings
   autoBackup: boolean;
@@ -220,36 +228,41 @@ export const usePersistStore = create(
     (set, get) => ({
       // history
       history: [],
-      addHistory: (item) => {
+      addHistory: (items, noCheck?, callback?) => {
         const buffer = useBufferStore.getState();
-        const free = buffer.checkSpace(JSON.stringify(item.symptoms).length);
-        if (!free) return null;
+        if (!noCheck) {
+          const free = buffer.checkSpace();
+          if (!free) return null;
+        }
         // update
         set(
           produce((s: PersistStore) => {
-            const existing = s.history.findIndex((r) => r.uuid === item.uuid);
-            if (existing < 0) {
-              s.history.unshift(item);
-              buffer.showSnackbar("Record saved!", "success");
-              return;
-            }
-            const existingItem = s.history[existing];
-            const newItem = { ...item };
-            if (_.isEqual(existingItem.symptoms, item.symptoms)) {
-              // if symptoms unchanged, use any available scores
-              newItem.scores = newItem.scores || existingItem.scores;
-            }
-            if (item.updatedAt > existingItem.updatedAt) {
-              // if same uuid and newer -> replace previous
-              s.history.splice(existing, 1); // remove outdated
-              s.history.unshift(newItem); // add new item
-              buffer.showSnackbar("Record updated!", "info");
-              return;
-            }
-            // else, the item is outdated and can't be imported
-            console.log({ item, existingItem });
-            buffer.showSnackbar("Record outdated! Can't import", "error");
-            Sentry.captureException({ item, existingItem });
+            items.forEach((item, i) => {
+              callback?.(i); // FIXME not working - need service worker for entire store
+              const existing = s.history.findIndex((r) => r.uuid === item.uuid);
+              if (existing < 0) {
+                s.history.unshift(item);
+                buffer.showSnackbar("Record saved!", "success");
+                return;
+              }
+              const existingItem = s.history[existing];
+              const newItem = { ...item };
+              if (_.isEqual(existingItem.symptoms, item.symptoms)) {
+                // if symptoms unchanged, use any available scores
+                newItem.scores = newItem.scores || existingItem.scores;
+              }
+              if (item.updatedAt > existingItem.updatedAt) {
+                // if same uuid and newer -> replace previous
+                s.history.splice(existing, 1); // remove outdated
+                s.history.unshift(newItem); // add new item
+                buffer.showSnackbar("Record updated!", "info");
+                return;
+              }
+              // else, the item is outdated and can't be imported
+              console.log({ item, existingItem });
+              buffer.showSnackbar("Record outdated! Can't import", "error");
+              Sentry.captureException({ item, existingItem });
+            });
           })
         );
         return get().history;

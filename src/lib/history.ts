@@ -1,22 +1,24 @@
 import LZString from "lz-string";
-import { PersistStore } from "../config/store";
+import { useBufferStore, usePersistStore } from "../config/store";
 import { appName } from "../config/strings";
 import { IHistoryItem } from "../types";
 import { downloadFile } from "./share";
 
+const POSTFIX = "doctor";
+
 export async function exportHistory(history: IHistoryItem[]) {
   const prefix = appName;
   const data = "data:text/plain;charset=utf-8," + LZString.compressToEncodedURIComponent(JSON.stringify(history));
-  downloadFile(`${prefix} ${new Date().toLocaleString()}.doctor`, data);
+  downloadFile(`${prefix} ${new Date().toLocaleString()}.${POSTFIX}`, data);
 }
 
 type ProgressCallback = (progress: number) => void;
 
-export async function importHistory(addHistory: PersistStore["addHistory"], callback: ProgressCallback) {
+export async function importHistory(callback: ProgressCallback) {
   const input = document.createElement("input");
   input.type = "file";
   input.multiple = false;
-  input.accept = ".doctor";
+  input.accept = `.${POSTFIX},.${POSTFIX}.txt`;
   input.onchange = (e) => {
     // callback(0);
     const file = (e.target as any).files[0];
@@ -26,23 +28,19 @@ export async function importHistory(addHistory: PersistStore["addHistory"], call
       try {
         const content = ev.target!.result;
         if (!content) throw new Error("empty file");
+        const free = useBufferStore.getState().checkSpace(content.toString().length);
+        if (!free) throw new Error("not enough space");
         callback(0);
         const data = JSON.parse(LZString.decompressFromEncodedURIComponent(content!.toString()));
         if (!Array.isArray(data)) throw new Error("wrong content");
-        await Promise.all(
-          data.reverse().map(
-            (item, i) =>
-              new Promise((resolve) =>
-                setTimeout(() => {
-                  const history = addHistory(item);
-                  const progress = (i + 1) / data.length;
-                  console.log(progress, history?.length);
-                  callback(progress);
-                  if (!history) console.error("Couldn't import item", i);
-                  resolve(progress);
-                })
-              )
-          )
+        const items = data.reverse();
+        const addHistory = usePersistStore.getState().addHistory;
+        await new Promise((resolve) =>
+          setTimeout(() => {
+            const history = addHistory(items, true, (i) => callback((i + 1) / data.length));
+            if (!history) console.error("Couldn't import history");
+            resolve(null);
+          })
         );
       } catch (e) {
         if (e instanceof Error) {

@@ -8,7 +8,6 @@ export default function useAppHistory() {
   const { pathname } = useLocation();
 
   const history = usePersistStore((s) => s.history);
-  const addHistory = usePersistStore((s) => s.addHistory);
   const reset = useBufferStore((s) => s.reset);
   const showSnackbar = useBufferStore((s) => s.showSnackbar);
 
@@ -22,7 +21,7 @@ export default function useAppHistory() {
   const handleImportHistory: React.MouseEventHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    importHistory(addHistory, (progress) => {
+    importHistory((progress) => {
       if (progress === 0) showSnackbar("Importing history file...");
       else if (progress === 1) showSnackbar("History file imported successfully!", "success");
       else showSnackbar("Importing history file...", "info", progress * 100);
