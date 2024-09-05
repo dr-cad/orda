@@ -1,5 +1,5 @@
 import LZString from "lz-string";
-import { useBufferStore, usePersistStore } from "../config/store";
+import { usePersistStore } from "../config/store";
 import { appName } from "../config/strings";
 import { IHistoryItem } from "../types";
 import { downloadFile } from "./share";
@@ -28,21 +28,17 @@ export async function importHistory(callback: ProgressCallback) {
       try {
         const content = ev.target!.result;
         if (!content) throw new Error("empty file");
-        const free = useBufferStore.getState().checkSpace(content.toString().length);
-        if (!free) throw new Error("not enough space");
         callback(0);
         const data = JSON.parse(LZString.decompressFromEncodedURIComponent(content!.toString()));
         if (!Array.isArray(data)) throw new Error("wrong content");
         const items = data.reverse();
         const addHistory = usePersistStore.getState().addHistory;
         setTimeout(() => {
-          const history = addHistory(items, true, (i) => callback((i + 1) / data.length));
+          const history = addHistory(items, (i) => callback((i + 1) / data.length));
           if (!history) console.error("Couldn't import history");
         });
       } catch (e) {
-        if (e instanceof Error) {
-          console.log(e.message);
-        }
+        if (e instanceof Error) console.log(e.message);
       }
     };
   };

@@ -217,11 +217,7 @@ export const useBufferStore = create(
 export interface PersistStore {
   // history
   history: IHistoryItem[];
-  addHistory: (
-    items: IHistoryItem[],
-    noCheck?: boolean,
-    callback?: (index: number) => void
-  ) => Promise<IHistoryItem[] | null>; // check space, +history
+  addHistory: (items: IHistoryItem[], callback?: (index: number) => void) => Promise<IHistoryItem[] | null>; // check space, +history
   removeHistory: (uuid: string) => void; // -history
   // app settings
   autoBackup: boolean;
@@ -232,12 +228,8 @@ export const usePersistStore = create(
     (set, get) => ({
       // history
       history: [],
-      addHistory: async (items, noCheck?, callback?) => {
+      addHistory: async (items, callback?) => {
         const buffer = useBufferStore.getState();
-        if (!noCheck) {
-          const free = buffer.checkSpace();
-          if (!free) return null;
-        }
         // update
         set(
           produce((s: PersistStore) => {
