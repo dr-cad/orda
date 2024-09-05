@@ -118,7 +118,6 @@ export const useBufferStore = create(
       },
 
       // history
-      history: [],
       loadHistoryItem: async (_item, overwrite) => {
         // saves and updates buffer
         // get item from archive
