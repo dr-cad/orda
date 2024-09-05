@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useBufferStore } from "../config/store";
+import { useBufferStore } from "../store";
 import { getSymptomValueById } from "../lib/symptoms";
 import { ISymptom } from "../types";
 

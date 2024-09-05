@@ -1,5 +1,5 @@
 import LZString from "lz-string";
-import { usePersistStore } from "../config/store";
+import { usePersistStore } from "../store";
 import { appName } from "../config/strings";
 import { IHistoryItem } from "../types";
 import { downloadFile } from "./share";

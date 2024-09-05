@@ -6,29 +6,28 @@ import { FcAreaChart, FcFullTrash, FcPrint } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
-import { useBufferStore, usePersistStore } from "../config/store";
 import { appName, VERSION } from "../config/strings";
-import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { getId } from "../lib/utils";
-import { IHistoryItem, SortDir, SortType } from "../types";
+import { useBufferStore, usePersistStore } from "../store";
+import { IHistoryItemBase, SortDir, SortType } from "../types";
 
 const GUTTER_SIZE = 6;
 const ITEM_HEIGHT = 64;
 
 const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortType: SortType; sortDir: SortDir }) => {
-  const history = usePersistStore((s) => s.history);
+  const history = useBufferStore((s) => s.history);
 
   const list = useMemo(() => {
     // search
     let result = history.filter((h) => {
-      const patName = getSymptomValueById<string>(h.symptoms, "pat-name");
+      const patName = h.patName;
       const matchPatName = patName?.includes(query);
       const matchUUID = h.uuid.includes(query);
       return matchPatName || matchUUID;
     });
     // sort - type, dir
     if (sortType === SortType.AZ) {
-      result = _.sortBy(result, [(o) => getSymptomValueById(o.symptoms, "pat-name") || "zzz"]);
+      result = _.sortBy(result, [(o) => o.patName]);
     }
     if (sortType === SortType.Created) {
       result = _.orderBy(result, [(o) => o.createdAt], ["desc"]);
@@ -94,20 +93,16 @@ const HistoryItem = ({
   selected,
   handleSelect,
   ...item
-}: IHistoryItem & { style: CSSProperties; selected: boolean; handleSelect: MouseEventHandler }) => {
+}: IHistoryItemBase & { style: CSSProperties; selected: boolean; handleSelect: MouseEventHandler }) => {
   const navigate = useNavigate();
   const removeHistory = usePersistStore((s) => s.removeHistory);
-  const loadHistory = useBufferStore((s) => s.loadHistory);
-  const reportDisabled = useMemo(() => getSymptomsErrors(item.symptoms).length, [item.symptoms]);
-
-  const title = useMemo(() => {
-    return getSymptomValueById<string>(item.symptoms, "pat-name") || appName;
-  }, [item.symptoms]);
+  const loadHistoryItem = useBufferStore((s) => s.loadHistoryItem);
+  const reportDisabled = item.errors?.length;
 
   const handleLoadAndGo = async (e: MouseEvent, to: string) => {
     e.preventDefault();
     e.stopPropagation();
-    await loadHistory(item);
+    await loadHistoryItem(item);
     navigate(to);
   };
 
@@ -129,13 +124,12 @@ const HistoryItem = ({
     removeHistory(item.uuid);
   };
 
-  const isDraft = !item.scores;
   const v = item.v ?? "0";
   const outdated = v !== VERSION;
 
-  const color = isDraft ? "warning" : outdated ? "error" : reportDisabled ? "primary" : "success";
+  const color = item.draft ? "warning" : outdated ? "error" : reportDisabled ? "primary" : "success";
   const caption =
-    moment(item.createdAt).format("DD MMM YYYY") + (isDraft ? " (draft)" : outdated ? ` (outdated) v${v}` : "");
+    moment(item.createdAt).format("DD MMM YYYY") + (item.draft ? " (draft)" : outdated ? ` (outdated) v${v}` : "");
 
   return (
     <ListItem
@@ -164,14 +158,14 @@ const HistoryItem = ({
       onContextMenu={handleSelect}
       secondaryAction={
         <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
-          {!isDraft && !reportDisabled && (
+          {!item.draft && !reportDisabled && (
             <Tooltip title="Report">
               <IconButton size="small" color="primary" onClick={handleReport}>
                 <FcPrint fontSize="1.25rem" />
               </IconButton>
             </Tooltip>
           )}
-          {!isDraft && (
+          {!item.draft && (
             <Tooltip title="Results" onClick={handleLoad}>
               <IconButton size="small" color="success">
                 <FcAreaChart fontSize="1.25rem" />
@@ -201,7 +195,7 @@ const HistoryItem = ({
         }}
       />
       <ListItemText
-        primary={title}
+        primary={item.patName || appName}
         secondary={caption}
         secondaryTypographyProps={{
           fontSize: "0.65rem",

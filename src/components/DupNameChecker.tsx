@@ -1,13 +1,13 @@
 import { Link } from "@mui/material";
 import { useMemo } from "react";
-import { useBufferStore, usePersistStore } from "../config/store";
 import { useSymptomValue } from "../hooks/symptom";
 import { getSymptomValueById } from "../lib/symptoms";
+import { useBufferStore, usePersistStore } from "../store";
 
 export default function DupNameChecker() {
   const uuid = useBufferStore((s) => s.uuid);
   const history = usePersistStore((s) => s.history);
-  const loadHistory = useBufferStore((s) => s.loadHistory);
+  const loadHistoryItem = useBufferStore((s) => s.loadHistoryItem);
 
   const patName = useSymptomValue<string>("pat-name");
   const index = useMemo(
@@ -17,7 +17,7 @@ export default function DupNameChecker() {
 
   const load = async () => {
     if (index < 0) return;
-    await loadHistory(history[index], true);
+    await loadHistoryItem(history[index], true);
   };
 
   if (!patName || index < 0 || patName.length < 3 || uuid === history[index].uuid) {

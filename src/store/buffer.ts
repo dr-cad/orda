@@ -1,38 +1,24 @@
 import { AlertProps } from "@mui/material";
-import * as Sentry from "@sentry/react";
 import sha256 from "crypto-js/sha256";
 import { produce } from "immer";
-import localforage from "localforage";
 import _ from "lodash";
-import LZString from "lz-string";
 import uuid4 from "uuid4";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
+import { VERSION } from "../config/strings";
 import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
 import { calcStorageSpace } from "../lib/storage";
-import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from "../lib/symptoms";
-import { IHistoryItem, ISymptom, Value } from "../types";
-import { VERSION } from "./strings";
-
-function createStorage<T>(compress?: boolean) {
-  return createJSONStorage<T>(() =>
-    compress
-      ? {
-          getItem: async (key) => {
-            const value = await localforage.getItem<string>(key);
-            if (value) return LZString.decompress(value);
-            return value;
-          },
-          setItem: (key, value) => {
-            // dont return the setItem function or no async ejection would happen
-            return localforage.setItem(key, LZString.compress(value));
-          },
-          removeItem: localforage.removeItem,
-        }
-      : localStorage
-  );
-}
+import {
+  digestSymptom,
+  getSymptomsErrors,
+  getSymptomValueById,
+  recursivelyResetItem,
+  recursivelyUpdateParents,
+} from "../lib/symptoms";
+import { IHistoryItem, IHistoryItemBase, ISymptom, Value } from "../types";
+import { createStorage } from "./create";
+import { usePersistStore } from "./history";
 
 export interface BufferStore {
   checkSpace: (need?: number) => boolean;
@@ -44,7 +30,8 @@ export interface BufferStore {
   save: (draft?: boolean) => Promise<IHistoryItem[] | null>; // buffer -> hisory
   reset: () => Promise<void>; // save, ~buffer
   // history
-  loadHistory: (item: IHistoryItem, overwrite?: boolean) => Promise<void>; // history -> buffer
+  history: IHistoryItemBase[];
+  loadHistoryItem: (item: IHistoryItemBase, overwrite?: boolean) => Promise<void>; // history -> buffer
   // app ui
   collapsed: boolean;
   toggleExpanded: (id: string, open?: boolean) => void;
@@ -118,6 +105,10 @@ export const useBufferStore = create(
           createdAt: get().createdAt || newDate,
           updatedAt: newDate,
           v: VERSION,
+          // base
+          patName: getSymptomValueById<string>(symptoms, "pat-name") ?? "",
+          draft: !newScores,
+          errors: getSymptomsErrors(symptoms),
         };
 
         try {
@@ -143,11 +134,18 @@ export const useBufferStore = create(
       },
 
       // history
-      loadHistory: async (item, overwrite) => {
+      history: [],
+      loadHistoryItem: async (_item, overwrite) => {
         // saves and updates buffer
+        // get item from archive
+        const item = usePersistStore.getState().history.find((x) => x.uuid === _item.uuid);
+        if (!item) {
+          console.error("No record found from db");
+          return;
+        }
         // check not same uuid loading
         if (item.uuid === get().uuid) {
-          console.log("Record already loaded!");
+          console.warn("Record already loaded!");
           return;
         }
         // save first
@@ -210,79 +208,23 @@ export const useBufferStore = create(
         );
       },
     }),
-    { name: "buffer-storage", storage: createStorage() }
+    { name: "buffer", storage: createStorage() }
   )
 );
 
-export interface PersistStore {
-  // history
-  history: IHistoryItem[];
-  addHistory: (items: IHistoryItem[], callback?: (index: number) => void) => Promise<IHistoryItem[] | null>; // check space, +history
-  removeHistory: (uuid: string) => void; // -history
-  // app settings
-  autoBackup: boolean;
-}
-
-export const usePersistStore = create(
-  persist<PersistStore>(
-    (set, get) => ({
-      // history
-      history: [],
-      addHistory: async (items, callback?) => {
-        const buffer = useBufferStore.getState();
-        // update
-        set(
-          produce((s: PersistStore) => {
-            items.forEach((item, i) => {
-              callback?.(i); // FIXME not working - need service worker for entire store
-              const existing = s.history.findIndex((r) => r.uuid === item.uuid);
-              if (existing < 0) {
-                s.history.unshift(item);
-                buffer.showSnackbar("Record saved!", "success");
-                return;
-              }
-              const existingItem = s.history[existing];
-              const newItem = { ...item };
-              if (_.isEqual(existingItem.symptoms, item.symptoms)) {
-                // if symptoms unchanged, use any available scores
-                newItem.scores = newItem.scores || existingItem.scores;
-              }
-              if (item.updatedAt > existingItem.updatedAt) {
-                // if same uuid and newer -> replace previous
-                s.history.splice(existing, 1); // remove outdated
-                s.history.unshift(newItem); // add new item
-                buffer.showSnackbar("Record updated!", "info");
-                return;
-              }
-              // else, the item is outdated and can't be imported
-              console.log({ item, existingItem });
-              buffer.showSnackbar("Record outdated! Can't import", "error");
-              Sentry.captureException({ item, existingItem });
-            });
-          })
-        );
-        return get().history;
-      },
-      removeHistory: (uuid) => {
-        set(
-          produce((s: PersistStore) => {
-            const index = s.history.findIndex((x) => x.uuid === uuid);
-            if (index > -1) s.history.splice(index, 1);
-          })
-        );
-        useBufferStore.getState().showSnackbar("History record removed!");
-      },
-
-      // app settings
-      autoBackup: false,
-    }),
-    { name: "app-storage", storage: createStorage(true) }
-  )
-);
-
-// TODO add a middleware for storage which checks left space using below code
-// calculate available space for saving draft
-// if (calcStorageSpace().free < SAVE_DRAFT_SPACE_LEFT) {
-//   get().showSnackbar(`Unable to save! No space left`, "error");
-//   return null;
-// }
+usePersistStore.subscribe((s) => {
+  const history: IHistoryItemBase[] = s.history.map(
+    ({ createdAt, hash, hash2, updatedAt, uuid, v, patName, draft, errors }) => ({
+      createdAt,
+      hash,
+      hash2,
+      updatedAt,
+      uuid,
+      v,
+      patName,
+      draft,
+      errors,
+    })
+  );
+  useBufferStore.setState({ history });
+});

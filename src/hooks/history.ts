@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useBufferStore, usePersistStore } from "../config/store";
+import { useBufferStore, usePersistStore } from "../store";
 import { exportHistory, importHistory } from "../lib/history";
 import { IHistoryItem } from "../types";
 

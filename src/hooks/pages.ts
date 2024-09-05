@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useBufferStore, usePersistStore } from "../config/store";
+import { useBufferStore, usePersistStore } from "../store";
 import { exportHistory } from "../lib/history";
 import { getId } from "../lib/utils";
 

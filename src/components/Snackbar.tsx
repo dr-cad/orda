@@ -1,6 +1,6 @@
 import { Alert, Box, CircularProgress, Snackbar as MuiSnackbar } from "@mui/material";
 import { useMemo } from "react";
-import { useBufferStore } from "../config/store";
+import { useBufferStore } from "../store";
 
 export default function Snackbar() {
   const snackbar = useBufferStore((s) => s.snackbar);

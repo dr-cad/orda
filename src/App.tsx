@@ -1,16 +1,16 @@
 import { clarity } from "react-microsoft-clarity";
 import { Navigate, Route, Routes } from "react-router-dom";
 import PageLayout from "./components/PageLayout";
-import { usePersistStore } from "./config/store";
 import HistoryPage from "./pages/HistoryPage";
 import IntroPage from "./pages/IntroPage";
 import ReportPage from "./pages/ReportPage";
 import ResultPage from "./pages/ResultPage";
 import SymptomsPage from "./pages/SymptomsPage";
+import { useBufferStore } from "./store";
 
 export default function App() {
   if (import.meta.env.PROD) clarity.init("nj04qzc3hn");
-  const history = usePersistStore((s) => s.history);
+  const history = useBufferStore((s) => s.history);
 
   return (
     <Routes>

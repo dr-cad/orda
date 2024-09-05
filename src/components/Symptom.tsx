@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useBufferStore } from "../config/store";
+import { useBufferStore } from "../store";
 import { digestSymptom } from "../lib/symptoms";
 import { IRange, ISymptom, SymptomType, Value } from "../types";
 import Features from "./Features";

@@ -4,13 +4,13 @@ import { useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import BarChart from "../components/BarChart";
 import DiseaseScore from "../components/DiseaseScore";
-import { useBufferStore } from "../config/store";
 import { appName } from "../config/strings";
 import { useHistoryItem } from "../hooks/history";
 import useScores from "../hooks/scores";
 import { handleShareImage, takeScreenshoot } from "../lib/share";
-import { getSymptomValueById, getSymptomsErrors } from "../lib/symptoms";
+import { getSymptomValueById } from "../lib/symptoms";
 import { getFilename } from "../lib/utils";
+import { useBufferStore } from "../store";
 import { AppMode, IHistoryItem, Keys } from "../types";
 
 export default function ResultPage() {
@@ -28,7 +28,6 @@ export function ResultPageContent({ id, item }: { id: string; item: IHistoryItem
   const symptoms = useBufferStore((s) => s.symptoms);
 
   const { scores, barChartData } = useScores(item.scores!, mode);
-  const errors = useMemo(() => getSymptomsErrors(symptoms), [symptoms]);
 
   const { title, patName } = useMemo(() => {
     const patName = getSymptomValueById<string>(symptoms, "pat-name");
@@ -62,7 +61,7 @@ export function ResultPageContent({ id, item }: { id: string; item: IHistoryItem
 
   return (
     <Stack aria-label="diseases-page" className="xxx" flex={1} p={2} gap={2}>
-      {errors.map((e, i) => (
+      {item.errors?.map((e, i) => (
         <Link key={i} to={e.link ?? "/result"}>
           <Alert severity={e.severity}>{e.message}</Alert>
         </Link>

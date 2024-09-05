@@ -4,7 +4,7 @@ import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import SymptomsGroup from "../components/Symptom";
 import { CloseSquare, MinusSquare, PlusSquare } from "../components/styled";
-import { useBufferStore } from "../config/store";
+import { useBufferStore } from "../store";
 import { usePageIndex } from "../hooks/pages";
 
 function SymptomsPage() {

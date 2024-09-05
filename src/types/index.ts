@@ -116,15 +116,21 @@ export interface IDiseaseScored extends IDisease {
   pvalue: number;
 }
 
-export interface IHistoryItem {
+export interface IHistoryItemBase {
   v: string; // for version mismatch
   uuid: string;
   createdAt: number;
   updatedAt: number;
-  symptoms: ISymptom[];
-  scores: IDiseaseScored[] | null;
   hash: string;
   hash2: string;
+  patName: string;
+  draft: boolean;
+  errors?: IError[];
+}
+
+export interface IHistoryItem extends IHistoryItemBase {
+  symptoms: ISymptom[];
+  scores: IDiseaseScored[] | null;
 }
 
 export interface IError {

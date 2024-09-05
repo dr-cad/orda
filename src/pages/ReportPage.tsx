@@ -7,14 +7,13 @@ import { RiCollapseDiagonalLine, RiExpandDiagonalLine } from "react-icons/ri";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import BarChart from "../components/BarChart";
-import { usePersistStore } from "../config/store";
 import { appName, email, orgName, siteURL } from "../config/strings";
 import useReportFindings from "../hooks/report";
 import useScores from "../hooks/scores";
 import { useSymptomValueOf } from "../hooks/symptom";
 import { handleDownloadImage, handleShareImage } from "../lib/share";
-import { getSymptomsErrors } from "../lib/symptoms";
 import { getFilename, sleep } from "../lib/utils";
+import { usePersistStore } from "../store";
 import { AppMode, ICImage, IHistoryItem } from "../types";
 
 import "../config/report.css";
@@ -30,7 +29,7 @@ export default function ReportPage() {
   const item = useMemo(() => (id ? history.find((x) => x.uuid.startsWith(id)) : undefined), [history, id]);
 
   if (!item || !item.scores) return null;
-  const disabled = getSymptomsErrors(item.symptoms).length;
+  const disabled = item.errors?.length;
   if (disabled) return <Navigate to="/result" replace />;
   return <ReportPageContent id={id!} item={item} />;
 }

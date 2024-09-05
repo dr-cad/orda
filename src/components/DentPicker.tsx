@@ -3,7 +3,7 @@ import { IconButton, Tooltip } from "@mui/material";
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import AnaLocImage from "../assets/ana-loc.webp";
-import { useBufferStore } from "../config/store";
+import { useBufferStore } from "../store";
 import { useSymptomValue } from "../hooks/symptom";
 import { IRange } from "../types";
 
