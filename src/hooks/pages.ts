@@ -1,13 +1,14 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useBufferStore, usePersistStore } from "../store";
 import { exportHistory } from "../lib/history";
 import { getId } from "../lib/utils";
+import { useBufferStore } from "../store";
+import { useAppStore } from "../store/app";
 
 export function usePageIndex() {
   const save = useBufferStore((s) => s.save);
   const symptoms = useBufferStore((s) => s.symptoms);
-  const autoBackup = usePersistStore((s) => s.autoBackup);
+  const autoBackup = useAppStore((s) => s.autoBackup);
 
   const nav = useNavigate();
   const { pageIndex: pi } = useParams();

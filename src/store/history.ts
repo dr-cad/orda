@@ -7,13 +7,13 @@ import { IHistoryItem } from "../types";
 import { useAppStore } from "./app";
 import { createStorage } from "./create";
 
+// TODO instead of persist use custom subscriber to save directly to indexeddb
+
 export interface PersistStore {
   // history
   history: IHistoryItem[];
   addHistory: (items: IHistoryItem[], callback?: (index: number) => void) => Promise<IHistoryItem[] | null>; // create/update
   removeHistory: (uuid: string) => void; // delete
-  // app settings
-  autoBackup: boolean;
 }
 
 export const usePersistStore = create(
@@ -65,9 +65,6 @@ export const usePersistStore = create(
         );
         useAppStore.getState().showSnackbar("History record removed!");
       },
-
-      // app settings
-      autoBackup: false,
     }),
     { name: "archive", storage: createStorage(true) }
   )

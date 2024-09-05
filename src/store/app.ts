@@ -12,6 +12,8 @@ export interface AppStore {
   snackbar: { message: string; severity?: AlertProps["severity"]; progress?: number } | null;
   showSnackbar: (message: string, severity?: AlertProps["severity"], progress?: number) => void;
   hideSnackbar: () => void;
+  // app settings
+  autoBackup: boolean;
 }
 
 export const useAppStore = create(
@@ -27,6 +29,8 @@ export const useAppStore = create(
       hideSnackbar: () => {
         set({ snackbar: null });
       },
+      // app settings
+      autoBackup: false,
     }),
     { name: "app", storage: createStorage() }
   )
