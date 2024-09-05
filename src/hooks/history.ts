@@ -41,19 +41,12 @@ export default function useAppHistory() {
 export function useHistoryItem(id?: string): IHistoryItem | undefined {
   const history = usePersistStore((s) => s.history);
   const showSnackbar = useAppStore((s) => s.showSnackbar);
-
   if (!history.length) return; // not hydrated yet
-
   if (!id) {
     showSnackbar("History item id not provided!", "error");
     return;
   }
-
   const item = history.find((r) => r.uuid.startsWith(id));
-  if (!item) {
-    showSnackbar("Can't find history record item!", "error");
-    return;
-  }
-
+  if (!item) return;
   return item;
 }

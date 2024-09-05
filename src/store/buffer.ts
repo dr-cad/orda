@@ -68,9 +68,11 @@ export const useBufferStore = create(
         return result;
       },
       save: async (scored) => {
-        // adds buffer to history with new scores - if needed
-        // check if symptoms are not empty, if empty ignore saving
         const symptoms = get().symptoms;
+        const uuid = get().uuid;
+        const createdAt = get().createdAt;
+
+        // check if symptoms are not empty, if empty ignore saving
         if (_.isEqual(symptoms, emptySymptoms)) {
           if (scored) {
             useAppStore.getState().showSnackbar("Nothing to save", "warning");
@@ -79,44 +81,48 @@ export const useBufferStore = create(
           return true; // ignore - ok
         }
 
-        const uuid = get().uuid;
+        const promise = new Promise((resolve) =>
+          setTimeout(async () => {
+            // save data
+            const newDate = new Date().getTime();
+            const newScores = !scored ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
+            const newItem: IHistoryItem = {
+              uuid,
+              symptoms,
+              scores: newScores,
+              hash: sha256(JSON.stringify(symptoms)).toString(),
+              hash2: sha256(JSON.stringify(newScores)).toString(),
+              createdAt: createdAt || newDate,
+              updatedAt: newDate,
+              v: VERSION,
+              // base
+              patName: getSymptomValueById<string>(symptoms, "pat-name") ?? "",
+              draft: !scored,
+              errors: getSymptomsErrors(symptoms),
+            };
 
-        setTimeout(async () => {
-          // save data
-          const newDate = new Date().getTime();
-          const newScores = !scored ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
-          const newItem: IHistoryItem = {
-            symptoms,
-            scores: newScores,
-            uuid: get().uuid,
-            hash: sha256(JSON.stringify(symptoms)).toString(),
-            hash2: sha256(JSON.stringify(newScores)).toString(),
-            createdAt: get().createdAt || newDate,
-            updatedAt: newDate,
-            v: VERSION,
-            // base
-            patName: getSymptomValueById<string>(symptoms, "pat-name") ?? "",
-            draft: !scored,
-            errors: getSymptomsErrors(symptoms),
-          };
+            // report to clarity
+            try {
+              window.clarity?.("event", "saveResult");
+              window.clarity?.("set", "result", newItem.hash2);
+            } catch (e) {
+              console.log(e);
+            }
 
-          // report to clarity
-          try {
-            window.clarity?.("event", "saveResult");
-            window.clarity?.("set", "result", newItem.hash2);
-          } catch (e) {
-            console.log(e);
-          }
+            const app = useAppStore.getState();
+            const persist = usePersistStore.getState();
 
-          const app = useAppStore.getState();
-          const persist = usePersistStore.getState();
+            // update archive
+            await persist.addHistory([newItem]); // dont await
 
-          // update archive
-          await persist.addHistory([newItem]); // dont await
+            // download a backup file
+            if (app.autoBackup) exportHistory(persist.history);
 
-          // download a backup file
-          if (app.autoBackup) exportHistory(persist.history);
-        });
+            resolve(true);
+          })
+        );
+
+        if (!scored) await promise; // if draft mode - await for save
 
         return uuid;
       },
@@ -147,7 +153,7 @@ export const useBufferStore = create(
           console.warn("Record already loaded!");
           return;
         }
-        // save first
+        // save current buffer first
         if (!overwrite && !(await get().save())) return;
         // load item
         console.log("BEFORE", (JSON.stringify(get().symptoms).length / 1024).toFixed(2));

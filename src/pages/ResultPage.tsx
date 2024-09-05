@@ -17,7 +17,13 @@ export default function ResultPage() {
   const { id } = useParams();
   const item = useHistoryItem(id);
 
-  if (!item || !id || !item.scores) return null; // TODO
+  if (!item || !id || !item.scores) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center">
+        I'm thinking...
+      </Box>
+    );
+  }
   return <ResultPageContent id={id} item={item} />;
 }
 
