@@ -9,13 +9,14 @@ import { FixedSizeList } from "react-window";
 import { appName, VERSION } from "../config/strings";
 import { getId } from "../lib/utils";
 import { useBufferStore, usePersistStore } from "../store";
+import { useAppStore } from "../store/app";
 import { IHistoryItemBase, SortDir, SortType } from "../types";
 
 const GUTTER_SIZE = 6;
 const ITEM_HEIGHT = 64;
 
 const HistoryList = memo(({ query, sortType, sortDir }: { query: string; sortType: SortType; sortDir: SortDir }) => {
-  const history = useBufferStore((s) => s.history);
+  const history = useAppStore((s) => s.history);
 
   const list = useMemo(() => {
     // search

@@ -1,4 +1,3 @@
-import { AlertProps } from "@mui/material";
 import sha256 from "crypto-js/sha256";
 import { produce } from "immer";
 import _ from "lodash";
@@ -8,7 +7,6 @@ import { persist } from "zustand/middleware";
 import { VERSION } from "../config/strings";
 import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
-import { calcStorageSpace } from "../lib/storage";
 import {
   digestSymptom,
   getSymptomsErrors,
@@ -17,43 +15,29 @@ import {
   recursivelyUpdateParents,
 } from "../lib/symptoms";
 import { IHistoryItem, IHistoryItemBase, ISymptom, Value } from "../types";
+import { useAppStore } from "./app";
 import { createStorage } from "./create";
 import { usePersistStore } from "./history";
 
 export interface BufferStore {
-  checkSpace: (need?: number) => boolean;
   // buffer
   uuid: string;
   symptoms: ISymptom[];
   createdAt: number | null;
   updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
-  save: (draft?: boolean) => Promise<IHistoryItem[] | null>; // buffer -> hisory
+  save: (scored?: boolean) => Promise<IHistoryItem[] | null>; // buffer -> hisory
   reset: () => Promise<void>; // save, ~buffer
-  // history
-  history: IHistoryItemBase[];
   loadHistoryItem: (item: IHistoryItemBase, overwrite?: boolean) => Promise<void>; // history -> buffer
   // app ui
   collapsed: boolean;
   toggleExpanded: (id: string, open?: boolean) => void;
   collapseAll: () => void;
   expandAll: () => void;
-  // app features
-  snackbar: { message: string; severity?: AlertProps["severity"]; progress?: number } | null;
-  showSnackbar: (message: string, severity?: AlertProps["severity"], progress?: number) => void;
-  hideSnackbar: () => void;
 }
 
 export const useBufferStore = create(
   persist<BufferStore>(
     (set, get) => ({
-      checkSpace: (needed = 10 * 1024) => {
-        if (calcStorageSpace().free < needed) {
-          get().showSnackbar(`Unable to save! No space left`, "error");
-          return false;
-        }
-        return true;
-      },
-
       // buffer
       uuid: uuid4(),
       symptoms: emptySymptoms,
@@ -82,20 +66,20 @@ export const useBufferStore = create(
         );
         return result;
       },
-      save: async (draft = true) => {
+      save: async (scored) => {
         // adds buffer to history with new scores - if needed
         // check if symptoms are not empty, if empty ignore saving
         const symptoms = get().symptoms;
         if (_.isEqual(symptoms, emptySymptoms)) {
-          if (!draft) {
-            get().showSnackbar("Nothing to save", "warning");
+          if (scored) {
+            useAppStore.getState().showSnackbar("Nothing to save", "warning");
             return null;
           }
           return usePersistStore.getState().history; // ignore - ok
         }
         // save data and tell
         const newDate = new Date().getTime();
-        const newScores = draft ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
+        const newScores = !scored ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
         const newItem: IHistoryItem = {
           symptoms,
           scores: newScores,
@@ -159,16 +143,7 @@ export const useBufferStore = create(
           symptoms: item.symptoms,
           createdAt: item.createdAt,
         });
-        get().showSnackbar("History record loaded!");
-      },
-
-      // app ui
-      snackbar: null,
-      showSnackbar: (message, severity, progress) => {
-        set({ snackbar: { message, severity, progress } });
-      },
-      hideSnackbar: () => {
-        set({ snackbar: null });
+        useAppStore.getState().showSnackbar("History record loaded!");
       },
 
       // app ui
@@ -211,20 +186,3 @@ export const useBufferStore = create(
     { name: "buffer", storage: createStorage() }
   )
 );
-
-usePersistStore.subscribe((s) => {
-  const history: IHistoryItemBase[] = s.history.map(
-    ({ createdAt, hash, hash2, updatedAt, uuid, v, patName, draft, errors }) => ({
-      createdAt,
-      hash,
-      hash2,
-      updatedAt,
-      uuid,
-      v,
-      patName,
-      draft,
-      errors,
-    })
-  );
-  useBufferStore.setState({ history });
-});

@@ -6,11 +6,11 @@ import IntroPage from "./pages/IntroPage";
 import ReportPage from "./pages/ReportPage";
 import ResultPage from "./pages/ResultPage";
 import SymptomsPage from "./pages/SymptomsPage";
-import { useBufferStore } from "./store";
+import { useAppStore } from "./store/app";
 
 export default function App() {
   if (import.meta.env.PROD) clarity.init("nj04qzc3hn");
-  const history = useBufferStore((s) => s.history);
+  const history = useAppStore((s) => s.history);
 
   return (
     <Routes>

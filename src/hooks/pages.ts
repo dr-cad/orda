@@ -35,7 +35,7 @@ export function usePageIndex() {
 
   const handleResult = async () => {
     // add to history
-    const history = await save(false);
+    const history = await save(true);
     if (!history) return;
     // download a backup file
     if (autoBackup) exportHistory(history);

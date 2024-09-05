@@ -1,10 +1,10 @@
 import { Alert, Box, CircularProgress, Snackbar as MuiSnackbar } from "@mui/material";
 import { useMemo } from "react";
-import { useBufferStore } from "../store";
+import { useAppStore } from "../store/app";
 
 export default function Snackbar() {
-  const snackbar = useBufferStore((s) => s.snackbar);
-  const hideSnackbar = useBufferStore((s) => s.hideSnackbar);
+  const snackbar = useAppStore((s) => s.snackbar);
+  const hideSnackbar = useAppStore((s) => s.hideSnackbar);
 
   const open = useMemo(() => !!snackbar, [snackbar]);
   const message = useMemo(() => snackbar?.message, [snackbar?.message]);

@@ -4,7 +4,7 @@ import _ from "lodash";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { IHistoryItem } from "../types";
-import { useBufferStore } from "./buffer";
+import { useAppStore } from "./app";
 import { createStorage } from "./create";
 
 export interface PersistStore {
@@ -22,7 +22,7 @@ export const usePersistStore = create(
       // history
       history: [],
       addHistory: async (items, callback?) => {
-        const buffer = useBufferStore.getState();
+        const app = useAppStore.getState();
         // update
         set(
           produce((s: PersistStore) => {
@@ -31,7 +31,7 @@ export const usePersistStore = create(
               const existing = s.history.findIndex((r) => r.uuid === item.uuid);
               if (existing < 0) {
                 s.history.unshift(item);
-                buffer.showSnackbar("Record saved!", "success");
+                app.showSnackbar("Record saved!", "success");
                 return;
               }
               const existingItem = s.history[existing];
@@ -44,12 +44,12 @@ export const usePersistStore = create(
                 // if same uuid and newer -> replace previous
                 s.history.splice(existing, 1); // remove outdated
                 s.history.unshift(newItem); // add new item
-                buffer.showSnackbar("Record updated!", "info");
+                app.showSnackbar("Record updated!", "info");
                 return;
               }
               // else, the item is outdated and can't be imported
               console.log({ item, existingItem });
-              buffer.showSnackbar("Record outdated! Can't import", "error");
+              app.showSnackbar("Record outdated! Can't import", "error");
               Sentry.captureException({ item, existingItem });
             });
           })
@@ -63,7 +63,7 @@ export const usePersistStore = create(
             if (index > -1) s.history.splice(index, 1);
           })
         );
-        useBufferStore.getState().showSnackbar("History record removed!");
+        useAppStore.getState().showSnackbar("History record removed!");
       },
 
       // app settings
