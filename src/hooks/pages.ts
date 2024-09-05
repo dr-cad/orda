@@ -1,14 +1,11 @@
 import { useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { exportHistory } from "../lib/history";
 import { getId } from "../lib/utils";
 import { useBufferStore } from "../store";
-import { useAppStore } from "../store/app";
 
 export function usePageIndex() {
   const save = useBufferStore((s) => s.save);
   const symptoms = useBufferStore((s) => s.symptoms);
-  const autoBackup = useAppStore((s) => s.autoBackup);
 
   const nav = useNavigate();
   const { pageIndex: pi } = useParams();
@@ -36,13 +33,10 @@ export function usePageIndex() {
 
   const handleResult = async () => {
     // add to history
-    const history = await save(true);
-    if (!history) return;
-    // download a backup file
-    if (autoBackup) exportHistory(history);
+    const uuid = await save(true);
+    if (typeof uuid !== "string") return;
     // navigate to result
-    const item = history[0];
-    nav("/result/" + getId(item.uuid));
+    nav("/result/" + getId(uuid));
   };
 
   return {

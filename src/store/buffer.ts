@@ -5,6 +5,7 @@ import uuid4 from "uuid4";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { VERSION } from "../config/strings";
+import { exportHistory } from "../lib/history";
 import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
 import {
@@ -25,7 +26,7 @@ export interface BufferStore {
   symptoms: ISymptom[];
   createdAt: number | null;
   updateSymptom: (id: string, value: Value) => ISymptom[] | undefined;
-  save: (scored?: boolean) => Promise<IHistoryItem[] | null>; // buffer -> hisory
+  save: (scored?: boolean) => Promise<string | boolean>; // buffer -> hisory
   reset: () => Promise<void>; // save, ~buffer
   loadHistoryItem: (item: IHistoryItemBase, overwrite?: boolean) => Promise<void>; // history -> buffer
   // app ui
@@ -73,36 +74,51 @@ export const useBufferStore = create(
         if (_.isEqual(symptoms, emptySymptoms)) {
           if (scored) {
             useAppStore.getState().showSnackbar("Nothing to save", "warning");
-            return null;
+            return false;
           }
-          return usePersistStore.getState().history; // ignore - ok
-        }
-        // save data and tell
-        const newDate = new Date().getTime();
-        const newScores = !scored ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
-        const newItem: IHistoryItem = {
-          symptoms,
-          scores: newScores,
-          uuid: get().uuid,
-          hash: sha256(JSON.stringify(symptoms)).toString(),
-          hash2: sha256(JSON.stringify(newScores)).toString(),
-          createdAt: get().createdAt || newDate,
-          updatedAt: newDate,
-          v: VERSION,
-          // base
-          patName: getSymptomValueById<string>(symptoms, "pat-name") ?? "",
-          draft: !newScores,
-          errors: getSymptomsErrors(symptoms),
-        };
-
-        try {
-          window.clarity?.("event", "saveResult");
-          window.clarity?.("set", "result", newItem.hash2);
-        } catch (e) {
-          console.log(e);
+          return true; // ignore - ok
         }
 
-        return await usePersistStore.getState().addHistory([newItem]);
+        const uuid = get().uuid;
+
+        setTimeout(async () => {
+          // save data
+          const newDate = new Date().getTime();
+          const newScores = !scored ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
+          const newItem: IHistoryItem = {
+            symptoms,
+            scores: newScores,
+            uuid: get().uuid,
+            hash: sha256(JSON.stringify(symptoms)).toString(),
+            hash2: sha256(JSON.stringify(newScores)).toString(),
+            createdAt: get().createdAt || newDate,
+            updatedAt: newDate,
+            v: VERSION,
+            // base
+            patName: getSymptomValueById<string>(symptoms, "pat-name") ?? "",
+            draft: !scored,
+            errors: getSymptomsErrors(symptoms),
+          };
+
+          // report to clarity
+          try {
+            window.clarity?.("event", "saveResult");
+            window.clarity?.("set", "result", newItem.hash2);
+          } catch (e) {
+            console.log(e);
+          }
+
+          const app = useAppStore.getState();
+          const persist = usePersistStore.getState();
+
+          // update archive
+          await persist.addHistory([newItem]); // dont await
+
+          // download a backup file
+          if (app.autoBackup) exportHistory(persist.history);
+        });
+
+        return uuid;
       },
       reset: async () => {
         // saves and resets buffer

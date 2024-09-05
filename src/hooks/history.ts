@@ -42,6 +42,8 @@ export function useHistoryItem(id?: string): IHistoryItem | undefined {
   const history = usePersistStore((s) => s.history);
   const showSnackbar = useAppStore((s) => s.showSnackbar);
 
+  if (!history.length) return; // not hydrated
+
   if (!id) {
     showSnackbar("History item id not provided!", "error");
     return;
@@ -51,5 +53,6 @@ export function useHistoryItem(id?: string): IHistoryItem | undefined {
     showSnackbar("Can't find history record item!", "error");
     return;
   }
+
   return item;
 }
