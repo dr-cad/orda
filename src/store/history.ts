@@ -3,6 +3,8 @@ import { produce } from "immer";
 import _ from "lodash";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { VERSION } from "../config/strings";
+import { getSymptomsErrors, getSymptomValueById } from "../lib/symptoms";
 import { IHistoryItem } from "../types";
 import { useAppStore } from "./app";
 import { createStorage } from "./create";
@@ -28,8 +30,10 @@ export const usePersistStore = create(
           produce((s: PersistStore) => {
             items.forEach((item, i) => {
               callback?.(i);
+              migration(item);
               const existing = s.history.findIndex((r) => r.uuid === item.uuid);
               if (existing < 0) {
+                // save if there's no existing uuid
                 s.history.unshift(item);
                 if (!callback) app.showSnackbar("Record saved!", "success");
                 return;
@@ -69,3 +73,24 @@ export const usePersistStore = create(
     { name: "archive", storage: createStorage(true) }
   )
 );
+
+function migration(item: IHistoryItem) {
+  if (item.v === "0" || !item.v) {
+    // 0 -> 1
+    item.patName = getSymptomValueById<string>(item.symptoms, "pat-name") ?? "";
+    item.draft = !item.scores;
+    item.errors = getSymptomsErrors(item.symptoms);
+    item.v = "1";
+  }
+  if (item.v === "1") {
+    // 1 -> 2
+    // TOBE filled on v2...
+  }
+  if (item.v !== VERSION) {
+    // no migration plan provided
+    alert("App version mismatch! contact dev team asap...");
+    const err = new Error(`no migration plans! ${item.v} != ${VERSION}`);
+    Sentry.captureException(err);
+    throw err;
+  }
+}
