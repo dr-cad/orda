@@ -4,7 +4,7 @@ import _ from "lodash";
 import uuid4 from "uuid4";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { VERSION } from "../config/strings";
+import { VERSION } from "../config/app";
 import { exportHistory } from "../lib/history";
 import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
@@ -83,7 +83,7 @@ export const useBufferStore = create(
 
         const promise = new Promise((resolve) =>
           setTimeout(async () => {
-            // save data
+            // create and save data
             const newDate = new Date().getTime();
             const newScores = !scored ? null : getScores({ diseases: emptyDiseases, symptoms }); // heavy calculations
             const newItem: IHistoryItem = {

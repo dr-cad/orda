@@ -6,7 +6,8 @@ import { FcAreaChart, FcFullTrash, FcPrint } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
-import { appName, VERSION } from "../config/strings";
+import { VERSION } from "../config/app";
+import { appName } from "../config/strings";
 import { getId } from "../lib/utils";
 import { useBufferStore, usePersistStore } from "../store";
 import { useAppStore } from "../store/app";
@@ -125,12 +126,11 @@ const HistoryItem = ({
     removeHistory(item.uuid);
   };
 
-  const v = item.v ?? "0";
-  const outdated = v !== VERSION;
+  const outdated = item.v !== VERSION;
 
   const color = item.draft ? "warning" : outdated ? "error" : reportDisabled ? "primary" : "success";
   const caption =
-    moment(item.createdAt).format("DD MMM YYYY") + (item.draft ? " (draft)" : outdated ? ` (outdated) v${v}` : "");
+    moment(item.createdAt).format("DD MMM YYYY") + (item.draft ? " (draft)" : outdated ? ` (outdated) v${item.v}` : "");
 
   return (
     <ListItem
