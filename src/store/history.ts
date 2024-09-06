@@ -97,7 +97,7 @@ function migration(item: IHistoryItem, index: number): IHistoryItem {
   }
   if (item.v !== VERSION) {
     // no migration plan provided
-    alert("App version mismatch! contact dev team asap...");
+    alert("App version mismatch! refresh page...");
     const err = new Error(`no migration plans! (${item.v} != ${VERSION}) at index: ${index}`);
     console.error(err);
     Sentry.captureException(err);

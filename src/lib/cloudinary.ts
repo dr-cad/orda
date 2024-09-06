@@ -1,4 +1,4 @@
-import { cloudName, uploadPreset } from "../config/strings";
+import { cloudName, uploadPreset } from "../config/app";
 
 const baseUrl = `https://api.cloudinary.com/v1_1/${cloudName}`;
 
