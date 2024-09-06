@@ -86,6 +86,7 @@ export const usePersistStore = create(
 function migration(item: IHistoryItem, index: number): IHistoryItem {
   if (!item.v) {
     // 0 -> 1
+    // in this version more fields are added to the history-item
     item.patName = getSymptomValueById<string>(item.symptoms, "pat-name") ?? "";
     item.draft = !item.scores;
     item.errors = getSymptomsErrors(item.symptoms);
@@ -93,7 +94,7 @@ function migration(item: IHistoryItem, index: number): IHistoryItem {
   }
   if (item.v === 1) {
     // 1 -> 2
-    // TOBE filled on v2...
+    // in this version ...
     // item.v = 2;
   }
   if (item.v !== VERSION) {
