@@ -94,14 +94,15 @@ function migration(item: IHistoryItem, index: number): IHistoryItem {
   if (item.v === 1) {
     // 1 -> 2
     // TOBE filled on v2...
+    // item.v = 2;
   }
   if (item.v !== VERSION) {
     // no migration plan provided
-    alert("App version mismatch! refresh page...");
-    const err = new Error(`no migration plans! (${item.v} != ${VERSION}) at index: ${index}`);
-    console.error(err);
+    alert("App version too low! refresh page...");
+    const err = new Error(`Imported data version higher than client app version! (${item.v} > ${VERSION})`);
+    console.error(err, index);
     Sentry.captureException(err);
-    throw err;
+    throw err; // most likely that the rest items have same version
   }
   return item;
 }
