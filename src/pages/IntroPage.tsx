@@ -1,11 +1,6 @@
-// buttons:
-// start new
-// load history from file
-
 import { AddRounded, UploadFileOutlined } from "@mui/icons-material";
-import Logo from "../components/favicon.svg?react";
-
 import { Box, Button, Stack, Typography } from "@mui/material";
+import Logo from "../components/favicon.svg?react";
 import useAppHistory from "../hooks/history";
 
 export default function IntroPage() {
