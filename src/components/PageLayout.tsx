@@ -5,6 +5,7 @@ import Pagination from "./Pagination";
 export default function PageLayout({ children }: { children: React.ReactNode }) {
   return (
     <Stack
+      className="layout"
       overflow="hidden"
       flex={1}
       mt="env(safe-area-inset-top, 0px)"

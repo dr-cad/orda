@@ -60,16 +60,34 @@ img.desc-img {
 }
 
 #root {
+  height: 100svh;
+  width: 100%;
+}
+
+.bg-video {
+  z-index: -1;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  padding: 0;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.layout {
+  height: 100%;
   max-width: 480px;
   margin: 0 auto;
   border-left: var(--app-border);
   border-right: var(--app-border);
-  height: 100dvh;
-  max-height: 100dvh;
+  background: #0f1a2ef2;
+  /* backdrop-filter: blur(20px); */
 }
 
 @media screen and (max-width: 480px) {
-  #root {
+  .layout {
     border: none;
   }
 }

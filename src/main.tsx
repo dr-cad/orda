@@ -5,6 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import Background from "./components/Background";
 import Snackbar from "./components/Snackbar";
 import theme from "./config/theme";
 import "./index.css";
@@ -26,6 +27,7 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Background />
       <BrowserRouter>
         <App />
       </BrowserRouter>
