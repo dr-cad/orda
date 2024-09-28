@@ -3,9 +3,11 @@ import { IconButton, Tooltip } from "@mui/material";
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import AnaLocImage from "../assets/ana-loc.webp";
-import { useBufferStore } from "../store";
 import { useSymptomValue } from "../hooks/symptom";
+import { useBufferStore } from "../store";
 import { IRange } from "../types";
+
+import "../config/dent-picker.css";
 
 enum AnaLocation {
   Root = "ana-location",
@@ -28,10 +30,11 @@ interface IPoint {
 }
 
 const points: IPoint[] = [
+  // both
   { j: JawType.Both, n: 1, x: 3, y: 26.3 },
   { j: JawType.Both, n: 2, x: 16.5, y: 30 },
   { j: JawType.Both, n: 3, x: 34.2, y: 35.8 },
-
+  // max
   { j: JawType.Maxilla, n: 4, x: 45, y: 40 },
   { j: JawType.Maxilla, n: 5, x: 51, y: 41.5 },
   { j: JawType.Maxilla, n: 6, x: 58, y: 43.25 },
@@ -41,7 +44,7 @@ const points: IPoint[] = [
   { j: JawType.Maxilla, n: 10, x: 83.2, y: 46.4 },
   { j: JawType.Maxilla, n: 11, x: 88.5, y: 46.5 },
   { j: JawType.Maxilla, n: 12, x: 96, y: 46.5 },
-
+  // man
   { j: JawType.Mandible, n: 4, x: 41.2, y: 64.5 },
   { j: JawType.Mandible, n: 5, x: 49, y: 68.5 },
   { j: JawType.Mandible, n: 6, x: 58, y: 72 },
@@ -116,16 +119,8 @@ export default function DentPicker() {
         <Point key={i} p={p} onSelect={onSelect} start={start} />
       ))}
       {(max || man || both || start) && (
-        <Tooltip title="Clear Selection" className="clear-btn">
-          <IconButton
-            onClick={onReset}
-            size="small"
-            sx={{
-              background: "#00000086",
-              "&:hover": {
-                background: "#6e002a9d",
-              },
-            }}>
+        <Tooltip title="Clear Selection">
+          <IconButton onClick={onReset} size="small" className="clear-btn">
             <RestartAltRounded />
           </IconButton>
         </Tooltip>
