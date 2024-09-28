@@ -82,7 +82,7 @@ img.desc-img {
   margin: 0 auto;
   border-left: var(--app-border);
   border-right: var(--app-border);
-  background: #0f1a2ef2;
+  /* background: #0f1a2ef2; */
   /* backdrop-filter: blur(20px); */
 }
 
