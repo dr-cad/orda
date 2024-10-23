@@ -16,7 +16,7 @@ app.use(bodyParser.json()); // for parsing application/json
 const properties = {};
 
 symptoms.forEach((s) => {
-  if (s.type === SymptomType.Enum) return;
+  if (s.type === SymptomType.Enum || s.page) return;
   properties[s.id] = {
     title: s.name,
     description: s.details,
