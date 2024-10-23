@@ -1,7 +1,7 @@
 import bodyParser from "body-parser";
 import express from "express";
 import symptoms from "./src/data/symptoms";
-import { emptyDiseases } from "./src/lib/raw";
+import { getDiseases } from "./src/lib/get-diseases";
 import getScores from "./src/lib/scores";
 import { ISymptom, SymptomType } from "./src/types";
 import { SId } from "./src/types/sid";
@@ -125,7 +125,7 @@ app.post("/process", (req, res) => {
         break;
     }
   });
-  const scores = getScores({ diseases: emptyDiseases, symptoms });
+  const scores = getScores({ diseases: getDiseases(), symptoms });
   console.log(req.body, scores);
   res.send({ scores });
 });
