@@ -1,7 +1,10 @@
 import bodyParser from "body-parser";
 import express from "express";
 import symptoms from "./src/data/symptoms";
-import { SymptomType } from "./src/types";
+import { emptyDiseases } from "./src/lib/raw";
+import getScores from "./src/lib/scores";
+import { ISymptom, SymptomType } from "./src/types";
+import { SId } from "./src/types/sid";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -75,10 +78,31 @@ app.get("/", (_, res) => {
 });
 
 app.post("/process", (req, res) => {
-  console.log(req.body);
-  res.send("Hello World!");
+  const symptoms: ISymptom[] = [];
+  Object.keys(req.body).forEach((k) => {
+    const id = k as SId;
+    const value = req.body[id];
+    switch (typeof value) {
+      case "boolean":
+        symptoms.push({ id, value, type: SymptomType.None, name: id });
+        break;
+      case "string":
+        symptoms.push({ id, value, type: SymptomType.String, name: id });
+        break;
+      case "number":
+        symptoms.push({ id, value, type: SymptomType.Number, name: id });
+        break;
+      case "object":
+        if (typeof value.a !== "number" || typeof value.b !== "number") break; // TODO input error
+        symptoms.push({ id, value, type: SymptomType.Range, name: id });
+        break;
+    }
+  });
+  const scores = getScores({ diseases: emptyDiseases, symptoms });
+  console.log(req.body, scores);
+  res.send({ scores });
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Listening on port ${port}`);
 });
