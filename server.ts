@@ -16,8 +16,7 @@ app.use(bodyParser.json()); // for parsing application/json
 const properties = {};
 
 symptoms.forEach((s) => {
-  if (s.gpt === false) return;
-  if (s.options) return;
+  if (s.gpt === false || s.options) return;
   properties[s.id] = {
     title: s.name,
     description: s.details,
@@ -59,6 +58,7 @@ app.get("/", (_, res) => {
           summary: "Find jaw bone lesions based on patient symptoms",
           description:
             "This endpoint receives symptoms from the patient and returns the list of most relevant jaw bone lesion by percentage",
+          operationId: "lesionClassification",
           requestBody: {
             content: {
               "application/json": {
