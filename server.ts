@@ -138,6 +138,7 @@ app.post("/process", (req, res) => {
   });
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true });
   console.log(JSON.stringify(req.body));
+  console.log(scores.map(({ name, value }) => ({ name, value })));
   res.send({ scores });
 });
 
