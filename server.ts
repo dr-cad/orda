@@ -1,13 +1,17 @@
+import bodyParser from "body-parser";
 import express from "express";
+
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(bodyParser.json()); // for parsing application/json
 
 app.get("/", (req, res) => {
   res.send("Hello dear!");
 });
 
-app.post("/", (req, res) => {
-  console.log(req);
+app.post("/process", (req, res) => {
+  console.log(req.body);
   res.send("Hello World!");
 });
 
