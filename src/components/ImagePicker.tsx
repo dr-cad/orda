@@ -14,10 +14,10 @@ import sha256 from "crypto-js/sha256";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TbCloudCancel, TbCloudCheck } from "react-icons/tb";
 import { Link } from "react-router-dom";
-import { useBufferStore } from "../store";
 import { useSymptomValue } from "../hooks/symptom";
 import { makeDeleteRequest, makeUploadRequest } from "../lib/cloudinary";
 import { parseImages, stringifyImages } from "../lib/image";
+import { useBufferStore } from "../store";
 import { ICImage } from "../types";
 
 registerPlugin(

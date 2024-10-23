@@ -76,7 +76,7 @@
     "lint-staged": "^15.2.9",
     "micromatch": "^4.0.8",
     "tsx": "^4.19.1",
-    "typescript": "^5.6.3",
+    "typescript": "^5.4.5",
     "vite": "^5.3.4",
     "vite-plugin-compile-time": "^0.2.1",
     "vite-plugin-pwa": "^0.20.1"
