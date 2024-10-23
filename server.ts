@@ -48,10 +48,12 @@ app.get("/", (_, res) => {
     },
     servers: [
       {
-        url: "https://orda.onrender.com/",
+        url: "https://orda.onrender.com",
         description: "API root endpoint",
       },
     ],
+    host: "orda.onrender.com",
+    schemes: ["https"],
     paths: {
       "/process": {
         post: {
