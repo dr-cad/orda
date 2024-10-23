@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import cors from "cors";
 import express from "express";
 import symptoms from "./src/data/symptoms";
 import { getDiseases } from "./src/lib/get-diseases";
@@ -9,6 +10,7 @@ import { SId } from "./src/types/sid";
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 
 const properties = {};
