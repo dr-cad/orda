@@ -77,6 +77,7 @@ export interface ISymptomRaw {
   omitHash?: boolean;
   noInput?: boolean;
   details?: string; // api description
+  gpt?: boolean; // to include in gpt api
 }
 
 export interface ISymptom extends ISymptomRaw {

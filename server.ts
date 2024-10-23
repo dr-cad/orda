@@ -16,7 +16,8 @@ app.use(bodyParser.json()); // for parsing application/json
 const properties = {};
 
 symptoms.forEach((s) => {
-  if (s.type === SymptomType.Enum || s.page) return;
+  if (s.gpt === false) return;
+  if (s.options) return;
   properties[s.id] = {
     title: s.name,
     description: s.details,
@@ -35,7 +36,7 @@ symptoms.forEach((s) => {
   };
 });
 
-const required = symptoms.filter((s) => s.required).map((s) => s.id);
+// const required = symptoms.filter((s) => s.required).map((s) => s.id);
 
 app.get("/", (_, res) => {
   res.send({
@@ -87,7 +88,7 @@ app.get("/", (_, res) => {
         Symptoms: {
           type: "object",
           properties,
-          required,
+          // required,
         },
         Scores: {
           type: "array",
