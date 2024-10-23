@@ -38,16 +38,23 @@ const required = symptoms.filter((s) => s.required).map((s) => s.id);
 app.get("/", (_, res) => {
   res.send({
     info: {
-      title: "Sample Pet Store App",
-      summary: "A pet store manager.",
-      description: "This is a sample server for a pet store.",
+      title: "Jaw bone lesion detection app",
+      summary: "A jaw bone lesion detection program.",
+      description: "This is an app that classifies jaw bone lesions.",
       version: "1.0.1",
     },
+    servers: [
+      {
+        url: "https://orda.onrender.com/",
+        description: "API root endpoint",
+      },
+    ],
     paths: {
       "/process": {
         post: {
-          description: "",
-          summary: "",
+          summary: "Find jaw bone lesions based on patient symptoms",
+          description:
+            "This endpoint receives symptoms from the patient and returns the list of most relevant jaw bone lesion by percentage",
           requestBody: {
             content: {
               "application/json": {
@@ -59,7 +66,7 @@ app.get("/", (_, res) => {
           },
           responses: {
             "200": {
-              description: "Diseases list generated!",
+              description: "Lesions list generated!",
               content: {
                 "application/json": {
                   schema: {
