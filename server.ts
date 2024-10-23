@@ -118,7 +118,7 @@ app.get("/", (_, res) => {
 app.post("/process", (req, res) => {
   const symptoms: ISymptom[] = [];
   Object.keys(req.body).forEach((k) => {
-    const id = k as SId;
+    const id = k.replaceAll("__", "-") as SId;
     const value = req.body[id];
     switch (typeof value) {
       case "boolean":
