@@ -52,8 +52,6 @@ app.get("/", (_, res) => {
         description: "API root endpoint",
       },
     ],
-    host: "orda.onrender.com",
-    schemes: ["https"],
     paths: {
       "/process": {
         post: {
@@ -138,8 +136,8 @@ app.post("/process", (req, res) => {
         break;
     }
   });
-  const scores = getScores({ diseases: getDiseases(), symptoms });
-  console.log(req.body, scores);
+  const scores = getScores({ diseases: getDiseases(), symptoms, silent: true });
+  console.log(JSON.stringify(req.body));
   res.send({ scores });
 });
 
