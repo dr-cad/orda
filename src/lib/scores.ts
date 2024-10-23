@@ -77,10 +77,10 @@ const getDiseaseProbablity_FIX_FRAC = (disease: IDisease, symptoms: ISymptom[], 
   getDiseaseProbablity(disease, symptoms, silent) * FIX_FRAC;
 
 export default function getScores({ diseases, symptoms, silent }: IProps): IDiseaseScored[] {
-  const nominators: number[] = diseases.map((disease) => getDiseaseProbablity_FIX_FRAC(disease, symptoms));
+  const nominators: number[] = diseases.map((disease) => getDiseaseProbablity_FIX_FRAC(disease, symptoms, silent));
   const dinaminator = nominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
   const pnominators: number[] = diseases.map((disease) =>
-    calc(disease.preval * getDiseaseProbablity_FIX_FRAC(disease, symptoms))
+    calc(disease.preval * getDiseaseProbablity_FIX_FRAC(disease, symptoms, silent))
   );
   const pdinaminator = pnominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
   if (!silent) console.log({ nominators, dinaminator, pnominators, pdinaminator });
