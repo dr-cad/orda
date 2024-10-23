@@ -137,8 +137,9 @@ app.post("/process", (req, res) => {
     }
   });
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true })
-    .map(({ id, name, pvalue }) => ({ id, name, pvalue }))
-    .sort((a, b) => b.pvalue - a.pvalue);
+    .sort((a, b) => b.pvalue - a.pvalue)
+    .slice(0, 5)
+    .map(({ id, name, pvalue }) => ({ id, name, pvalue }));
   console.log(JSON.stringify(req.body));
   console.log(scores.map(({ name, pvalue }) => ({ name, pvalue })));
   res.send({ scores });
