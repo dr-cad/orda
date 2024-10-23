@@ -39,6 +39,7 @@ const required = symptoms.filter((s) => s.required).map((s) => s.id);
 
 app.get("/", (_, res) => {
   res.send({
+    swagger: "2.0",
     info: {
       title: "Jaw bone lesion detection app",
       summary: "A jaw bone lesion detection program.",
