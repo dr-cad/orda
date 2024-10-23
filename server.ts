@@ -60,6 +60,13 @@ app.get("/", (_, res) => {
           responses: {
             "200": {
               description: "Diseases list generated!",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/Scores",
+                  },
+                },
+              },
             },
           },
         },
@@ -71,6 +78,26 @@ app.get("/", (_, res) => {
           type: "object",
           properties,
           required,
+        },
+        Scores: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: {
+                type: "string",
+              },
+              name: {
+                type: "string",
+                description: "Name of the disease",
+              },
+              value: {
+                type: "number",
+                format: "double",
+                description: "Probablity score of the disease",
+              },
+            },
+          },
         },
       },
     },
