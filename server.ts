@@ -3,7 +3,9 @@ import cors from "cors";
 import express from "express";
 import symptoms from "./src/data/symptoms";
 import { getDiseases } from "./src/lib/get-diseases";
+import { getSymptoms } from "./src/lib/get-symptoms";
 import getScores from "./src/lib/scores";
+import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from "./src/lib/symptoms";
 import { ISymptom, SymptomType } from "./src/types";
 import { SId } from "./src/types/sid";
 
@@ -116,24 +118,22 @@ app.get("/", (_, res) => {
 });
 
 app.post("/process", (req, res) => {
-  const symptoms: ISymptom[] = [];
+  const symptoms: ISymptom[] = getSymptoms();
   Object.keys(req.body).forEach((k) => {
     const id = k.replaceAll("__", "-") as SId;
     const value = req.body[id];
-    switch (typeof value) {
-      case "boolean":
-        symptoms.push({ id, value, type: SymptomType.None, name: id });
-        break;
-      case "string":
-        symptoms.push({ id, value, type: SymptomType.String, name: id });
-        break;
-      case "number":
-        symptoms.push({ id, value, type: SymptomType.Number, name: id });
-        break;
-      case "object":
-        if (typeof value.a !== "number" || typeof value.b !== "number") break; // TODO input error
-        symptoms.push({ id, value, type: SymptomType.Range, name: id });
-        break;
+    const item = symptoms.find((i) => i.id === id);
+    if (item) {
+      // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
+      const { hasInput } = digestSymptom(item);
+      // if unset occured and has options -> reset item -r
+      if (!value && !hasInput) recursivelyResetItem(symptoms, item.id);
+      // update/reset value
+      console.log("Updating", id, value);
+      item.value = value;
+      recursivelyUpdateParents(symptoms, item.id);
+    } else {
+      console.error("Couldnt find item", id);
     }
   });
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true })

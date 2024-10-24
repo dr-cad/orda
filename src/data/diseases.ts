@@ -1,4 +1,5 @@
 import { IDisease } from "../types";
+import symptoms from "./symptoms";
 
 const diseases: IDisease[] = [
   {
@@ -10,7 +11,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 20, b: 60, rate: 0.75 },
-          { a: 15, b: 75, rate: 0.50 },
+          { a: 15, b: 75, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -145,7 +146,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 18, b: 40, rate: 0.6 },
-          { a: 14, b: 50, rate: 0.50 },
+          { a: 14, b: 50, rate: 0.5 },
           { a: 0, b: 100, rate: 0.4 },
         ],
       },
@@ -283,7 +284,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 20, b: 60, rate: 0.7 },
-          { a: 15, b: 75, rate: 0.50 },
+          { a: 15, b: 75, rate: 0.5 },
           { a: 0, b: 100, rate: 0.3 },
         ],
       },
@@ -416,7 +417,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 10, b: 30, rate: 0.7 },
-          { a: 2, b: 40, rate: 0.50 },
+          { a: 2, b: 40, rate: 0.5 },
           { a: 0, b: 100, rate: 0.3 },
         ],
       },
@@ -548,7 +549,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 20, b: 50, rate: 0.75 },
-          { a: 15, b: 65, rate: 0.50 },
+          { a: 15, b: 65, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -681,7 +682,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 18, b: 40, rate: 0.75 },
-          { a: 14, b: 50, rate: 0.50 },
+          { a: 14, b: 50, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -814,7 +815,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 10, b: 30, rate: 0.75 },
-          { a: 8, b: 40, rate: 0.50 },
+          { a: 8, b: 40, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -949,7 +950,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 0, b: 10, rate: 0.75 },
-          { a: 0, b: 15, rate: 0.50 },
+          { a: 0, b: 15, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -1080,7 +1081,7 @@ const diseases: IDisease[] = [
         sid: "pat-age",
         ranges: [
           { a: 0, b: 20, rate: 0.75 },
-          { a: 0, b: 25, rate: 0.50 },
+          { a: 0, b: 25, rate: 0.5 },
           { a: 0, b: 100, rate: 0.25 },
         ],
       },
@@ -1219,8 +1220,8 @@ const diseases: IDisease[] = [
           { a: 0, b: 20, rate: 0.2 },
         ],
       },
-      { sid: "pat-male", rate: 0.50 },
-      { sid: "pat-female", rate: 0.50 },
+      { sid: "pat-male", rate: 0.5 },
+      { sid: "pat-female", rate: 0.5 },
       { sid: "recent-gingival", rate: -1 },
       { sid: "lymph", rate: 0.15 },
       { sid: "impact", rate: -1 },
@@ -1266,9 +1267,9 @@ const diseases: IDisease[] = [
           { a: 0, b: 5, rate: 0.2 },
         ],
       },
-      { sid: "round", rate: 0.50 },
+      { sid: "round", rate: 0.5 },
       { sid: "scalloped", rate: -1 },
-      { sid: "irregular", rate: 0.50 },
+      { sid: "irregular", rate: 0.5 },
       { sid: "non-corticated", rate: 0.7 },
       { sid: "corticated", rate: 0.2 },
       { sid: "sclerotic", rate: -1 },
@@ -1297,7 +1298,7 @@ const diseases: IDisease[] = [
         sid: "both",
         ranges: [
           { a: 2, b: 4, rate: 0.56 },
-          { a: 1, b: 7, rate: 0.40 },
+          { a: 1, b: 7, rate: 0.4 },
           { a: 1, b: 9, rate: 0.24 },
           { a: 1, b: 12, rate: 0.08 },
         ],
@@ -2552,3 +2553,10 @@ const diseases: IDisease[] = [
 ];
 
 export default diseases;
+
+diseases.forEach((d) => {
+  d.factors.forEach((f) => {
+    const s = symptoms.find((s) => s.id === f.sid);
+    if (s && s.options) console.error("Dont use parents for calculations!", s.id);
+  });
+});
