@@ -8,13 +8,7 @@ import { VERSION } from "../config/app";
 import { exportHistory } from "../lib/history";
 import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
-import {
-  digestSymptom,
-  getSymptomsErrors,
-  getSymptomValueById,
-  recursivelyResetItem,
-  recursivelyUpdateParents,
-} from "../lib/symptoms";
+import { getSymptomsErrors, getSymptomValueById, updateSymptom } from "../lib/symptoms";
 import { IHistoryItem, IHistoryItemBase, ISymptom, Value } from "../types";
 import { useAppStore } from "./app";
 import { createStorage } from "./create";
@@ -48,20 +42,7 @@ export const useBufferStore = create(
         set(
           produce((s: BufferStore) => {
             const arr: ISymptom[] = s.symptoms; // reference
-            const item = arr.find((i) => i.id === id);
-            if (item) {
-              // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
-              const { hasInput } = digestSymptom(item);
-              // if unset occured and has options -> reset item -r
-              if (!value && !hasInput) recursivelyResetItem(arr, item.id);
-              // update/reset value
-              console.log("Updating", id, value);
-              item.value = value;
-              recursivelyUpdateParents(arr, item.id);
-              result = arr;
-            } else {
-              console.error("Couldnt find item", id);
-            }
+            updateSymptom(arr, id, value);
             result = arr;
           })
         );
