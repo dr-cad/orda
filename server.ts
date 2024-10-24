@@ -8,6 +8,7 @@ import getScores from "./src/lib/scores";
 import { digestSymptom, recursivelyResetItem, recursivelyUpdateParents } from "./src/lib/symptoms";
 import { ISymptom, SymptomType } from "./src/types";
 import { SId } from "./src/types/sid";
+import { privacy } from "./strings";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -38,6 +39,10 @@ symptoms.forEach((s) => {
 });
 
 // const required = symptoms.filter((s) => s.required).map((s) => s.id);
+
+app.get("/privacy", (_, res) => {
+  res.send(privacy);
+});
 
 app.get("/", (_, res) => {
   res.send({
