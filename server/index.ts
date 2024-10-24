@@ -22,7 +22,6 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swagger, {
     customSiteTitle: "ORDA API",
-    swaggerUrl: "https://orda-api.dr-cad.ir/v2/swagger.json",
   })
 );
 
@@ -48,9 +47,9 @@ app.post("/process", (req, res) => {
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true })
     .sort((a, b) => b.pvalue - a.pvalue)
     .slice(0, 5)
-    .map(({ id, name, pvalue }) => ({ id, name, pvalue }));
+    .map(({ id, name, pvalue }) => ({ id, name, probablity: Math.round(pvalue * 100) }));
   console.log("Body:", JSON.stringify(req.body));
-  console.log(scores.map(({ name, pvalue }) => ({ name, pvalue })));
+  console.log(scores.map(({ name, probablity }) => ({ name, probablity })));
   res.send({ scores });
 });
 

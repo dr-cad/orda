@@ -88,9 +88,9 @@ const swagger = {
               type: "string",
               description: "Name of the disease",
             },
-            pvalue: {
-              type: "number",
-              format: "double",
+            probablity: {
+              type: "integer",
+              format: "int32",
               description: "Probablity score of the disease",
             },
           },
