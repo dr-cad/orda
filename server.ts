@@ -120,18 +120,17 @@ app.get("/", (_, res) => {
 app.post("/process", (req, res) => {
   const symptoms: ISymptom[] = getSymptoms();
   Object.keys(req.body).forEach((k) => {
-    const id = k.replaceAll("__", "-") as SId;
-    const value = req.body[id];
+    const value = req.body[k];
+    const id = k.replace(/__/g, "-") as SId;
     const item = symptoms.find((i) => i.id === id);
     if (item) {
       // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
       const { hasInput } = digestSymptom(item);
       // if unset occured and has options -> reset item -r
-      if (!value && !hasInput) recursivelyResetItem(symptoms, item.id);
+      if (!value && !hasInput) recursivelyResetItem(symptoms, item.id, true);
       // update/reset value
-      console.log("Updating", id, value);
       item.value = value;
-      recursivelyUpdateParents(symptoms, item.id);
+      recursivelyUpdateParents(symptoms, item.id, true);
     } else {
       console.error("Couldnt find item", id);
     }

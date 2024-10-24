@@ -55,12 +55,12 @@ export function getSymptomsErrors(symptoms: ISymptom[]): IError[] {
  * @param arr list of all symptoms
  * @param id id of the symptom
  */
-export function recursivelyResetItem(arr: ISymptom[], id: string) {
+export function recursivelyResetItem(arr: ISymptom[], id: string, silent?: boolean) {
   // populate item
   const item = arr.find((x) => x.id === id);
   // reset if found
   if (item) {
-    console.log("Removing", item.id);
+    if (!silent) console.log("Removing", item.id);
     // reset self
     item.value = undefined;
     item.open = false; // close the item
@@ -77,11 +77,11 @@ export function recursivelyResetItem(arr: ISymptom[], id: string) {
  * @param arr list of all symptoms
  * @param id id of the symptom
  */
-export function recursivelyUpdateParents(arr: ISymptom[], id: string) {
+export function recursivelyUpdateParents(arr: ISymptom[], id: string, silent?: boolean) {
   // find a parent which has this id as a child
   const parent = arr.find((p) => p.options?.includes(id));
   if (parent) {
-    console.log("Updating Parent", parent.id);
+    if (!silent) console.log("Updating Parent", parent.id);
     parent.value = false;
     for (const option of parent.options ?? []) {
       // reset siblings of enum parent
