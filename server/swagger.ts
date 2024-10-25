@@ -21,8 +21,8 @@ symptoms.forEach((s) => {
     properties:
       s.type === SymptomType.Range
         ? {
-            a: { type: "integer", title: "from", description: "Starting point number of the specific region" },
-            b: { type: "integer", title: "to", description: "Finishing point number of the specific region" },
+            a: { type: "integer", title: "from", description: "From: Starting point number of the specific region" },
+            b: { type: "integer", title: "to", description: "To: Finishing point number of the specific region" },
           }
         : undefined,
     minimum: s.min,
