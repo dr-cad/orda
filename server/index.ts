@@ -46,8 +46,7 @@ app.post("/process", (req, res) => {
   });
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true })
     .sort((a, b) => b.pvalue - a.pvalue)
-    .slice(0, 5)
-    .filter((s, i) => i < 3 || s.pvalue > 0.01)
+    .slice(0, 3)
     .map(({ id, name, pvalue }) => ({ id, name, probablity: Math.round(pvalue * 100) }));
   console.log("Body:", JSON.stringify(req.body));
   console.log(scores.map(({ name, probablity }) => ({ name, probablity })));

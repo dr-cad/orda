@@ -703,17 +703,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "expand",
     name: "Expansion or displacement without destruction or perforation",
-    details: "expansion or displacement of cortical bone without destruction or perforation",
+    details: "Only Expansion or displacement of cortical bone without destruction or perforation",
   },
   {
     id: "destruct-3",
     name: "Expansion or displacement with destruction or perforation",
-    details: "destruction or perforation of cortical bone",
+    details: "Expansion and Destruction or perforation of cortical bone",
   },
   {
     id: "extend",
     name: "Extension within bone without expansion or destruction",
-    details: "extension within bone without expansion or destruction of cortical bone",
+    details: "Extension within bone without expansion or destruction of cortical bone",
   },
   {
     id: "necrotic",

@@ -1,12 +1,31 @@
 import type { ObjectSubtype, OpenAPI3 } from "openapi-typescript/dist/types.d.ts";
 import symptoms from "../src/data/symptoms";
-import { SymptomType } from "../src/types";
+import { ISymptomRaw, SymptomType } from "../src/types";
 
 const properties: ObjectSubtype["properties"] = {};
 
+const getSId = (sid: string) => sid.replace(/-/g, "_");
+
+function getSiblings(s: ISymptomRaw): string[] | undefined {
+  // NOTICE: This function only checks enums of same parent at depth of level 1. (improve if needed)
+  const parent = symptoms.find((p) => p.options?.includes(s.id));
+  if (!parent || parent.type !== SymptomType.Enum) return;
+  return parent.options?.filter((o) => o !== s.id);
+}
+
+export function genEnumWarning(s: ISymptomRaw): string {
+  const siblings = getSiblings(s);
+  if (!siblings) return "";
+  return (
+    "(Notice: This option is in coflict with " +
+    siblings.map((sid) => `'${getSId(sid)}'`).join(", ") +
+    " options. only one of them can be true, others MUST be false!). "
+  );
+}
+
 symptoms.forEach((s) => {
   if (s.gpt === false || s.options) return;
-  const sid = s.id.replace(/-/g, "_"); // make it readable for gpt
+  const sid = getSId(s.id); // make it readable for gpt
   properties[sid] = {
     title: s.name,
     description: s.details,
@@ -68,9 +87,9 @@ const swagger: OpenAPI3 = {
                 $ref: "#/components/schemas/Symptoms",
               },
               examples: {
-                // Alexis: {
-                //   $ref: "#/components/examples/Alex",
-                // },
+                Alexis: {
+                  $ref: "#/components/examples/Alex",
+                },
               },
             },
           },
@@ -126,22 +145,30 @@ const swagger: OpenAPI3 = {
     },
     examples: {
       // requestBodies
-      // Alexis: {
-      //   summary: "Example of a symptoms report mapped to symptoms values by their id",
-      //   description:
-      //     "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
-      //   value: {
-      //     pat_age: 32,
-      //     pat_female: true,
-      //     moderate_0: true,
-      //     corticated: true,
-      //     mandible: { a: 4, b: 5 },
-      //     unilateral_left: true,
-      //     pericoronal: true,
-      //     extend: true,
-      //     uni1: true,
-      //   },
-      // },
+      Alexis: {
+        summary: "Example of a symptoms report mapped to symptoms values by their id",
+        description:
+          "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
+        value: {
+          pat_age: 32,
+          pat_female: true,
+          moderate_0: true,
+          corticated: true,
+          mandible: { a: 4, b: 5 },
+          unilateral_left: true,
+          pericoronal: true,
+          extend: true,
+          uni1: true,
+        },
+      },
+      Bob: {
+        summary: "Example of a symptoms report mapped to symptoms values by their id",
+        description:
+          "Panoramic findings illustrates unilateral, solitary, multilocular radiolucent lesion with scalloped, well-defined, and non-corticated border in Rt side of mandible at apex or molars with expansion of cortical bone",
+        value: {
+          // TODO
+        },
+      },
       // responses
       "Dentigerous Cyst": {
         summary: "", // TODO
