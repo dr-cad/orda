@@ -18,9 +18,9 @@ symptoms.forEach((s) => {
         ? "object"
         : "boolean", // None
     format: s.type === SymptomType.Number ? "int32" : undefined,
+    properties: s.type === SymptomType.Range ? { a: "integer", b: "integer" } : undefined,
     minimum: s.min,
     maximum: s.max,
-    properties: s.type === SymptomType.Range ? { a: "integer", b: "integer" } : undefined,
   };
 });
 
@@ -40,6 +40,11 @@ const swagger: OpenAPI3 = {
       description: "API root endpoint",
       variables: {},
     },
+    // {
+    //   url: "http://localhost:3000",
+    //   description: "API root endpoint for development",
+    //   variables: {},
+    // },
   ],
   paths: {
     "/process": {
@@ -56,12 +61,17 @@ const swagger: OpenAPI3 = {
               schema: {
                 $ref: "#/components/schemas/Symptoms",
               },
-              examples: {}, // TODO
+              examples: {
+                Alex: {
+                  $ref: "#/components/examples/Alex",
+                },
+              },
             },
           },
         },
         responses: {
           "200": {
+            summary: "List of lesions",
             description: "Lesions list generated!",
             content: {
               "application/json": {
@@ -101,6 +111,16 @@ const swagger: OpenAPI3 = {
               description: "Probablity score of the lesion",
             },
           },
+        },
+      },
+    },
+    examples: {
+      Alex: {
+        summary: "",
+        description: "",
+        value: {
+          pat_age: 35,
+          bleeding: true,
         },
       },
     },
