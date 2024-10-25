@@ -465,7 +465,6 @@ const symptoms: ISymptomRaw[] = [
     max: 12,
     details:
       "On both regions (maxilla and mandible) selected: condyle (from 1 to 2) - beginning of ramus (from 3 to 4) - ramus (from 2 to 4) - third molar or tooth number 8 (from 4 to 5) - second molar or tooth number 7 (from 5 to 6) - first molar or tooth number 6 (from 6 to 7) - molars region (from 4 to 7) - second premolar or tooth number 5 (from 7 to 8) - first premolar or tooth number 4 (from 8 to 9) - canine or tooth number 3 (from 9 to 10) - lateral or tooth number 2 (from 10 to 11) - central or tooth number 1 (from 11 to 12) - incisors (from 10 to 12)",
-    // gpt: false, // TODO
   },
   {
     id: "side",
@@ -521,7 +520,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "related",
     name: "Not related to tooth",
-    details: "Epicenter of lesion is non-odontogenic or lesion is not related to tooh",
+    details: "Epicenter of lesion is non-odontogenic",
   },
   {
     id: "solitary",
