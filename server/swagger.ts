@@ -6,22 +6,23 @@ const properties: ObjectSubtype["properties"] = {};
 
 const getSId = (sid: string) => sid.replace(/-/g, "_");
 
-function getSiblings(s: ISymptomRaw): string[] | undefined {
+function getSiblings(s: ISymptomRaw): [string | undefined, string[] | undefined] {
   // NOTICE: This function only checks enums of same parent at depth of level 1. (improve if needed)
   const parent = symptoms.find((p) => p.options?.includes(s.id));
-  if (!parent || parent.type !== SymptomType.Enum) return;
-  return parent.options?.filter((o) => o !== s.id);
+  if (!parent || parent.type !== SymptomType.Enum || !parent.options) return [parent?.id, undefined];
+  return [parent.id, parent.options];
 }
 
-export function genEnumWarning(s: ISymptomRaw): string {
-  const siblings = getSiblings(s);
+function genEnumWarning(s: ISymptomRaw): string {
+  const [, siblings] = getSiblings(s);
   if (!siblings) return "";
   return (
-    "(Notice: This option is in coflict with " +
     siblings.map((sid) => `'${getSId(sid)}'`).join(", ") +
-    " options. only one of them can be true, others MUST be false!). "
+    " options are in conflict. only one of them can be true, others MUST be false!"
   );
 }
+
+const rules: string[] = [];
 
 symptoms.forEach((s) => {
   if (s.gpt === false || s.options) return;
@@ -47,6 +48,8 @@ symptoms.forEach((s) => {
     minimum: s.min,
     maximum: s.max,
   };
+  const warning = genEnumWarning(s);
+  if (warning) rules.push(warning);
 });
 
 // const required = symptoms.filter((s) => s.required).map((s) => s.id);
@@ -171,8 +174,8 @@ const swagger: OpenAPI3 = {
       },
       // responses
       "Dentigerous Cyst": {
-        summary: "", // TODO
-        description: "", // TODO
+        summary: "Dentigerous Cyst lesion detected",
+        description: "Dentigerous Cyst and 2 more lesions detected by the api",
         value: {
           scores: [
             {
@@ -190,16 +193,6 @@ const swagger: OpenAPI3 = {
               name: "Odontogenic keratocyst",
               probablity: 7,
             },
-            {
-              id: "unicystic",
-              name: "Unicystic/Mural Ameloblastoma",
-              probablity: 4,
-            },
-            {
-              id: "abscess",
-              name: "Periapical Abscess",
-              probablity: 2,
-            },
           ],
         },
       },
@@ -208,3 +201,5 @@ const swagger: OpenAPI3 = {
 };
 
 export default swagger;
+
+export { rules };

@@ -1,3 +1,5 @@
+import { rules } from "./swagger";
+
 export const privacy = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,5 +76,15 @@ export const privacy = `<!DOCTYPE html>
        <strong>Address:</strong> Iran, Rasht</p>
 
     <p>By using the Lesion Classification API, you acknowledge that you have read and understood this Privacy Policy and agree to its terms.</p>
+</body>
+</html>`;
+
+export const apiRules = `<!DOCTYPE html>
+<html>
+<body>
+<h1>Rules</h1>
+<ul>
+  ${rules.map((r) => `<li>${r}</li>`).join("\n")}
+</ul>
 </body>
 </html>`;

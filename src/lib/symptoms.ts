@@ -96,16 +96,16 @@ export function recursivelyUpdateParents(arr: ISymptom[], id: string, silent?: b
 
 export function updateSymptom(arr: ISymptom[], id: string, value: ISymptom["value"], silent?: boolean) {
   const item = arr.find((i) => i.id === id);
-  if (item) {
-    // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
-    const { hasInput } = digestSymptom(item);
-    // if unset occured and has options -> reset item -r
-    if (!value && !hasInput) recursivelyResetItem(arr, item.id, silent);
-    // update/reset value
-    if (!silent) console.log("Updating", id, value);
-    item.value = value;
-    recursivelyUpdateParents(arr, item.id, silent);
-  } else {
+  if (!item) {
     console.error("Couldnt find item", id);
+    return;
   }
+  // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
+  const { hasInput } = digestSymptom(item);
+  // if unset occured and has options -> reset item -r
+  if (!value && !hasInput) recursivelyResetItem(arr, item.id, silent);
+  // update/reset value
+  if (!silent) console.log("Updating", id, value);
+  item.value = value;
+  recursivelyUpdateParents(arr, item.id, silent);
 }

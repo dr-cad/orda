@@ -8,7 +8,7 @@ import getScores from "../src/lib/scores";
 import { updateSymptom } from "../src/lib/symptoms";
 import { ISymptom } from "../src/types";
 import { SId } from "../src/types/sid";
-import { privacy } from "./strings";
+import { apiRules, privacy } from "./strings";
 import swagger from "./swagger";
 
 const app = express();
@@ -31,6 +31,10 @@ app.get("/", (_, res) => {
 
 app.get("/privacy", (_, res) => {
   res.send(privacy);
+});
+
+app.get("/rules", (_, res) => {
+  res.send(apiRules);
 });
 
 app.get("/v3/swagger.json", (_, res) => {
