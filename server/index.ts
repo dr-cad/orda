@@ -38,15 +38,16 @@ app.get("/v2/swagger.json", (_, res) => {
 });
 
 app.post("/process", (req, res) => {
-  const symptoms: ISymptom[] = getSymptoms();
+  const symptoms: ISymptom[] = getSymptoms(); // raw data
   Object.keys(req.body).forEach((k) => {
     const value = req.body[k];
-    const id = k.replace(/__/g, "-") as SId;
+    const id = k.replace(/__/g, "-").replace(/_/g, "-") as SId;
     updateSymptom(symptoms, id, value, true);
   });
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true })
     .sort((a, b) => b.pvalue - a.pvalue)
     .slice(0, 5)
+    .filter((s, i) => i < 3 || s.pvalue > 0.01)
     .map(({ id, name, pvalue }) => ({ id, name, probablity: Math.round(pvalue * 100) }));
   console.log("Body:", JSON.stringify(req.body));
   console.log(scores.map(({ name, probablity }) => ({ name, probablity })));
