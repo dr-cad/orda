@@ -23,6 +23,7 @@ const symptoms: ISymptomRaw[] = [
     required: true,
     type: SymptomType.Number,
     open: true,
+    details: "patient age",
   },
   {
     id: "pat-gender",
@@ -31,14 +32,17 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Enum,
     options: ["pat-male", "pat-female"],
     open: true,
+    details: "patient gender"
   },
   {
     id: "pat-male",
     name: "Male",
+    details: "patient gender = male",
   },
   {
     id: "pat-female",
     name: "Female",
+    details: "patient gender = female",
   },
   {
     id: "pat-images",
@@ -59,30 +63,37 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "fever-illness",
     name: "Fever and Illness",
+    details: "fever or sickness or illness",
   },
   {
     id: "paresth-anes",
     name: "Paresthesia and anesthesia",
+    details: "parasthesia or anesthesia of skin",
   },
   {
     id: "bleeding",
     name: "Gingival bleeding",
+    details: "gingiva bleeding",
   },
   {
     id: "purulent",
     name: "Purulent (pus) drainage",
+    details: "pus drainage",
   },
   {
     id: "swelling",
     name: "Swelling",
+    details: "swelling or asymmetry of face",
   },
   {
     id: "pain-0",
     name: "Pain",
+    details: "pain (facial or tooth or general pain)"
   },
   {
     id: "trismus",
     name: "Trismus",
+    details: "muscle trismus or limitation of mouth opening",
   },
   {
     id: "pat-his-cli-fin",
@@ -94,14 +105,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "lymph",
     name: "Lymph nodes involvement",
+    details: "lymph nodes growth or involvement",
   },
   {
     id: "impact",
     name: "Impacted, unerupted or supernumerary tooth",
+    details: "impacted or unerupted tooth at lesion site",
   },
   {
     id: "history-of-surgery",
     name: "History of surgery, trauma or tooth extraction",
+    details: "history of surgery, trauma or tooth extraction",
   },
   {
     id: "sig-blood",
@@ -159,6 +173,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "hist-radio",
     name: "History of radiotherapy and chemotherapy",
+    details: "history of radiotherapy and chemotherapy",
   },
   {
     id: "onset-course",
@@ -169,14 +184,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "slow-0",
     name: "Slow (Months to years)",
+    details: "slow growth of lesion (lesion has appeared or existed for months or even years)",
   },
   {
     id: "moderate-0",
     name: "Moderate (weeks to about 2months)",
+    details: "moderate growth of lesion (lesion has appeared or existed less than two months but more than a week)",
   },
   {
     id: "rapid-0",
     name: "Rapid (Hours to days)",
+    details: "rapid growth of lesion (lesion has appeared or existed within afew hours or days )",
   },
   {
     id: "clinical-exam",
@@ -193,10 +211,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "hemorrhage",
     name: "Hemorrhage",
+    details: "hemorrheage or bleeding from lesion site or soft tissue lesion",
   },
   {
     id: "soft-tissue",
     name: "Soft tissue lesion",
+    details: "soft tissue lesion",
   },
   {
     id: "tooth-exam",
@@ -212,6 +232,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "nonvital",
     name: "Nonvital tooth",
+    details: "nonvital tooth or negative tooth vitality test",
   },
   {
     id: "percussion",
@@ -222,14 +243,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "mobile-teeth",
     name: "Tooth mobility",
+    details: "tooth has mobility",
   },
   {
     id: "pain-1",
     name: "Pain",
+    details: "tooth is sensetive to percussion or tooth has pain on percussion",
   },
   {
     id: "pump",
     name: "Pumping tooth",
+    details: "pumping tooth or tooth pumps-up on percussion or pressure",
   },
   {
     id: "aspiration",
@@ -240,6 +264,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "negative",
     name: "Negative",
+    details: "negative aspiration",
   },
   {
     id: "positive",
@@ -250,26 +275,32 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "blood",
     name: "Blood",
+    details: "posetive blood aspiration",
   },
   {
     id: "serosanguinous",
     name: "Serosanguinous",
+    details: "posetive serum and blood (serosanguinous) aspiration",
   },
   {
     id: "serum",
     name: "Serum like fluid",
+    details: "posetive serum aspiration",
   },
   {
     id: "cheesy-mat",
     name: "Cheesy material",
+    details: "posetive cheesy material aspiration",
   },
   {
     id: "pus",
     name: "Pus",
+    details: "posetive pus aspiration",
   },
   {
     id: "auscultation",
     name: "Auscultation",
+    details: "posetive ausculation test or lesion has throbbing sound",
   },
   {
     id: "consist",
@@ -280,18 +311,22 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "soft",
     name: "Soft",
+    details: "lesion has soft consistancy on palpation",
   },
   {
     id: "rubbery",
     name: "Rubbery",
+    details: "lesion has rubbery consistancy on palpation",
   },
   {
     id: "firm",
     name: "Firm",
+    details: "lesion has firm consistancy on palpation",
   },
   {
     id: "bony-hard",
     name: "Bony-hard",
+    details: "lesion has bony-hard consistancy on palpation",
   },
   {
     id: "imaging-fin",
@@ -326,14 +361,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "round",
     name: "Round, Ovoid or Regular",
+    details: "lesion has round shape",
   },
   {
     id: "scalloped",
     name: "Scalloped",
+    details: "lesion has scalloped shape or border",
   },
   {
     id: "irregular",
     name: "Irregular",
+    details: "lesion has irregular shape",
   },
   {
     id: "periphery",
@@ -352,18 +390,22 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "non-corticated",
     name: "Non corticated",
+    details: "lesion has well-defined and non-corticated border",
   },
   {
     id: "corticated",
     name: "Corticated",
+    details: "lesion has well-defined and corticated border",
   },
   {
     id: "sclerotic",
     name: "Sclerotic",
+    details: "lesion has well-defined and sclerotic border",
   },
   {
     id: "soft-capsule",
     name: "Radiolucent rim (Soft capsule)",
+    details: "lesion has well-defined border with radiolucent rim (soft capsule)",
   },
   {
     id: "ill-defined",
@@ -374,10 +416,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "blending",
     name: "Blending border",
+    details: "lesion has ill-defined and blending border",
   },
   {
     id: "invasive",
     name: "Invasive and Destructive border",
+    details: "lesion has ill-defined and invasive border",
   },
   {
     id: "location",
@@ -459,30 +503,37 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "pericoronal",
     name: "Pericoronal (Coronal to CEJ)",
+    details: "epicenter of lesion is in pericoronal position to tooth (lesion is coronal to CEJ)",
   },
   {
     id: "interradicular",
     name: "Root (Interradicular, Midroot or whole root)",
+    details: "epicenter of lesion is around whole root or mid root or between roots",
   },
   {
     id: "periapical",
     name: "Periapical (Only apex area)",
+    details: "epicenter of lesion is around the apex of tooth (periapical)",
   },
   {
     id: "related",
     name: "Not related to tooth",
+    details: "epicenter of lesion is non-odontogenic or lesion is not related to tooh",
   },
   {
     id: "solitary",
     name: "Solitary",
+    details: "there is only one lesion or lesion type is solitary",
   },
   {
     id: "multiple-separate",
     name: "Multiple seprate",
+    details: "there are multiple seperate lesion or lesion type is multipe seprate",
   },
   {
     id: "diffuse",
     name: "Generalized diffuse",
+    gpt: false,
   },
   {
     id: "int-struct",
@@ -500,10 +551,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "radiopaue-zone",
     name: "With radiolucent zone",
+    details: "radiopaque internal strcuture with radioclucent zone within it (radiolucent rim)",
   },
   {
     id: "radiopaque-nozone",
     name: "No specific zone",
+    details: "radiopaque or completely radiopaque internal structure",
   },
   {
     id: "radiolucent",
@@ -522,10 +575,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "uni1",
     name: "Completely radiolucent",
+    details: "completely radiolucent internal structure",
   },
   {
     id: "uni2",
     name: "Radiolucent with flecks",
+    details: "radiolucent internal structure with flecks (radiopaque zone) within it",
   },
   {
     id: "multilocular",
@@ -543,10 +598,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "wispy1",
     name: "Wispy or Thin",
+    details: "multilocular internal structure with linear wispy septa",
   },
   {
     id: "coarse1",
     name: "Coarse or Thick",
+    details: "multilocular internal structure with linear coarse septa",
   },
   {
     id: "curved",
@@ -557,18 +614,22 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "wispy2",
     name: "Wispy or Thin",
+    details: "multilocular internal structure with curved wispy septa",
   },
   {
     id: "coarse2",
     name: "Coarse or Thick",
+    details: "multilocular internal structure with curved coarse septa",
   },
   {
     id: "rarefaction",
     name: "Generalized rarefaction",
+    gpt: false,
   },
   {
     id: "mixed",
     name: "Radiopaque and Radiolucent (Mixed)",
+    details: "Radiopaque and Radiolucent (Mixed) internal structure",
   },
   {
     id: "effects-surr",
@@ -582,23 +643,28 @@ const symptoms: ISymptomRaw[] = [
   },
   {
     id: "eruption",
-    name: "Early eruption",
+    name: "Early (froced) eruption",
+    details: "tooth forced eruption",
   },
   {
     id: "displace-0",
     name: "Displacement",
+    details: "tooth or root displacement",
   },
   {
     id: "resorp-1",
     name: "Root resorption",
+    details: "root resorption",
   },
   {
     id: "dura",
     name: "Loss of lamina dura (without root resorption)",
+    details: "lamina dura is lost or destructed",
   },
   {
     id: "wide-0",
     name: "PDL space widening",
+    details: "pdl space widening",
   },
   {
     id: "ian-canal",
@@ -608,18 +674,22 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "displace-1",
     name: "Displacement",
+    details: "IAN canal displacement",
   },
   {
     id: "enlarge",
     name: "Enlargment",
+    details: "IAN canal enlargment",
   },
   {
     id: "destruct-0",
     name: "Destruction",
+    details: "IAN canal destruction",
   },
   {
     id: "sinus",
     name: "Invagination to sinus space",
+    details: "invagination of lesion to sinus space",
   },
   {
     id: "corital-bone",
@@ -630,14 +700,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "expand",
     name: "Expansion or displacement without destruction or perforation",
+    details: "expansion or displacement of cortical bone without destruction or perforation",
   },
   {
     id: "destruct-3",
     name: "Expansion or displacement with destruction or perforation",
+    details: "destruction or perforation of cortical bone",
   },
   {
     id: "extend",
     name: "Extension within bone without expansion or destruction",
+    details: "extension within bone without expansion or destruction of cortical bone",
   },
   {
     id: "necrotic",
@@ -647,10 +720,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "sequestrum",
     name: "Sequestrum (Bone island)",
+    details: "sequestrum (Bone island)",
   },
   {
     id: "fracture",
     name: "Pathologic fracture",
+    details: "pathologic fracture",
   },
   {
     id: "periosteal-reaction",
@@ -661,26 +736,32 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "single",
     name: "Single layer",
+    details: "single layer periosteal reaction",
   },
   {
     id: "onion",
     name: "Mulitlayered(Onion skin)",
+    details: "mulitlayered (onion skin) periosteal reaction",
   },
   {
     id: "solid",
     name: "Solid",
+    gpt: false,
   },
   {
     id: "compelx",
     name: "Disorganized or Complex",
+    gpt: false,
   },
   {
     id: "codman",
     name: "codman triangle",
+    details: "codman triangle periosteal reaction",
   },
   {
     id: "spiculated",
     name: "Spiculated or Sunburst",
+    details: "spiculated or sunburst periosteal reaction",
   },
 ] as const;
 
