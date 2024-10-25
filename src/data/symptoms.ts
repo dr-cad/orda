@@ -481,12 +481,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "unilateral-right",
     name: "Right",
-    gpt: false,
+    details: "unilateral lesion at right side of mandible or maxilla",
   },
   {
     id: "unilateral-left",
     name: "Left",
-    gpt: false,
+    details: "unilateral lesion at left side of mandible or maxilla",
   },
   {
     id: "bilateral",
