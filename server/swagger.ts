@@ -32,7 +32,7 @@ const swagger: OpenAPI3 = {
     title: "Jaw bone lesion detection app",
     summary: "A jaw bone lesion detection program.",
     description: "This is an app that classifies jaw bone lesions.",
-    version: "1.0.1",
+    version: "1.0.2",
   },
   servers: [
     {
