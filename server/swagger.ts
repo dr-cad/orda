@@ -1,10 +1,12 @@
+import type { OpenAPI3 } from "openapi-typescript/dist/types.d.ts";
 import symptoms from "../src/data/symptoms";
 import { SymptomType } from "../src/types";
 
 const properties = {};
 symptoms.forEach((s) => {
   if (s.gpt === false || s.options) return;
-  properties[s.id] = {
+  const sid = s.id.replace(/-/g, "_"); // make it readable for gpt
+  properties[sid] = {
     title: s.name,
     description: s.details,
     type:
@@ -24,8 +26,8 @@ symptoms.forEach((s) => {
 
 // const required = symptoms.filter((s) => s.required).map((s) => s.id);
 
-const swagger = {
-  swagger: "2.0",
+const swagger: OpenAPI3 = {
+  openapi: "3.0.0",
   info: {
     title: "Jaw bone lesion detection app",
     summary: "A jaw bone lesion detection program.",
@@ -36,6 +38,7 @@ const swagger = {
     {
       url: "https://orda.onrender.com",
       description: "API root endpoint",
+      variables: {},
     },
   ],
   paths: {
@@ -86,12 +89,12 @@ const swagger = {
             },
             name: {
               type: "string",
-              description: "Name of the disease",
+              description: "Name of the lesion",
             },
             probablity: {
               type: "integer",
               format: "int32",
-              description: "Probablity score of the disease",
+              description: "Probablity score of the lesion",
             },
           },
         },

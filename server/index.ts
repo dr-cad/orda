@@ -38,10 +38,10 @@ app.get("/v2/swagger.json", (_, res) => {
 });
 
 app.post("/process", (req, res) => {
-  const symptoms: ISymptom[] = getSymptoms();
+  const symptoms: ISymptom[] = getSymptoms(); // raw data
   Object.keys(req.body).forEach((k) => {
     const value = req.body[k];
-    const id = k.replace(/__/g, "-") as SId;
+    const id = k.replace(/__/g, "-").replace(/_/g, "-") as SId;
     updateSymptom(symptoms, id, value, true);
   });
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true })

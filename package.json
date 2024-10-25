@@ -79,6 +79,7 @@
     "husky": "^9.1.4",
     "lint-staged": "^15.2.9",
     "micromatch": "^4.0.8",
+    "openapi-typescript": "^7.4.1",
     "swagger-ui-express": "^5.0.1",
     "tsx": "^4.19.1",
     "typescript": "^5.4.5",
