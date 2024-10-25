@@ -55,17 +55,11 @@ export enum SymptomType {
   String = "string",
   Number = "number",
   Range = "range",
-  Date = "date", // not used yet
   Enum = "enum",
   None = "none",
 }
 
-export type Value =
-  | string
-  | number
-  | IRange
-  | Date // not used yet
-  | boolean;
+export type Value = string | number | IRange | boolean;
 
 export interface ISymptomRaw {
   id: SId;
@@ -82,6 +76,8 @@ export interface ISymptomRaw {
   max?: number;
   omitHash?: boolean;
   noInput?: boolean;
+  details?: string; // api description
+  gpt?: boolean; // to include in gpt api
 }
 
 export interface ISymptom extends ISymptomRaw {

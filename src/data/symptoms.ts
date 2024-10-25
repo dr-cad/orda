@@ -15,6 +15,7 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.String,
     open: true,
     omitHash: true,
+    gpt: false,
   },
   {
     id: "pat-age",
@@ -47,6 +48,7 @@ const symptoms: ISymptomRaw[] = [
     required: true,
     open: true,
     noInput: true,
+    gpt: false,
   },
   {
     id: "chief-comp",
@@ -87,7 +89,12 @@ const symptoms: ISymptomRaw[] = [
     name: "History & Clinical findings",
     desc: { title: "Patient's history \nand Clinical findings" },
     page: 3,
-    options: ["onset-course", "history-of-surgery", "hist-radio", "lymph", "impact", "sig-blood"],
+    options: ["onset-course", "history-of-surgery", "hist-radio", "recent-gingival", "lymph", "impact", "sig-blood"],
+  },
+  {
+    id: "recent-gingival",
+    name: "Gingival or periodontal problem",
+    gpt: false,
   },
   {
     id: "lymph",
@@ -115,10 +122,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "increase-1",
     name: "Increase",
+    gpt: false,
   },
   {
     id: "decrease-1",
     name: "Decrease",
+    gpt: false,
   },
   {
     id: "phosphorus",
@@ -129,10 +138,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "increase-2",
     name: "Increase",
+    gpt: false,
   },
   {
     id: "decrease-2",
     name: "Decrease",
+    gpt: false,
   },
   {
     id: "alkaline",
@@ -143,10 +154,12 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "increase-3",
     name: "Increase",
+    gpt: false,
   },
   {
     id: "decrease-3",
     name: "Decrease",
+    gpt: false,
   },
   {
     id: "hist-radio",
@@ -394,6 +407,7 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Range,
     min: 1,
     max: 12,
+    gpt: false,
   },
   {
     id: "mandible",
@@ -401,6 +415,7 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Range,
     min: 1,
     max: 12,
+    gpt: false,
   },
   {
     id: "both",
@@ -408,6 +423,7 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Range,
     min: 1,
     max: 12,
+    gpt: false,
   },
   {
     id: "side",
@@ -426,14 +442,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "unilateral-right",
     name: "Right",
+    gpt: false,
   },
   {
     id: "unilateral-left",
-    name: "LefT",
+    name: "Left",
+    gpt: false,
   },
   {
     id: "bilateral",
     name: "Bilateral",
+    gpt: false,
   },
   {
     id: "relation-tooth",

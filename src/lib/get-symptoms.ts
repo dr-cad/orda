@@ -6,7 +6,7 @@ const MAX_OPTIONS_TO_OPEN = 3;
 // TODO according to commit 32dc533, we need new validation, which ensures that input items (string, number, range), don't inlcude children
 // TODO page items should not have any type! - also define a new type "page" for that
 
-function getSymptoms(): ISymptom[] {
+export function getSymptoms(): ISymptom[] {
   const data: ISymptomRaw[] = rawSymptoms;
 
   const validate = () => {

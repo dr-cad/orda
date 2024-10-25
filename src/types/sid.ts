@@ -18,6 +18,7 @@ export type SId =
   | "trismus"
   // page 3
   | "pat-his-cli-fin"
+  | "recent-gingival"
   | "lymph"
   | "impact"
   | "history-of-surgery"

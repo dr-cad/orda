@@ -55,12 +55,12 @@ export function getSymptomsErrors(symptoms: ISymptom[]): IError[] {
  * @param arr list of all symptoms
  * @param id id of the symptom
  */
-export function recursivelyResetItem(arr: ISymptom[], id: string) {
+export function recursivelyResetItem(arr: ISymptom[], id: string, silent?: boolean) {
   // populate item
   const item = arr.find((x) => x.id === id);
   // reset if found
   if (item) {
-    console.log("Removing", item.id);
+    if (!silent) console.log("Removing", item.id);
     // reset self
     item.value = undefined;
     item.open = false; // close the item
@@ -77,11 +77,11 @@ export function recursivelyResetItem(arr: ISymptom[], id: string) {
  * @param arr list of all symptoms
  * @param id id of the symptom
  */
-export function recursivelyUpdateParents(arr: ISymptom[], id: string) {
+export function recursivelyUpdateParents(arr: ISymptom[], id: string, silent?: boolean) {
   // find a parent which has this id as a child
   const parent = arr.find((p) => p.options?.includes(id));
   if (parent) {
-    console.log("Updating Parent", parent.id);
+    if (!silent) console.log("Updating Parent", parent.id);
     parent.value = false;
     for (const option of parent.options ?? []) {
       // reset siblings of enum parent
@@ -92,5 +92,21 @@ export function recursivelyUpdateParents(arr: ISymptom[], id: string) {
       if (item?.value) parent.value = true;
     }
     recursivelyUpdateParents(arr, parent.id);
+  }
+}
+
+export function updateSymptom(arr: ISymptom[], id: string, value: ISymptom["value"], silent?: boolean) {
+  const item = arr.find((i) => i.id === id);
+  if (item) {
+    // NOTICE Quick fix: I excluded inputs from reseting - the reason why I did this is that, the input items don't have children.
+    const { hasInput } = digestSymptom(item);
+    // if unset occured and has options -> reset item -r
+    if (!value && !hasInput) recursivelyResetItem(arr, item.id, silent);
+    // update/reset value
+    if (!silent) console.log("Updating", id, value);
+    item.value = value;
+    recursivelyUpdateParents(arr, item.id, silent);
+  } else {
+    console.error("Couldnt find item", id);
   }
 }

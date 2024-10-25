@@ -5,7 +5,7 @@ import getSymptoms from "./get-symptoms.ts";
 
 const rawSymptoms = getSymptoms().data;
 
-function getDiseases() {
+export function getDiseases() {
   const data: IDisease[] = rawDiseases;
 
   const validate = () => {

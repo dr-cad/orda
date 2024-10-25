@@ -5,13 +5,14 @@ import { calc } from "./utils";
 interface IProps {
   symptoms: ISymptom[];
   diseases: IDisease[];
+  silent?: boolean;
 }
 
 export const epsilon = 0.01; // NOTICE lower number may cause NaN issue
 const inactive = epsilon; // any fucking number - no matter
 const getRate = (rate: number) => (rate === -1 ? epsilon : rate);
 
-const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
+const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[], silent?: boolean) => {
   // This will check if ranges-array exists and sort them by their rate
   const dfranges = factor.ranges ? _.orderBy(factor.ranges, (a) => getRate(a.rate), "desc") : null; // dfranges = disease factor ranges
 
@@ -29,10 +30,12 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
               !symptom.value.a ||
               !symptom.value.b
             ) {
-              console.error(
-                `Type mismatch for symptom.value ${symptom.id} expected range but got ${typeof symptom.value}`,
-                symptom.value
-              );
+              if (!silent) {
+                console.error(
+                  `Type mismatch for symptom.value ${symptom.id} expected range but got ${typeof symptom.value}`,
+                  symptom.value
+                );
+              }
               return inactive;
             }
             if (symptom.value.a >= range.a && symptom.value.b <= range.b) {
@@ -55,7 +58,7 @@ const getSymptomProbablity = (factor: IDiseaseFactor, symptoms: ISymptom[]) => {
     }
   }
 
-  console.error("Couldn't find factor", factor.sid);
+  if (!silent) console.error("Couldn't find factor", factor.sid);
   return 1;
 };
 
@@ -63,24 +66,24 @@ const FIX_FRAC = 100;
 // const FIX_FRAC = 1;
 
 // nominator
-const getDiseaseProbablity = (disease: IDisease, symptoms: ISymptom[]): number => {
-  console.groupCollapsed("Disease", disease.name);
-  const mul = disease.factors.reduce((v, factor) => v * getSymptomProbablity(factor, symptoms) * FIX_FRAC, 1);
-  console.groupEnd();
+const getDiseaseProbablity = (disease: IDisease, symptoms: ISymptom[], silent?: boolean): number => {
+  if (!silent) console.groupCollapsed("Disease", disease.name);
+  const mul = disease.factors.reduce((v, factor) => v * getSymptomProbablity(factor, symptoms, silent) * FIX_FRAC, 1);
+  if (!silent) console.groupEnd();
   return mul; // P(Di) * ∏j{P(Sj|Di)}
 };
 
-const getDiseaseProbablity_FIX_FRAC = (disease: IDisease, symptoms: ISymptom[]): number =>
-  getDiseaseProbablity(disease, symptoms) * FIX_FRAC;
+const getDiseaseProbablity_FIX_FRAC = (disease: IDisease, symptoms: ISymptom[], silent?: boolean): number =>
+  getDiseaseProbablity(disease, symptoms, silent) * FIX_FRAC;
 
-export default function getScores({ diseases, symptoms }: IProps): IDiseaseScored[] {
-  const nominators: number[] = diseases.map((disease) => getDiseaseProbablity_FIX_FRAC(disease, symptoms));
+export default function getScores({ diseases, symptoms, silent }: IProps): IDiseaseScored[] {
+  const nominators: number[] = diseases.map((disease) => getDiseaseProbablity_FIX_FRAC(disease, symptoms, silent));
   const dinaminator = nominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
   const pnominators: number[] = diseases.map((disease) =>
-    calc(disease.preval * getDiseaseProbablity_FIX_FRAC(disease, symptoms))
+    calc(disease.preval * getDiseaseProbablity_FIX_FRAC(disease, symptoms, silent))
   );
   const pdinaminator = pnominators.reduce((a, b) => calc(a + b), 0); // Σi{P(Di)} * ∏j{P(Sj|Di)}
-  console.log({ nominators, dinaminator, pnominators, pdinaminator });
+  if (!silent) console.log({ nominators, dinaminator, pnominators, pdinaminator });
   return diseases.map((disease, i) => ({
     ...disease,
     value: calc(nominators[i] / dinaminator),
