@@ -49,11 +49,14 @@ const swagger: OpenAPI3 = {
           "This endpoint receives symptoms from the patient and returns the list of most relevant jaw bone lesion by percentage",
         operationId: "lesionClassification",
         requestBody: {
+          summary: "Symptoms and their values",
+          description: "Request body contains the value for each symptom given by the user",
           content: {
             "application/json": {
               schema: {
                 $ref: "#/components/schemas/Symptoms",
               },
+              examples: {}, // TODO
             },
           },
         },
@@ -65,6 +68,7 @@ const swagger: OpenAPI3 = {
                 schema: {
                   $ref: "#/components/schemas/Scores",
                 },
+                examples: {}, // TODO
               },
             },
           },
