@@ -446,7 +446,7 @@ const symptoms: ISymptomRaw[] = [
     min: 1,
     max: 12,
     details:
-      "tuberosity (from 3 to 4) - third molar (from 4 to 5) - second molar (from 5 to 6) - first molar (from 6 to 7) - molars region (from 4 to 7) - second premolar (from 7 to 8) - first premolar (from 8 to 9) - canine (from 9 to 10) - lateral (from 10 to 11) - central (from 11 to 12) - incisors (from 10 to 12)",
+      "Maxilla: tuberosity (from 3 to 4) - third molar (from 4 to 5) - second molar (from 5 to 6) - first molar (from 6 to 7) - molars region (from 4 to 7) - second premolar (from 7 to 8) - first premolar (from 8 to 9) - canine (from 9 to 10) - lateral (from 10 to 11) - central (from 11 to 12) - incisors (from 10 to 12)",
   },
   {
     id: "mandible",
@@ -455,7 +455,7 @@ const symptoms: ISymptomRaw[] = [
     min: 1,
     max: 12,
     details:
-      "condyle (from 1 to 2) - beginning of ramus (from 3 to 4) - ramus (from 2 to 4) - third molar (from 4 to 5) - second molar (from 5 to 6) - first molar (from 6 to 7) - molars region (from 4 to 7) - second premolar (from 7 to 8) - first premolar (from 8 to 9) - canine (from 9 to 10) - lateral (from 10 to 11) - central (from 11 to 12) - incisors (from 10 to 12)",
+      "Mandible: condyle (from 1 to 2) - beginning of ramus (from 3 to 4) - ramus (from 2 to 4) - third molar (from 4 to 5) - second molar (from 5 to 6) - first molar (from 6 to 7) - molars region (from 4 to 7) - second premolar (from 7 to 8) - first premolar (from 8 to 9) - canine (from 9 to 10) - lateral (from 10 to 11) - central (from 11 to 12) - incisors (from 10 to 12)",
   },
   {
     id: "both",
