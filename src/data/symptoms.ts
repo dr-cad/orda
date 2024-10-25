@@ -87,11 +87,7 @@ const symptoms: ISymptomRaw[] = [
     name: "History & Clinical findings",
     desc: { title: "Patient's history \nand Clinical findings" },
     page: 3,
-    options: ["onset-course", "history-of-surgery", "hist-radio", "recent-gingival", "lymph", "impact", "sig-blood"],
-  },
-  {
-    id: "recent-gingival",
-    name: "Gingival or periodontal problem",
+    options: ["onset-course", "history-of-surgery", "hist-radio", "lymph", "impact", "sig-blood"],
   },
   {
     id: "lymph",
