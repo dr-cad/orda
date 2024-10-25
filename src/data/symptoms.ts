@@ -32,7 +32,6 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Enum,
     options: ["pat-male", "pat-female"],
     open: true,
-    details: "patient gender"
   },
   {
     id: "pat-male",
@@ -88,7 +87,7 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "pain-0",
     name: "Pain",
-    details: "pain (facial or tooth or general pain)"
+    details: "pain (facial or tooth or general pain)",
   },
   {
     id: "trismus",
@@ -446,7 +445,8 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Range,
     min: 1,
     max: 12,
-    gpt: false,
+    details:
+      "tuberosity (from 3 to 4) - third molar (from 4 to 5) - second molar (from 5 to 6) - first molar (from 6 to 7) - molars region (from 4 to 7) - second premolar (from 7 to 8) - first premolar (from 8 to 9) - canine (from 9 to 10) - lateral (from 10 to 11) - central (from 11 to 12) - incisors (from 10 to 12)",
   },
   {
     id: "mandible",
@@ -454,7 +454,8 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Range,
     min: 1,
     max: 12,
-    gpt: false,
+    details:
+      "condyle (from 1 to 2) - beginning of ramus (from 3 to 4) - ramus (from 2 to 4) - third molar (from 4 to 5) - second molar (from 5 to 6) - first molar (from 6 to 7) - molars region (from 4 to 7) - second premolar (from 7 to 8) - first premolar (from 8 to 9) - canine (from 9 to 10) - lateral (from 10 to 11) - central (from 11 to 12) - incisors (from 10 to 12)",
   },
   {
     id: "both",
@@ -462,7 +463,9 @@ const symptoms: ISymptomRaw[] = [
     type: SymptomType.Range,
     min: 1,
     max: 12,
-    gpt: false,
+    details:
+      "On both regions (maxilla and mandible) selected: condyle (from 1 to 2) - beginning of ramus (from 3 to 4) - ramus (from 2 to 4) - third molar (from 4 to 5) - second molar (from 5 to 6) - first molar (from 6 to 7) - molars region (from 4 to 7) - second premolar (from 7 to 8) - first premolar (from 8 to 9) - canine (from 9 to 10) - lateral (from 10 to 11) - central (from 11 to 12) - incisors (from 10 to 12)",
+    // gpt: false, // TODO
   },
   {
     id: "side",
@@ -481,17 +484,17 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "unilateral-right",
     name: "Right",
-    details: "unilateral lesion at right side of mandible or maxilla",
+    details: "Unilateral lesion at right side of mandible or maxilla",
   },
   {
     id: "unilateral-left",
     name: "Left",
-    details: "unilateral lesion at left side of mandible or maxilla",
+    details: "Unilateral lesion at left side of mandible or maxilla",
   },
   {
     id: "bilateral",
     name: "Bilateral",
-    gpt: false,
+    details: "Bilateral lesion at both sides of mandible or maxilla",
   },
   {
     id: "relation-tooth",
@@ -503,32 +506,32 @@ const symptoms: ISymptomRaw[] = [
   {
     id: "pericoronal",
     name: "Pericoronal (Coronal to CEJ)",
-    details: "epicenter of lesion is in pericoronal position to tooth (lesion is coronal to CEJ)",
+    details: "Epicenter of lesion is in pericoronal position to tooth (lesion is coronal to CEJ)",
   },
   {
     id: "interradicular",
     name: "Root (Interradicular, Midroot or whole root)",
-    details: "epicenter of lesion is around whole root or mid root or between roots",
+    details: "Epicenter of lesion is around whole root or mid root or between roots",
   },
   {
     id: "periapical",
     name: "Periapical (Only apex area)",
-    details: "epicenter of lesion is around the apex of tooth (periapical)",
+    details: "Epicenter of lesion is around the apex of tooth (periapical)",
   },
   {
     id: "related",
     name: "Not related to tooth",
-    details: "epicenter of lesion is non-odontogenic or lesion is not related to tooh",
+    details: "Epicenter of lesion is non-odontogenic or lesion is not related to tooh",
   },
   {
     id: "solitary",
     name: "Solitary",
-    details: "there is only one lesion or lesion type is solitary",
+    details: "There is only one lesion or lesion type is solitary",
   },
   {
     id: "multiple-separate",
     name: "Multiple seprate",
-    details: "there are multiple seperate lesion or lesion type is multipe seprate",
+    details: "There are multiple seperate lesion or lesion type is multipe seprate",
   },
   {
     id: "diffuse",

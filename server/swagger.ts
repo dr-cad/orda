@@ -1,24 +1,30 @@
-import type { OpenAPI3 } from "openapi-typescript/dist/types.d.ts";
+import type { ObjectSubtype, OpenAPI3 } from "openapi-typescript/dist/types.d.ts";
 import symptoms from "../src/data/symptoms";
 import { SymptomType } from "../src/types";
 
-const properties = {};
+const properties: ObjectSubtype["properties"] = {};
+
 symptoms.forEach((s) => {
   if (s.gpt === false || s.options) return;
   const sid = s.id.replace(/-/g, "_"); // make it readable for gpt
   properties[sid] = {
     title: s.name,
     description: s.details,
-    type:
-      s.type === SymptomType.String
-        ? "string"
-        : s.type === SymptomType.Number
-        ? "integer"
-        : s.type === SymptomType.Range
-        ? "object"
-        : "boolean", // None
+    type: (s.type === SymptomType.String
+      ? "string"
+      : s.type === SymptomType.Number
+      ? "integer"
+      : s.type === SymptomType.Range
+      ? "object"
+      : "boolean") as any,
     format: s.type === SymptomType.Number ? "int32" : undefined,
-    properties: s.type === SymptomType.Range ? { a: "integer", b: "integer" } : undefined,
+    properties:
+      s.type === SymptomType.Range
+        ? {
+            a: { type: "integer", title: "from", description: "Starting point number of the specific region" },
+            b: { type: "integer", title: "to", description: "Finishing point number of the specific region" },
+          }
+        : undefined,
     minimum: s.min,
     maximum: s.max,
   };
@@ -27,7 +33,7 @@ symptoms.forEach((s) => {
 // const required = symptoms.filter((s) => s.required).map((s) => s.id);
 
 const swagger: OpenAPI3 = {
-  openapi: "3.0.0",
+  openapi: "3.1.0",
   info: {
     title: "Jaw bone lesion detection app",
     summary: "A jaw bone lesion detection program.",
@@ -40,11 +46,11 @@ const swagger: OpenAPI3 = {
       description: "API root endpoint",
       variables: {},
     },
-    {
-      url: "http://localhost:3000",
-      description: "API root endpoint for development",
-      variables: {},
-    },
+    // {
+    //   url: "http://localhost:3000",
+    //   description: "API root endpoint for development",
+    //   variables: {},
+    // },
   ],
   paths: {
     "/process": {

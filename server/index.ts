@@ -33,7 +33,7 @@ app.get("/privacy", (_, res) => {
   res.send(privacy);
 });
 
-app.get("/v2/swagger.json", (_, res) => {
+app.get("/v3/swagger.json", (_, res) => {
   res.send(swagger);
 });
 
