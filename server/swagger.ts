@@ -68,14 +68,8 @@ const swagger: OpenAPI3 = {
                 $ref: "#/components/schemas/Symptoms",
               },
               examples: {
-                Alex: {
+                Alexis: {
                   $ref: "#/components/examples/Alex",
-                },
-                Bob: {
-                  $ref: "#/components/examples/Bob",
-                },
-                Charlie: {
-                  $ref: "#/components/examples/Charlie",
                 },
               },
             },
@@ -91,14 +85,8 @@ const swagger: OpenAPI3 = {
                   $ref: "#/components/schemas/Scores",
                 },
                 examples: {
-                  "Periapical Abscess": {
-                    $ref: "#/components/examples/Periapical Abscess",
-                  },
                   "Dentigerous Cyst": {
                     $ref: "#/components/examples/Dentigerous Cyst",
-                  },
-                  "Ossifying Fibroma": {
-                    $ref: "#/components/examples/Ossifying Fibroma",
                   },
                 },
               },
@@ -138,67 +126,23 @@ const swagger: OpenAPI3 = {
     },
     examples: {
       // requestBodies
-      Alex: {
-        summary: "", // TODO
-        description: "", // TODO
+      Alexis: {
+        summary: "Example of a symptoms report mapped to symptoms values by their id",
+        description:
+          "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
         value: {
-          pat_age: 35,
-          pat_male: true,
-          bleeding: true,
-        },
-      },
-      Bob: {
-        summary: "", // TODO
-        description: "", // TODO
-        value: {
-          pat_age: 15,
-          pat_male: true,
-          soft_tissue: true,
-        },
-      },
-      Charlie: {
-        summary: "", // TODO
-        description: "", // TODO
-        value: {
-          pat_age: 15,
+          pat_age: 32,
           pat_female: true,
-          soft_capsule: true,
+          moderate_0: true,
+          corticated: true,
+          mandible: { a: 4, b: 5 },
+          unilateral_left: true,
+          pericoronal: true,
+          extend: true,
+          uni1: true,
         },
       },
       // responses
-      "Periapical Abscess": {
-        summary: "", // TODO
-        description: "", // TODO
-        value: {
-          scores: [
-            {
-              id: "abscess",
-              name: "Periapical Abscess",
-              probablity: 46,
-            },
-            {
-              id: "radicular",
-              name: "Radicular Cyst",
-              probablity: 25,
-            },
-            {
-              id: "dentigerous",
-              name: "Dentigerous Cyst",
-              probablity: 12,
-            },
-            {
-              id: "okc",
-              name: "Odontogenic keratocyst",
-              probablity: 3,
-            },
-            {
-              id: "hemangioma",
-              name: "Central Hemangioma",
-              probablity: 3,
-            },
-          ],
-        },
-      },
       "Dentigerous Cyst": {
         summary: "", // TODO
         description: "", // TODO
@@ -207,60 +151,27 @@ const swagger: OpenAPI3 = {
             {
               id: "dentigerous",
               name: "Dentigerous Cyst",
-              probablity: 38,
+              probablity: 75,
             },
             {
-              id: "cgcg",
-              name: "Central Giant Cell",
-              probablity: 26,
+              id: "myxoma",
+              name: "Odontogenic Myxoma",
+              probablity: 11,
+            },
+            {
+              id: "okc",
+              name: "Odontogenic keratocyst",
+              probablity: 7,
+            },
+            {
+              id: "unicystic",
+              name: "Unicystic/Mural Ameloblastoma",
+              probablity: 4,
             },
             {
               id: "abscess",
               name: "Periapical Abscess",
-              probablity: 13,
-            },
-            {
-              id: "radicular",
-              name: "Radicular Cyst",
-              probablity: 7,
-            },
-            {
-              id: "multicystic",
-              name: "Multicystic/Solid Ameloblastoma",
-              probablity: 4,
-            },
-          ],
-        },
-      },
-      "Ossifying Fibroma": {
-        summary: "", // TODO
-        description: "", // TODO
-        value: {
-          scores: [
-            {
-              id: "ossifying-fibroma",
-              name: "Ossifying Fibroma",
-              probablity: 52,
-            },
-            {
-              id: "osteoblastoma",
-              name: "Osteoblastoma",
-              probablity: 15,
-            },
-            {
-              id: "abscess",
-              name: "Periapical Abscess",
-              probablity: 15,
-            },
-            {
-              id: "radicular",
-              name: "Radicular Cyst",
-              probablity: 7,
-            },
-            {
-              id: "dentigerous",
-              name: "Dentigerous Cyst",
-              probablity: 4,
+              probablity: 2,
             },
           ],
         },
