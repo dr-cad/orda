@@ -1213,7 +1213,6 @@ const diseases: IDisease[] = [
       },
       { sid: "pat-male", rate: 0.5 },
       { sid: "pat-female", rate: 0.5 },
-      { sid: "recent-gingival", rate: -1 },
       { sid: "lymph", rate: 0.15 },
       { sid: "impact", rate: -1 },
       { sid: "history-of-surgery", rate: -1 },
