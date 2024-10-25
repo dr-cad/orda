@@ -28,7 +28,7 @@ symptoms.forEach((s) => {
   if (s.gpt === false || s.options) return;
   const sid = getSId(s.id); // make it readable for gpt
   properties[sid] = {
-    title: s.name,
+    title: s.title ?? s.name,
     description: s.details,
     type: (s.type === SymptomType.String
       ? "string"
@@ -91,7 +91,10 @@ const swagger: OpenAPI3 = {
               },
               examples: {
                 Alexis: {
-                  $ref: "#/components/examples/Alex",
+                  $ref: "#/components/examples/Alexis",
+                },
+                Barbara: {
+                  $ref: "#/components/examples/Barbara",
                 },
               },
             },
@@ -164,12 +167,26 @@ const swagger: OpenAPI3 = {
           uni1: true,
         },
       },
-      Bob: {
+      Barbara: {
         summary: "Example of a symptoms report mapped to symptoms values by their id",
         description:
-          "Panoramic findings illustrates unilateral, solitary, multilocular radiolucent lesion with scalloped, well-defined, and non-corticated border in Rt side of mandible at apex or molars with expansion of cortical bone",
+          "24 old female with report of swelling or pain which she reported gradually increased in 2years. The lesion was hard on palpation.Panoramic findings illustrates unilateral, solitary, mixed radiolucent and radiopaque non-odontogenic lesion with irregular, ill-defined , and blending border in Rt side of mandible at ramus to incisors region with expansion of cortical bone and loss of lamina dura.",
         value: {
-          // TODO
+          pat_age: 24,
+          pat_female: true,
+          swelling: true,
+          pain_0: true,
+          slow_0: true,
+          bony_hard: true,
+          mandible: { a: 2, b: 12 },
+          unilateral_right: true,
+          solitary: true,
+          mixed: true,
+          irregular: true,
+          blending: true,
+          related: true,
+          expand: true,
+          dura: true,
         },
       },
       // responses

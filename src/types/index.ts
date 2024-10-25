@@ -76,7 +76,8 @@ export interface ISymptomRaw {
   max?: number;
   omitHash?: boolean;
   noInput?: boolean;
-  details?: string; // api description
+  details?: string; // api description for gpt
+  title?: string; // open-api title for gpt
   gpt?: boolean; // to include in gpt api
 }
 
