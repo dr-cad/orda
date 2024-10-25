@@ -68,9 +68,9 @@ const swagger: OpenAPI3 = {
                 $ref: "#/components/schemas/Symptoms",
               },
               examples: {
-                Alexis: {
-                  $ref: "#/components/examples/Alex",
-                },
+                // Alexis: {
+                //   $ref: "#/components/examples/Alex",
+                // },
               },
             },
           },
@@ -126,22 +126,22 @@ const swagger: OpenAPI3 = {
     },
     examples: {
       // requestBodies
-      Alexis: {
-        summary: "Example of a symptoms report mapped to symptoms values by their id",
-        description:
-          "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
-        value: {
-          pat_age: 32,
-          pat_female: true,
-          moderate_0: true,
-          corticated: true,
-          mandible: { a: 4, b: 5 },
-          unilateral_left: true,
-          pericoronal: true,
-          extend: true,
-          uni1: true,
-        },
-      },
+      // Alexis: {
+      //   summary: "Example of a symptoms report mapped to symptoms values by their id",
+      //   description:
+      //     "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
+      //   value: {
+      //     pat_age: 32,
+      //     pat_female: true,
+      //     moderate_0: true,
+      //     corticated: true,
+      //     mandible: { a: 4, b: 5 },
+      //     unilateral_left: true,
+      //     pericoronal: true,
+      //     extend: true,
+      //     uni1: true,
+      //   },
+      // },
       // responses
       "Dentigerous Cyst": {
         summary: "", // TODO
