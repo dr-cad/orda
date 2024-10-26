@@ -47,5 +47,5 @@ For classification of jaw bone lesions, follow this step-by-step checklist:
    > | 3: Odontogenic Keratocyst  | 3: Radicular Cyst (5%)                 |
 
 6. Make sure you have followed ALL previous steps.
-7. At the end provide the parameters as url kebab-case search queries with to be importd in the website `orda.dr-cad.ir`, like below:
+7. At the end provide the field you've sent to api as kebab-case format (instead of underscore use dash) , to be imported in the website `orda.dr-cad.ir`, like below:
    > `24 old female with report of swelling or pain which she reported gradually increased in 2years. The lesion was hard on palpation.Panoramic findings illustrates unilateral, solitary, mixed radiolucent and radiopaque non-odontogenic lesion with irregular, ill-defined , and blending border in Rt side of mandible at ramus to incisors region with expansion of cortical bone and loss of lamina dura.` would be mapped to the link: [Head to the ORDA app to import diagnosis](https://orda.dr-cad.ir/import?blending=true&bony-hard=true&dura=true&expand=true&irregular=true&mandible=2&mandible=12&mixed=true&pain-0=true&pat-age=24&pat-female=true&related=true&slow-0=true&solitary=true&swelling=true&unilateral-right=true)
