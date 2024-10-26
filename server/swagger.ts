@@ -52,7 +52,7 @@ symptoms.forEach((s) => {
   if (warning) rules.push(warning);
 });
 
-// const required = symptoms.filter((s) => s.required).map((s) => s.id);
+// const required: SId[] = ["pat-age"];
 
 const swagger: OpenAPI3 = {
   openapi: "3.1.0",
