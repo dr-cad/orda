@@ -13,6 +13,7 @@ export default function ImportPage() {
   const updateSymptom = useBufferStore((s) => s.updateSymptom);
   const reset = useBufferStore((s) => s.reset);
 
+  // parse symptoms from url-params
   const symptoms = useMemo(() => {
     const output: ISymptom[] = [];
     getSymptoms().forEach((s) => {
@@ -43,7 +44,7 @@ export default function ImportPage() {
   const handleImport = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    reset();
+    reset(); // reset buffer - prepare before load
     symptoms.forEach((s) => {
       updateSymptom(s.id, s.value!); // sure they have value
     });

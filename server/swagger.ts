@@ -152,7 +152,7 @@ const swagger: OpenAPI3 = {
     examples: {
       // requestBodies
       Alexis: {
-        summary: "Alexix",
+        summary: "Alexis",
         description:
           "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
         value: {
