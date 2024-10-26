@@ -11,6 +11,7 @@ export default function ImportPage() {
 
   const showSnackbar = useAppStore((s) => s.showSnackbar);
   const updateSymptom = useBufferStore((s) => s.updateSymptom);
+  const reset = useBufferStore((s) => s.reset);
 
   const symptoms = useMemo(() => {
     const output: ISymptom[] = [];
@@ -42,6 +43,7 @@ export default function ImportPage() {
   const handleImport = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    reset();
     symptoms.forEach((s) => {
       updateSymptom(s.id, s.value!); // sure they have value
     });
