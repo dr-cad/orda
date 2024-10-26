@@ -29,6 +29,10 @@ app.get("/", (_, res) => {
   res.redirect("/api");
 });
 
+app.get("/healthz", (_, res) => {
+  res.send("We are live!");
+});
+
 app.get("/privacy", (_, res) => {
   res.send(privacy);
 });

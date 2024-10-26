@@ -150,3 +150,9 @@ img.desc-img {
   left: 50%;
   transform: translateX(-50%);
 }
+
+.dashed-box {
+  border-radius: 14px;
+  border: 2px dashed #fff2;
+  background-color: #ffffff12;
+}

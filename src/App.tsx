@@ -2,6 +2,7 @@ import { clarity } from "react-microsoft-clarity";
 import { Navigate, Route, Routes } from "react-router-dom";
 import PageLayout from "./components/PageLayout";
 import HistoryPage from "./pages/HistoryPage";
+import ImportPage from "./pages/ImportPage";
 import IntroPage from "./pages/IntroPage";
 import ReportPage from "./pages/ReportPage";
 import ResultPage from "./pages/ResultPage";
@@ -25,6 +26,7 @@ export default function App() {
       />
       <Route path="/result/:id" element={<PageLayout children={<ResultPage />} />} />
       <Route path="/report/:id" element={<PageLayout children={<ReportPage />} />} />
+      <Route path="/import" element={<PageLayout children={<ImportPage />} />} />
       <Route path="*" element={<Navigate to="/intro" replace />} />
     </Routes>
   );
