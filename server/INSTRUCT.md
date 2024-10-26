@@ -47,3 +47,5 @@ For classification of jaw bone lesions, follow this step-by-step checklist:
    > | 3: Odontogenic Keratocyst  | 3: Radicular Cyst (5%)                 |
 
 6. Make sure you have followed ALL previous steps.
+
+![Anatamic location Image](https://orda.dr-cad.ir/assets/ana-loc-BgiBNui0.webp)

@@ -110,8 +110,8 @@ const swagger: OpenAPI3 = {
                   $ref: "#/components/schemas/Scores",
                 },
                 examples: {
-                  "Dentigerous Cyst": {
-                    $ref: "#/components/examples/Dentigerous Cyst",
+                  Dentigerous_Cyst: {
+                    $ref: "#/components/examples/Dentigerous_Cyst",
                   },
                 },
               },
@@ -152,7 +152,7 @@ const swagger: OpenAPI3 = {
     examples: {
       // requestBodies
       Alexis: {
-        summary: "Example of a symptoms report mapped to symptoms values by their id",
+        summary: "Alexix",
         description:
           "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
         value: {
@@ -168,7 +168,7 @@ const swagger: OpenAPI3 = {
         },
       },
       Barbara: {
-        summary: "Example of a symptoms report mapped to symptoms values by their id",
+        summary: "Barbara",
         description:
           "24 old female with report of swelling or pain which she reported gradually increased in 2years. The lesion was hard on palpation.Panoramic findings illustrates unilateral, solitary, mixed radiolucent and radiopaque non-odontogenic lesion with irregular, ill-defined , and blending border in Rt side of mandible at ramus to incisors region with expansion of cortical bone and loss of lamina dura.",
         value: {
@@ -190,8 +190,8 @@ const swagger: OpenAPI3 = {
         },
       },
       // responses
-      "Dentigerous Cyst": {
-        summary: "Dentigerous Cyst lesion detected",
+      Dentigerous_Cyst: {
+        summary: "Dentigerous Cyst",
         description: "Dentigerous Cyst and 2 more lesions detected by the api",
         value: {
           scores: [
