@@ -64,15 +64,15 @@ const swagger: OpenAPI3 = {
   },
   servers: [
     {
-      url: "https://orda.onrender.com",
+      url: "https://orda-api.dr-cad.ir",
       description: "API root endpoint",
       variables: {},
     },
-    // {
-    //   url: "http://localhost:3000",
-    //   description: "API root endpoint for development",
-    //   variables: {},
-    // },
+    {
+      url: "https://orda.onrender.com",
+      description: "Alternative API root endpoint on Render cloud",
+      variables: {},
+    },
   ],
   paths: {
     "/process": {
