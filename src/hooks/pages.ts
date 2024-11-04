@@ -8,12 +8,12 @@ export function usePageIndex() {
   const symptoms = useBufferStore((s) => s.symptoms);
 
   const nav = useNavigate();
-  const { pageIndex: pi } = useParams();
+  const { id } = useParams();
   const { pathname } = useLocation();
 
   const show = useMemo(() => pathname.startsWith("/list") || pathname.startsWith("/result"), [pathname]);
 
-  const pageIndex = useMemo(() => (pi ? parseInt(pi) - 1 : 0), [pi]);
+  const pageIndex = useMemo(() => (id ? parseInt(id) - 1 : 0), [id]);
   const pages = useMemo(() => symptoms.filter((i) => i.page), [symptoms]);
   const currPage = pages[pageIndex];
 

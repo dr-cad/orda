@@ -1,10 +1,20 @@
 import { AddRounded, UploadFileOutlined } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup, Stack, Typography } from "@mui/material";
+import { RiRobot2Fill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 import Logo from "../components/favicon.svg?react";
 import useAppHistory from "../hooks/history";
+import { useBufferStore } from "../store";
 
 export default function IntroPage() {
   const { handleImportHistory, handleNewRecord } = useAppHistory();
+  const nav = useNavigate();
+  const resetAiInputs = useBufferStore((s) => s.resetAiInputs);
+
+  const handleNewAi = () => {
+    resetAiInputs();
+    nav("/ai/1");
+  };
 
   return (
     <Stack aria-label="intro-wrapper" flex={1} maxWidth={350} alignItems="center" textAlign="center" mx="auto">
@@ -13,13 +23,23 @@ export default function IntroPage() {
       <Typography variant="h3">Welcome to Oral Diagnosis App</Typography>
       <Box flex={1} />
       {/* <Typography variant="body2">Select and option to get started</Typography> */}
-      <Button
-        onClick={() => handleNewRecord()}
-        variant="contained"
-        startIcon={<AddRounded />}
-        sx={{ borderRadius: 4, px: 2 }}>
-        <Typography className="text-ellipsis">Create a New Record</Typography>
-      </Button>
+      <ButtonGroup>
+        <Button
+          onClick={handleNewRecord}
+          variant="contained"
+          startIcon={<AddRounded />}
+          sx={{ borderRadius: 4, px: 2 }}>
+          <Typography className="text-ellipsis">Create</Typography>
+        </Button>
+        <Button
+          onClick={handleNewAi}
+          variant="contained"
+          color="info"
+          endIcon={<RiRobot2Fill />}
+          sx={{ borderRadius: 4, px: 2 }}>
+          <Typography className="text-ellipsis">AI</Typography>
+        </Button>
+      </ButtonGroup>
       <Box flex="0 0 0.85rem" />
       <Button onClick={handleImportHistory} startIcon={<UploadFileOutlined />} sx={{ borderRadius: 4, px: 2 }}>
         <Typography className="text-ellipsis">Import Backup</Typography>

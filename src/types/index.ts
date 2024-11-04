@@ -151,3 +151,11 @@ export interface ICImage {
   // filename: string;
   hash: string;
 }
+
+// ai
+
+export interface IAiForm {
+  title: string;
+  questions: string[];
+  placeholder: string;
+}

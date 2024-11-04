@@ -5,6 +5,7 @@ import uuid4 from "uuid4";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { VERSION } from "../config/app";
+import { initInputs } from "../data/ai";
 import { exportHistory } from "../lib/history";
 import { emptyDiseases, emptySymptoms } from "../lib/raw";
 import getScores from "../lib/scores";
@@ -15,6 +16,10 @@ import { createStorage } from "./create";
 import { usePersistStore } from "./history";
 
 export interface BufferStore {
+  // ai buffer
+  aiInputs: string[];
+  setAiInputs: (inputs: string[]) => void;
+  resetAiInputs: () => void;
   // buffer
   uuid: string;
   symptoms: ISymptom[];
@@ -33,6 +38,10 @@ export interface BufferStore {
 export const useBufferStore = create(
   persist<BufferStore>(
     (set, get) => ({
+      // ai buffer
+      aiInputs: initInputs,
+      setAiInputs: (inputs) => set({ aiInputs: inputs }),
+      resetAiInputs: () => set({ aiInputs: initInputs }),
       // buffer
       uuid: uuid4(),
       symptoms: emptySymptoms,
