@@ -1,6 +1,6 @@
 import { AddRounded, UploadFileOutlined } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, Stack, Typography } from "@mui/material";
-import { RiRobot2Fill } from "react-icons/ri";
+import { RiRobot2Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import Logo from "../components/favicon.svg?react";
 import useAppHistory from "../hooks/history";
@@ -35,7 +35,7 @@ export default function IntroPage() {
           onClick={handleNewAi}
           variant="contained"
           color="info"
-          endIcon={<RiRobot2Fill />}
+          endIcon={<RiRobot2Line />}
           sx={{ borderRadius: 4, px: 2 }}>
           <Typography className="text-ellipsis">AI</Typography>
         </Button>
