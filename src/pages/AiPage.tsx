@@ -1,6 +1,7 @@
 import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
 import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { IAiThinkRef } from "../components/AiThink";
 import { forms } from "../data/ai";
 import { useBufferStore } from "../store";
 import { IAiForm } from "../types";
@@ -16,6 +17,7 @@ export default function AiPage() {
   const data = useBufferStore((s) => s.aiInputs);
   const setData = useBufferStore((s) => s.setAiInputs);
   const [loading, setLoading] = useState(false);
+  const aiThink = useRef<IAiThinkRef>(null!);
 
   const handleSubmit = (i: number, text?: string) => {
     if (loading) return; // TODO error
@@ -25,6 +27,7 @@ export default function AiPage() {
     setData(newData); // cache
     // next form
     if (!final) {
+      aiThink.current.nextLoop();
       return nav("/ai/" + (index + 2));
     }
     // process
@@ -42,16 +45,13 @@ export default function AiPage() {
   return (
     <Stack aria-label="ai-page" flex={1} position="relative" p={2}>
       <Stack mt={2} position="relative" alignItems="center" justifyContent="center">
-        <Box width="55%" sx={{ aspectRatio: 1 }}>
+        <Box width="45%" sx={{ aspectRatio: 1 }}>
           <Suspense>
-            <AiThink loading={loading} />
+            <AiThink ref={aiThink} loading={loading} />
           </Suspense>
         </Box>
-        <Typography position="absolute" variant="h5" align="center">
-          CAD.AI
-        </Typography>
       </Stack>
-      <Box flex="0.5 0 auto" />
+      <Box flex="0.25 0 1rem" />
       <AiForm
         {...form}
         key={index}
@@ -86,13 +86,13 @@ function AiForm({
         ))}
       </List>
       <Box flex="0 0 1rem" />
-      <TextField inputRef={input} defaultValue={cache} multiline rows={8} placeholder={placeholder} />
+      <TextField inputRef={input} defaultValue={cache} multiline rows={6} placeholder={placeholder} />
       <Box flex="0 0 1.5rem" />
       <Button
         variant="contained"
+        // disabled={loading}
         color={!loading ? "primary" : "secondary"}
-        disabled={loading}
-        sx={{ height: 44 }}
+        sx={{ height: 44, pointerEvents: !loading ? "auto" : "none" }}
         onClick={() => handleSubmit(input.current?.value)}>
         {buttonTitle}
       </Button>

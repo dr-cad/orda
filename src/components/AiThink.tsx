@@ -1,35 +1,61 @@
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
-import { useEffect, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import aiThink from "../assets/ai-think.json";
 
-const frames = 297;
+export const frames = 297; // for sake of performance
+const DEFAULT_SPEED = 0.5;
+const PROC_SPEED = 2;
 
 interface IProps {
   loading: boolean;
 }
 
-export default function AiThink({ loading }: IProps) {
+export interface IAiThinkRef {
+  nextLoop: () => void;
+}
+
+export interface BMCompleteEvent {
+  direction: number;
+  type: "complete";
+}
+
+export interface BMCompleteLoopEvent {
+  currentLoop: number;
+  direction: number;
+  totalLoops: number;
+  type: "loopComplete";
+}
+
+export interface BMDestroyEvent {
+  type: "destroy";
+}
+
+export interface BMEnterFrameEvent {
+  /** The current time in frames. */
+  currentTime: number;
+  direction: number;
+  /** The total number of frames. */
+  totalTime: number;
+  type: "enterFrame";
+}
+
+const AiThink = forwardRef<IAiThinkRef, IProps>(function AiThink({ loading }, ref) {
   const lottie = useRef<LottieRefCurrentProps>(null!);
+
+  useImperativeHandle(ref, () => ({
+    nextLoop() {
+      lottie.current.setSpeed(PROC_SPEED);
+      lottie.current.animationItem?.addEventListener("loopComplete", () => {
+        lottie.current.setSpeed(DEFAULT_SPEED);
+      });
+    },
+  }));
 
   useEffect(() => {
     const dur = lottie.current.getDuration();
     if (typeof dur === "undefined") return;
-    if (loading) {
-      lottie.current.setSpeed(2);
-      lottie.current.play();
-    } else {
-      lottie.current.setSpeed(0.25);
-      const mid = frames / 2;
-      lottie.current.animationItem?.addEventListener("enterFrame", (args) => {
-        if (args.currentTime < mid) return;
-        lottie.current.pause();
-        lottie.current.animationItem?.removeEventListener("enterFrame");
-      });
-      return () => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        lottie.current.animationItem?.removeEventListener("enterFrame");
-      };
-    }
+    if (loading) lottie.current.setSpeed(PROC_SPEED);
+    else lottie.current.setSpeed(DEFAULT_SPEED);
   }, [loading]);
 
   return (
@@ -43,4 +69,6 @@ export default function AiThink({ loading }: IProps) {
       }}
     />
   );
-}
+});
+
+export default AiThink;

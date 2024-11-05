@@ -156,3 +156,10 @@ img.desc-img {
   border: 2px dashed #fff2;
   background-color: #ffffff12;
 }
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(-360deg);
+    transform: rotate(-360deg);
+  }
+}
