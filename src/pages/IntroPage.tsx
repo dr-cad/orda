@@ -42,7 +42,7 @@ export default function IntroPage() {
       </ButtonGroup>
       <Box flex="0 0 0.85rem" />
       <Button onClick={handleImportHistory} startIcon={<UploadFileOutlined />} sx={{ borderRadius: 4, px: 2 }}>
-        <Typography className="text-ellipsis">Import Backup</Typography>
+        <Typography className="text-ellipsis">Import backup</Typography>
       </Button>
       <Box flex={1} />
     </Stack>

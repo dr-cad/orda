@@ -35,6 +35,7 @@
     ]
   },
   "include": [
-    "src"
+    "src",
+    "src/types/global.d.ts"
   ]
 }
