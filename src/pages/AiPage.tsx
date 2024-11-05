@@ -3,6 +3,7 @@ import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IAiThinkRef } from "../components/AiThink";
 import { forms } from "../data/ai";
+import { sleep } from "../lib/utils";
 import { useBufferStore } from "../store";
 import { IAiForm } from "../types";
 
@@ -19,9 +20,8 @@ export default function AiPage() {
   const [loading, setLoading] = useState(false);
   const aiThink = useRef<IAiThinkRef>(null!);
 
-  const handleSubmit = (i: number, text?: string) => {
+  const handleSubmit = async (i: number, text: string) => {
     if (loading) return; // TODO error
-    if (!text) return; // TODO error
     const newData = [...data];
     newData[i] = text;
     setData(newData); // cache
@@ -30,16 +30,16 @@ export default function AiPage() {
       aiThink.current.nextLoop();
       return nav("/ai/" + (index + 2));
     }
-    // process
+    // final - process
     const message = newData.join("\n");
     // play animation
     setLoading(true);
-    // api call
+    // TODO api call
     console.log(message);
-    setTimeout(() => {
-      setLoading(false);
-    }, 8000);
+    await sleep(8000);
+    setLoading(false);
     // nav to import page
+    nav("/import"); // TODO
   };
 
   return (
@@ -73,8 +73,9 @@ function AiForm({
   loading,
   buttonTitle,
   handleSubmit,
-}: IAiForm & { loading: boolean; cache: string; buttonTitle: string; handleSubmit: (text?: string) => void }) {
+}: IAiForm & { loading: boolean; cache: string; buttonTitle: string; handleSubmit: (text: string) => void }) {
   const input = useRef<HTMLInputElement>();
+  const [error, setError] = useState(false);
   return (
     <Stack p={2}>
       <Typography variant="h5">{title}</Typography>
@@ -86,14 +87,28 @@ function AiForm({
         ))}
       </List>
       <Box flex="0 0 1rem" />
-      <TextField inputRef={input} defaultValue={cache} multiline rows={6} placeholder={placeholder} />
+      <TextField
+        inputRef={input}
+        error={error}
+        helperText={error ? "Please fill this field!" : "..."}
+        onFocus={() => setError(false)}
+        defaultValue={cache}
+        multiline
+        rows={5}
+        placeholder={placeholder}
+        FormHelperTextProps={{ style: { color: error ? "yellow" : "transparent" } }}
+      />
       <Box flex="0 0 1.5rem" />
       <Button
         variant="contained"
         // disabled={loading}
         color={!loading ? "primary" : "secondary"}
         sx={{ height: 44, pointerEvents: !loading ? "auto" : "none" }}
-        onClick={() => handleSubmit(input.current?.value)}>
+        onClick={() => {
+          const text = input.current?.value;
+          if (!text) return setError(true);
+          handleSubmit(text);
+        }}>
         {buttonTitle}
       </Button>
     </Stack>
