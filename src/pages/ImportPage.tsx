@@ -41,14 +41,14 @@ export default function ImportPage() {
     return output;
   }, [params]);
 
-  const handleImport = (e: MouseEvent) => {
+  const handleImport = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    reset(); // reset buffer - prepare before load
+    await reset(); // reset buffer - prepare before load
     symptoms.forEach((s) => {
       updateSymptom(s.id, s.value!); // sure they have value
     });
-    showSnackbar("Import suceed!", "success");
+    showSnackbar("Import succeed!", "success");
     navigate("/list/1");
   };
 

@@ -42,6 +42,8 @@ export default function AiPage() {
     try {
       const res = await axios.post(baseURL + "/assistant", { message });
       if (!res.data.symptoms) return setError("Information is not enough!");
+      if (typeof res.data.symptoms === "string") return setError(res.data.symptoms);
+      console.log(res.data.symptoms);
       nav("/import?" + objectToUrlParams(res.data.symptoms));
     } finally {
       setLoading(false);

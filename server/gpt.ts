@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import { ISymptom } from "../src/types";
 import { properties } from "./swagger";
 
+const required = ["pat_age", "pat_name", "pat_female", "pat_male"];
+
 dotenv.config({ path: [".env.local", ".env"] });
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +20,7 @@ const client = new OpenAI({
 type Run = OpenAI.Beta.Threads.Runs.Run;
 type Fields = { [k: string]: ISymptom["value"] };
 
-export async function extractSymptoms(messageContent: string): Promise<Fields | undefined> {
+export async function extractSymptoms(messageContent: string): Promise<Fields | string | undefined> {
   // create an assistant
   const instructions = readFileSync(__dirname + "/GPTTOOL.md", "utf-8");
   const assistant = await client.beta.assistants.create({
@@ -36,6 +38,7 @@ export async function extractSymptoms(messageContent: string): Promise<Fields | 
           parameters: {
             type: "object",
             properties,
+            required,
           },
         },
       },
@@ -70,6 +73,10 @@ export async function extractSymptoms(messageContent: string): Promise<Fields | 
       })
       .filter((v) => typeof v === "string");
 
+    // stop the run - we don't need it anymore
+    client.beta.threads.runs.cancel(thread.id, run.id);
+
+    // response
     if (toolOutputs.length > 0) {
       return JSON.parse(toolOutputs[0]);
     }
@@ -77,10 +84,13 @@ export async function extractSymptoms(messageContent: string): Promise<Fields | 
     console.log("No tool outputs to submit.");
   };
 
-  const handleRunStatus = (run: Run): Fields | undefined => {
+  const handleRunStatus = async (run: Run): Promise<Fields | undefined> => {
     // Check if the run is completed
     if (run.status === "completed") {
       console.log("completed == wrong");
+      const messages = await client.beta.threads.messages.list(thread.id);
+      const text = (messages.data.find((m) => m.role === "assistant")?.content[0] as any)?.text?.value;
+      return text ?? undefined;
     } else if (run.status === "requires_action") {
       console.log("requires_action == good");
       console.log(run.status);
@@ -95,7 +105,7 @@ export async function extractSymptoms(messageContent: string): Promise<Fields | 
     const run = await client.beta.threads.runs.createAndPoll(thread.id, {
       assistant_id: assistant.id,
     });
-    return handleRunStatus(run);
+    return await handleRunStatus(run);
   } catch (err) {
     console.log(err);
   }

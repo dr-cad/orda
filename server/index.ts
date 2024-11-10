@@ -6,8 +6,8 @@ import { getDiseases } from "../src/lib/get-diseases";
 import { getSymptoms } from "../src/lib/get-symptoms";
 import getScores from "../src/lib/scores";
 import { updateSymptom } from "../src/lib/symptoms";
+import { sidUnderToHyphen } from "../src/lib/url";
 import { ISymptom } from "../src/types";
-import { SId } from "../src/types/sid";
 import { extractSymptoms } from "./gpt";
 import { apiRules, privacy } from "./strings";
 import swagger from "./swagger";
@@ -50,7 +50,7 @@ app.post("/process", (req, res) => {
   const symptoms: ISymptom[] = getSymptoms(); // raw data
   Object.keys(req.body).forEach((k) => {
     const value = req.body[k];
-    const id = k.replace(/__/g, "-").replace(/_/g, "-") as SId;
+    const id = sidUnderToHyphen(k);
     updateSymptom(symptoms, id, value, true);
   });
   const scores = getScores({ diseases: getDiseases(), symptoms, silent: true })

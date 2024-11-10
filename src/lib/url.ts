@@ -1,13 +1,17 @@
+import { SId } from "../types/sid";
+
 export function objectToUrlParams(obj: { [k: string]: any }) {
   const params = new URLSearchParams();
-  for (const key in obj) {
-    if (typeof obj[key] === "object") {
+  for (const k in obj) {
+    const key = sidUnderToHyphen(k);
+    const v = obj[k];
+    if (typeof v === "object") {
       // range
-      params.append(key, obj[key].a);
-      params.append(key, obj[key].b);
-    } else if (typeof obj[key] !== "undefined") {
+      params.append(key, v.a);
+      params.append(key, v.b);
+    } else if (typeof v !== "undefined") {
       // number, bool
-      params.append(key, obj[key]);
+      params.append(key, v);
     }
   }
   return params.toString();
@@ -20,4 +24,8 @@ export function urlParamsToObject(url: string) {
     obj[key] = value;
   }
   return obj;
+}
+
+export function sidUnderToHyphen(k: string) {
+  return k.replace(/__/g, "-").replace(/_/g, "-") as SId;
 }
