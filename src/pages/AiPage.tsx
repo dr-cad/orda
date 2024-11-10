@@ -1,9 +1,10 @@
 import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
+import axios from "axios";
 import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IAiThinkRef } from "../components/AiThink";
 import { forms } from "../data/ai";
-import { sleep } from "../lib/utils";
+import { objectToUrlParams } from "../lib/url";
 import { useBufferStore } from "../store";
 import { IAiForm } from "../types";
 
@@ -34,12 +35,12 @@ export default function AiPage() {
     const message = newData.join("\n");
     // play animation
     setLoading(true);
-    // TODO api call
-    console.log(message);
-    await sleep(8000);
+    // api call
+    const res = await axios.post("https://orda-api.dr-cad.ir/assistant", { message });
+    console.log(message, res.data);
     setLoading(false);
-    // nav to import page
-    nav("/import"); // TODO
+    if (!res.data) return; // TODO error
+    nav("/import?" + objectToUrlParams(res.data));
   };
 
   return (

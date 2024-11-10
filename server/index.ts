@@ -8,6 +8,7 @@ import getScores from "../src/lib/scores";
 import { updateSymptom } from "../src/lib/symptoms";
 import { ISymptom } from "../src/types";
 import { SId } from "../src/types/sid";
+import { extractSymptoms } from "./gpt";
 import { apiRules, privacy } from "./strings";
 import swagger from "./swagger";
 
@@ -59,6 +60,13 @@ app.post("/process", (req, res) => {
   console.log("Body:", JSON.stringify(req.body));
   console.log(scores.map(({ name, probablity }) => ({ name, probablity })));
   res.send({ scores });
+});
+
+app.post("/assistant", async (req, res) => {
+  const message = req.body.message;
+  if (!message) res.status(400).send({ error: "No message!" });
+  const symptoms = await extractSymptoms(message);
+  res.send({ symptoms });
 });
 
 app.listen(port, () => {

@@ -77,10 +77,10 @@ const swagger: OpenAPI3 = {
   paths: {
     "/process": {
       post: {
+        operationId: "lesionClassification",
         summary: "Find jaw bone lesions based on patient symptoms",
         description:
           "This endpoint receives symptoms from the patient and returns the list of most relevant jaw bone lesion by percentage",
-        operationId: "lesionClassification",
         requestBody: {
           summary: "Symptoms and their values",
           description: "Request body contains the value for each symptom given by the user",
@@ -219,4 +219,4 @@ const swagger: OpenAPI3 = {
 
 export default swagger;
 
-export { rules };
+export { properties, rules };
