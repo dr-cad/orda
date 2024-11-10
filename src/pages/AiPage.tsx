@@ -22,9 +22,10 @@ export default function AiPage() {
   const setData = useBufferStore((s) => s.setAiInputs);
   const [loading, setLoading] = useState(false);
   const aiThink = useRef<IAiThinkRef>(null!);
+  const [error, setError] = useState<string | undefined>();
 
   const handleSubmit = async (i: number, text: string) => {
-    if (loading) return; // TODO error
+    if (loading) return;
     const newData = [...data];
     newData[i] = text;
     setData(newData); // cache
@@ -38,11 +39,13 @@ export default function AiPage() {
     // play animation
     setLoading(true);
     // api call
-    const res = await axios.post(baseURL + "/assistant", { message });
-    console.log(message, res.data);
-    setLoading(false);
-    if (!res.data.symptoms) return; // TODO error
-    nav("/import?" + objectToUrlParams(res.data.symptoms));
+    try {
+      const res = await axios.post(baseURL + "/assistant", { message });
+      if (!res.data.symptoms) return setError("Information is not enough!");
+      nav("/import?" + objectToUrlParams(res.data.symptoms));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,6 +62,8 @@ export default function AiPage() {
         {...form}
         key={index}
         cache={data[index]}
+        error={error}
+        setError={setError}
         loading={loading}
         buttonTitle={!final ? "Confirm" : !loading ? "Process" : "Processing..."}
         handleSubmit={(text) => handleSubmit(index, text)}
@@ -74,11 +79,19 @@ function AiForm({
   placeholder,
   cache,
   loading,
+  error,
+  setError,
   buttonTitle,
   handleSubmit,
-}: IAiForm & { loading: boolean; cache: string; buttonTitle: string; handleSubmit: (text: string) => void }) {
+}: IAiForm & {
+  error: string | undefined;
+  setError: React.Dispatch<React.SetStateAction<string | undefined>>;
+  loading: boolean;
+  cache: string;
+  buttonTitle: string;
+  handleSubmit: (text: string) => void;
+}) {
   const input = useRef<HTMLInputElement>();
-  const [error, setError] = useState(false);
   return (
     <Stack p={2}>
       <Typography variant="h5">{title}</Typography>
@@ -92,12 +105,12 @@ function AiForm({
       <Box flex="0 0 1rem" />
       <TextField
         inputRef={input}
-        error={error}
-        helperText={error ? "Please fill this field!" : "..."}
-        onFocus={() => setError(false)}
+        error={!!error}
+        helperText={error ?? "..."}
+        onFocus={() => setError(undefined)}
         defaultValue={cache}
         multiline
-        rows={5}
+        rows={8}
         placeholder={placeholder}
         FormHelperTextProps={{ style: { color: error ? "yellow" : "transparent" } }}
       />
@@ -109,7 +122,7 @@ function AiForm({
         sx={{ height: 44, pointerEvents: !loading ? "auto" : "none" }}
         onClick={() => {
           const text = input.current?.value;
-          if (!text) return setError(true);
+          if (!text) return setError("Please fill this field!");
           handleSubmit(text);
         }}>
         {buttonTitle}
