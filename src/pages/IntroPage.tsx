@@ -1,20 +1,13 @@
 import { AddRounded, UploadFileOutlined } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import { RiRobot2Line } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
 import Logo from "../components/favicon.svg?react";
+import useAI from "../hooks/ai";
 import useAppHistory from "../hooks/history";
-import { useBufferStore } from "../store";
 
 export default function IntroPage() {
   const { handleImportHistory, handleNewRecord } = useAppHistory();
-  const nav = useNavigate();
-  const resetAiInputs = useBufferStore((s) => s.resetAiInputs);
-
-  const handleNewAi = () => {
-    resetAiInputs();
-    nav("/ai/1");
-  };
+  const { handleNewAi } = useAI();
 
   return (
     <Stack aria-label="intro-wrapper" flex={1} maxWidth={350} alignItems="center" textAlign="center" mx="auto">

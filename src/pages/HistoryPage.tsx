@@ -1,4 +1,14 @@
-import { Box, Button, IconButton, InputAdornment, Stack, TextField, Tooltip } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useDeferredValue, useState } from "react";
 import {
   FcAlphabeticalSortingAz,
@@ -9,7 +19,9 @@ import {
   FcSearch,
   FcUp,
 } from "react-icons/fc";
+import { RiRobot2Fill } from "react-icons/ri";
 import HistoryList from "../components/HistoryList";
+import useAI from "../hooks/ai";
 import useAppHistory from "../hooks/history";
 import { SortDir, SortType } from "../types";
 
@@ -19,6 +31,7 @@ export default function HistoryPage() {
   const [sortType, setSortType] = useState(SortType.Created);
   const [sortDir, setSortDir] = useState(SortDir.Desc);
   const { handleNewRecord } = useAppHistory();
+  const { handleNewAi } = useAI();
 
   return (
     <Stack aria-label="history-page" flex={1} gap={2} position="relative">
@@ -41,14 +54,24 @@ export default function HistoryPage() {
       />
 
       <Box display="flex" flexWrap="wrap" gap={2} mx={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={() => handleNewRecord()}
-          startIcon={<FcPlus filter="contrast(4) hue-rotate(300deg)" />}
-          sx={{ borderRadius: 4, px: 2 }}>
-          New Record
-        </Button>
+        <ButtonGroup>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => handleNewRecord()}
+            startIcon={<FcPlus filter="contrast(4) hue-rotate(300deg)" />}
+            sx={{ borderRadius: 4, px: 2 }}>
+            Create
+          </Button>
+          <Button
+            onClick={handleNewAi}
+            variant="contained"
+            color="info"
+            endIcon={<RiRobot2Fill color="#ffc400" />}
+            sx={{ borderRadius: 4, px: 2 }}>
+            <Typography className="text-ellipsis">AI</Typography>
+          </Button>
+        </ButtonGroup>
 
         <Box flex={1} />
 

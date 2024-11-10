@@ -17,6 +17,7 @@ export default function Header() {
   const inResult = useMemo(() => pathname.startsWith("/result"), [pathname]);
   const inReport = useMemo(() => pathname.startsWith("/report"), [pathname]);
   const inHistory = useMemo(() => pathname.startsWith("/history"), [pathname]);
+  const inAI = useMemo(() => pathname.startsWith("/ai"), [pathname]);
 
   if (inIntro) return null;
 
@@ -76,7 +77,7 @@ export default function Header() {
         </Typography>
       </NavLink>
       <Stack flex="0 1 100%" gap={0.25} direction="row" justifyContent="flex-end" alignItems="center">
-        {(inList || inResult) && (
+        {(inList || inResult || inAI) && (
           <NavLink to="/history">
             <IconButton size="medium">
               <FcDataBackup />
