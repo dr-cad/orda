@@ -22,7 +22,9 @@ export async function extractSymptoms(messageContent: string): Promise<Fields | 
   // create an assistant
   const instructions = readFileSync(__dirname + "/GPTTOOL.md", "utf-8");
   const assistant = await client.beta.assistants.create({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o-mini",
+    temperature: 0,
+    top_p: 0,
     instructions,
     tools: [
       {

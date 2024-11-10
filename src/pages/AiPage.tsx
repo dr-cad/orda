@@ -10,6 +10,8 @@ import { IAiForm } from "../types";
 
 const AiThink = lazy(() => import("../components/AiThink"));
 
+const baseURL = import.meta.env.DEV ? "http://localhost:3000" : "https://orda-api.dr-cad.ir";
+
 export default function AiPage() {
   const nav = useNavigate();
   const { id } = useParams();
@@ -36,11 +38,11 @@ export default function AiPage() {
     // play animation
     setLoading(true);
     // api call
-    const res = await axios.post("https://orda-api.dr-cad.ir/assistant", { message });
+    const res = await axios.post(baseURL + "/assistant", { message });
     console.log(message, res.data);
     setLoading(false);
-    if (!res.data) return; // TODO error
-    nav("/import?" + objectToUrlParams(res.data));
+    if (!res.data.symptoms) return; // TODO error
+    nav("/import?" + objectToUrlParams(res.data.symptoms));
   };
 
   return (
