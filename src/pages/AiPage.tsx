@@ -59,7 +59,7 @@ export default function AiPage() {
   return (
     <Stack aria-label="ai-page" flex={1} position="relative" p={2}>
       <Stack mt={2} position="relative" alignItems="center" justifyContent="center">
-        <Box width="45%" sx={{ aspectRatio: 1 }}>
+        <Box width={{ xs: "25%", sm: "45%" }} sx={{ aspectRatio: 1 }}>
           <Suspense>
             <AiThink ref={aiThink} loading={loading} />
           </Suspense>
@@ -126,7 +126,7 @@ function AiForm({
 
   return (
     <Stack p={2} flex={1}>
-      <Box flex="0 0 2rem" />
+      <Box flex={{ xs: "0 0 1rem", sm: "0 0 2rem" }} />
       <Typography ref={text} variant="h5" />
       <List ref={list} sx={{ listStyle: "inside" }}>
         {questions.map((s, i) => (
@@ -143,12 +143,12 @@ function AiForm({
         onFocus={() => setError(undefined)}
         defaultValue={cache}
         multiline
-        rows={8}
+        rows={7}
         sx={{ py: 1, px: 2.5 }}
         placeholder={placeholder}
         FormHelperTextProps={{ style: { color: error ? "yellow" : "transparent" } }}
       />
-      <Box flex="0 0 2rem" />
+      <Box flex={{ xs: "0 0 1rem", sm: "0 0 2rem" }} />
       <Button
         variant="contained"
         disabled={loading}
