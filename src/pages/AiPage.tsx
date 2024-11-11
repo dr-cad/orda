@@ -126,7 +126,7 @@ function AiForm({
 
   return (
     <Stack p={2} flex={1}>
-      <Box flex="0.5 0 1rem" />
+      <Box flex="0 0 2rem" />
       <Typography ref={text} variant="h5" />
       <List ref={list} sx={{ listStyle: "inside" }}>
         {questions.map((s, i) => (
