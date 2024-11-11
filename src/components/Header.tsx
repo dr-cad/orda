@@ -1,15 +1,17 @@
-import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { alpha, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { FcDataBackup, FcExternal, FcInternal, FcPlus, FcSurvey } from "react-icons/fc";
-import { RiRobot2Line } from "react-icons/ri";
-import { NavLink, useLocation } from "react-router-dom";
+import { RiRestartLine, RiRobot2Line } from "react-icons/ri";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { appName } from "../config/strings";
+import theme from "../config/theme";
 import useAI from "../hooks/ai";
 import useAppHistory from "../hooks/history";
 import Logo from "./favicon.svg?react";
 import ReportIcon from "./ReportIcon";
 
 export default function Header() {
+  const nav = useNavigate();
   const { pathname } = useLocation();
 
   const { handleImportHistory, handleExportHistory, handleNewRecord } = useAppHistory();
@@ -21,6 +23,7 @@ export default function Header() {
   const inReport = useMemo(() => pathname.startsWith("/report"), [pathname]);
   const inHistory = useMemo(() => pathname.startsWith("/history"), [pathname]);
   const inAI = useMemo(() => pathname.startsWith("/ai"), [pathname]);
+  const inImport = useMemo(() => pathname.startsWith("/import"), [pathname]);
 
   if (inIntro) return null;
 
@@ -104,6 +107,21 @@ export default function Header() {
               </IconButton>
             </Tooltip>
           </NavLink>
+        )}
+        {inImport && (
+          <Button
+            onClick={() => nav(-1)}
+            startIcon={<RiRestartLine />}
+            color="warning"
+            sx={{
+              px: 2,
+              borderRadius: 4,
+              lineHeight: "0.5em",
+              textTransform: "none",
+              bgcolor: alpha(theme.palette.warning.main, 0.08),
+            }}>
+            Retry
+          </Button>
         )}
       </Stack>
     </Stack>
