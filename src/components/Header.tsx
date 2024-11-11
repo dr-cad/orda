@@ -36,8 +36,7 @@ export default function Header() {
       className="blur-bg"
       flexShrink={0}
       top={0}
-      zIndex={99}
-      borderBottom="var(--app-border)">
+      zIndex={99}>
       <Stack flex="0 1 100%" direction="row" alignItems="center" justifyContent="flex-start" overflow="hidden">
         {inAI && (
           <Button

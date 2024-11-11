@@ -77,18 +77,24 @@ img.desc-img {
 }
 
 .layout {
-  height: 100%;
+  height: calc(100% - 2rem);
+  top: 1rem;
   max-width: 480px;
   margin: 0 auto;
-  border-left: var(--app-border);
-  border-right: var(--app-border);
-  background: #0f1a2ef2;
-  backdrop-filter: blur(20px);
+  background: #0f1a2ee2;
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  overflow-y: scroll;
+  border-radius: 1rem;
+  box-shadow: 0 0 0 2px #fff2;
 }
 
 @media screen and (max-width: 480px) {
   .layout {
-    border: none;
+    top: 0;
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
   }
 }
 

@@ -16,7 +16,7 @@ export default function IntroPage() {
       <Typography variant="h3">Welcome to Oral Diagnosis App</Typography>
       <Box flex={1} />
       {/* <Typography variant="body2">Select and option to get started</Typography> */}
-      <ButtonGroup>
+      <ButtonGroup sx={{ gap: 0.6 }}>
         <Button
           onClick={handleNewRecord}
           variant="contained"

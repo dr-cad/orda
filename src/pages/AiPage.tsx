@@ -59,7 +59,6 @@ export default function AiPage() {
           </Suspense>
         </Box>
       </Stack>
-      <Box flex="0.25 0 1rem" />
       <AiForm
         {...form}
         key={index}
@@ -70,7 +69,6 @@ export default function AiPage() {
         buttonTitle={!final ? "Confirm" : !loading ? "Process" : "Processing..."}
         handleSubmit={(text) => handleSubmit(index, text)}
       />
-      <Box flex="1 0 5rem" />
     </Stack>
   );
 }
@@ -95,7 +93,8 @@ function AiForm({
 }) {
   const input = useRef<HTMLInputElement>();
   return (
-    <Stack p={2}>
+    <Stack p={2} flex={1}>
+      <Box flex="0.5 0 1rem" />
       <Typography variant="h5">{title}</Typography>
       <List sx={{ listStyle: "inside" }}>
         {questions.map((s, i) => (
@@ -116,7 +115,7 @@ function AiForm({
         placeholder={placeholder}
         FormHelperTextProps={{ style: { color: error ? "yellow" : "transparent" } }}
       />
-      <Box flex="0 0 1.5rem" />
+      <Box flex="1 0 1.5rem" />
       <Button
         variant="contained"
         // disabled={loading}
