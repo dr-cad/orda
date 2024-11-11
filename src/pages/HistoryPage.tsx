@@ -6,8 +6,7 @@ import {
   InputAdornment,
   Stack,
   TextField,
-  Tooltip,
-  Typography,
+  Tooltip
 } from "@mui/material";
 import { useDeferredValue, useState } from "react";
 import {
@@ -69,7 +68,7 @@ export default function HistoryPage() {
             color="info"
             endIcon={<RiRobot2Fill color="#ffc400" />}
             sx={{ borderRadius: 4, px: 2 }}>
-            <Typography className="text-ellipsis">AI</Typography>
+            AI
           </Button>
         </ButtonGroup>
 

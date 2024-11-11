@@ -1,8 +1,10 @@
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { FcDataBackup, FcExternal, FcInternal, FcPlus, FcSurvey } from "react-icons/fc";
+import { RiRobot2Line } from "react-icons/ri";
 import { NavLink, useLocation } from "react-router-dom";
 import { appName } from "../config/strings";
+import useAI from "../hooks/ai";
 import useAppHistory from "../hooks/history";
 import Logo from "./favicon.svg?react";
 import ReportIcon from "./ReportIcon";
@@ -11,6 +13,7 @@ export default function Header() {
   const { pathname } = useLocation();
 
   const { handleImportHistory, handleExportHistory, handleNewRecord } = useAppHistory();
+  const { handleNewAi } = useAI();
 
   const inIntro = useMemo(() => pathname.startsWith("/intro"), [pathname]);
   const inList = useMemo(() => pathname.startsWith("/list"), [pathname]);
@@ -36,13 +39,23 @@ export default function Header() {
       zIndex={99}
       borderBottom="var(--app-border)">
       <Stack flex="0 1 100%" direction="row" alignItems="center" justifyContent="flex-start" overflow="hidden">
-        {inList && (
+        {inAI && (
           <Button
             onClick={() => handleNewRecord()}
             startIcon={<FcPlus />}
             color="success"
             sx={{ borderRadius: 4, textTransform: "none", px: 2, lineHeight: "0.5em" }}>
-            Create
+            Manual
+          </Button>
+        )}
+        {inList && (
+          <Button
+            onClick={handleNewAi}
+            variant="contained"
+            color="info"
+            endIcon={<RiRobot2Line />}
+            sx={{ borderRadius: 4, px: 2 }}>
+            AI
           </Button>
         )}
         {inResult && <ReportIcon />}

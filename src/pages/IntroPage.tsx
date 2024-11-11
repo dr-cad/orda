@@ -22,7 +22,7 @@ export default function IntroPage() {
           variant="contained"
           startIcon={<AddRounded />}
           sx={{ borderRadius: 4, px: 2 }}>
-          <Typography className="text-ellipsis">Create</Typography>
+          Create
         </Button>
         <Button
           onClick={handleNewAi}
@@ -30,7 +30,7 @@ export default function IntroPage() {
           color="info"
           endIcon={<RiRobot2Line />}
           sx={{ borderRadius: 4, px: 2 }}>
-          <Typography className="text-ellipsis">AI</Typography>
+          AI
         </Button>
       </ButtonGroup>
       <Box flex="0 0 0.85rem" />
