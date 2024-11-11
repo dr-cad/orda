@@ -72,7 +72,7 @@ export default function AiPage() {
         error={error}
         setError={setError}
         loading={loading}
-        buttonTitle={!final ? "Confirm" : !loading ? "Process" : "Processing..."}
+        buttonTitle={!final ? "Confirm" : !loading ? "Proceed" : "Thinking..."}
         handleSubmit={(text) => handleSubmit(index, text)}
       />
     </Stack>
