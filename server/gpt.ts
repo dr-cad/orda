@@ -84,12 +84,12 @@ export async function extractSymptoms(messageContent: string): Promise<Fields | 
     console.log("No tool outputs to submit.");
   };
 
-  const handleRunStatus = async (run: Run): Promise<Fields | undefined> => {
+  const handleRunStatus = async (run: Run): Promise<Fields | string | undefined> => {
     // Check if the run is completed
     if (run.status === "completed") {
       console.log("completed == wrong");
       const messages = await client.beta.threads.messages.list(thread.id);
-      const text = (messages.data.find((m) => m.role === "assistant")?.content[0] as any)?.text?.value;
+      const text: string = (messages.data.find((m) => m.role === "assistant")?.content[0] as any)?.text?.value;
       return text ?? undefined;
     } else if (run.status === "requires_action") {
       console.log("requires_action == good");

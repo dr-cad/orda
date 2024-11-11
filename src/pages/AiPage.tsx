@@ -49,8 +49,9 @@ export default function AiPage() {
       if (typeof res.data.symptoms === "string") return setError(res.data.symptoms);
       console.log(res.data.symptoms);
       nav("/import?" + objectToUrlParams(res.data.symptoms));
-    } finally {
+    } catch (e) {
       setError("Something went wrong!");
+    } finally {
       setLoading(false);
     }
   };
