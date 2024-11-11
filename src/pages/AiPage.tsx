@@ -1,12 +1,16 @@
 import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
 import axios from "axios";
-import { lazy, Suspense, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import { TextPlugin } from "gsap/all";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IAiThinkRef } from "../components/AiThink";
 import { forms } from "../data/ai";
 import { objectToUrlParams } from "../lib/url";
 import { useBufferStore } from "../store";
 import { IAiForm } from "../types";
+
+gsap.registerPlugin(TextPlugin);
 
 const AiThink = lazy(() => import("../components/AiThink"));
 
@@ -93,18 +97,43 @@ function AiForm({
   handleSubmit: (text: string) => void;
 }) {
   const input = useRef<HTMLInputElement>();
+  const text = useRef<HTMLSpanElement>(null!);
+  const list = useRef<HTMLUListElement>(null!);
+
+  useEffect(() => {
+    const animate = async () => {
+      // prepare
+      gsap.killTweensOf(text.current);
+      gsap.set(text.current, { text: "" });
+      const q = gsap.utils.selector(list.current);
+      const items = q(".list-item");
+      gsap.killTweensOf(items);
+      gsap.set(items, { display: "none", opacity: 0 });
+      // animate
+      await gsap.to(text.current, {
+        text: title,
+        delay: 0.5,
+        duration: 2,
+        ease: "none",
+      });
+      gsap.from(items, { text: "", duration: 1, stagger: 1 });
+      await gsap.to(items, { display: "list-item", opacity: 1, stagger: 1 });
+    };
+    animate();
+  }, [title]);
+
   return (
     <Stack p={2} flex={1}>
       <Box flex="0.5 0 1rem" />
-      <Typography variant="h5">{title}</Typography>
-      <List sx={{ listStyle: "inside" }}>
+      <Typography ref={text} variant="h5" />
+      <List ref={list} sx={{ listStyle: "inside" }}>
         {questions.map((s, i) => (
-          <ListItem key={i} sx={{ p: 0, display: "list-item", color: "#fff6" }}>
+          <ListItem className="list-item" key={i} sx={{ p: 0, display: "list-item", color: "#fff6" }}>
             {s}
           </ListItem>
         ))}
       </List>
-      <Box flex="0 0 1rem" />
+      <Box flex="1 0 1rem" />
       <TextField
         inputRef={input}
         error={!!error}
@@ -116,7 +145,7 @@ function AiForm({
         placeholder={placeholder}
         FormHelperTextProps={{ style: { color: error ? "yellow" : "transparent" } }}
       />
-      <Box flex="1 0 1.5rem" />
+      <Box flex="0 0 2rem" />
       <Button
         variant="contained"
         disabled={loading}

@@ -3,7 +3,13 @@ import { IAiForm } from "../types";
 export const forms: IAiForm[] = [
   {
     title: "Hi, I would be happy if you give me a bit of info about the patient.",
-    questions: ["What's their name?", "How old are they?", "What's their gender?"],
+    questions: [
+      "What's their name?",
+      "How old are they?",
+      "What's their name?",
+      "What's their gender?",
+      "What's their name?",
+    ],
     placeholder: "Smith 25 male",
   },
   // {
