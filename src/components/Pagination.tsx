@@ -7,14 +7,7 @@ export default function Pagination() {
   const { show, pages, isResult, canGoForward, handleTo, handleResult, pageIndex } = usePageIndex();
 
   return !show ? null : (
-    <Stack
-      py={2}
-      direction="row"
-      gap={1}
-      justifyContent="center"
-      alignItems="center"
-      className="blur-bg sticky"
-      sx={{ position: "relative", bottom: 0, zIndex: 100 }}>
+    <Stack direction="row" gap={1} justifyContent="center" alignItems="center" className="sticky pagination">
       <MuiPagination
         count={pages.length}
         page={pageIndex + 1}

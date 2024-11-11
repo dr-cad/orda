@@ -102,23 +102,29 @@ img.desc-img {
   * {
     scrollbar-color: var(--scroll-thumb-color) var(--scroll-track);
     scrollbar-width: auto;
+
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 
 *::-webkit-scrollbar {
   width: var(--scroll-size);
   height: var(--scroll-size);
+  display: none;
 }
 
 *::-webkit-scrollbar-track {
   background-color: var(--scroll-track);
   border-radius: var(--scroll-radius);
+  display: none;
 }
 
 *::-webkit-scrollbar-thumb {
   background-color: var(--scroll-thumb-color);
   background-image: var(--scroll-thumb);
   border-radius: var(--scroll-radius);
+  display: none;
 }
 
 .text-wrap {
@@ -161,6 +167,18 @@ img.desc-img {
   border-radius: 14px;
   border: 2px dashed #fff2;
   background-color: #ffffff12;
+}
+
+.pagination {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+  bottom: 1rem;
+  z-index: 100;
+  border-radius: 1rem;
+  background-color: black;
+  box-shadow: 0 0 0 2px #fff2;
+  padding: 0.75rem 0.5rem;
 }
 
 @keyframes spin {
