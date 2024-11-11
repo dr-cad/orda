@@ -104,20 +104,21 @@ function AiForm({
     const animate = async () => {
       // prepare
       gsap.killTweensOf(text.current);
-      gsap.set(text.current, { text: "" });
+      gsap.set(text.current, { text: "", opacity: 0 });
       const q = gsap.utils.selector(list.current);
       const items = q(".list-item");
       gsap.killTweensOf(items);
       gsap.set(items, { display: "none", opacity: 0 });
       // animate
+      gsap.to(text.current, { opacity: 1, delay: 0.5, duration: 1 });
       await gsap.to(text.current, {
         text: title,
         delay: 0.5,
         duration: 2,
         ease: "none",
       });
-      gsap.from(items, { text: "", duration: 1, stagger: 1 });
-      await gsap.to(items, { display: "list-item", opacity: 1, stagger: 1 });
+      gsap.from(items, { text: "", duration: 1, stagger: 1, ease: "none" });
+      await gsap.to(items, { display: "list-item", opacity: 1, stagger: 1, ease: "none" });
     };
     animate();
   }, [title]);
