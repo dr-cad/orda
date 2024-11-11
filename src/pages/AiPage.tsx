@@ -46,6 +46,7 @@ export default function AiPage() {
       console.log(res.data.symptoms);
       nav("/import?" + objectToUrlParams(res.data.symptoms));
     } finally {
+      setError("Something went wrong!");
       setLoading(false);
     }
   };
@@ -118,7 +119,7 @@ function AiForm({
       <Box flex="1 0 1.5rem" />
       <Button
         variant="contained"
-        // disabled={loading}
+        disabled={loading}
         color={!loading ? "primary" : "secondary"}
         sx={{ height: 44, pointerEvents: !loading ? "auto" : "none" }}
         onClick={() => {

@@ -16,6 +16,7 @@ const symptoms: ISymptomRaw[] = [
     open: true,
     omitHash: true,
     gpt: false,
+    details: "patient name",
   },
   {
     id: "pat-age",
