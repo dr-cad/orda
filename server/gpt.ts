@@ -47,7 +47,7 @@ export async function extractSymptoms(messageContent: string): Promise<Fields | 
 
   // create thread and add a message
   const thread = await client.beta.threads.create();
-  client.beta.threads.messages.create(thread.id, {
+  await client.beta.threads.messages.create(thread.id, {
     role: "user",
     content: messageContent,
   });

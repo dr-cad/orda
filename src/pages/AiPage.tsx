@@ -2,7 +2,7 @@ import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/
 import axios from "axios";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IAiThinkRef } from "../components/AiThink";
 import { forms } from "../data/ai";
@@ -50,7 +50,7 @@ export default function AiPage() {
       console.log(res.data.symptoms);
       nav("/import?" + objectToUrlParams(res.data.symptoms));
     } catch (e) {
-      setError("Something went wrong!");
+      setError("Something went wrong! Please try again..");
     } finally {
       setLoading(false);
     }
@@ -100,29 +100,55 @@ function AiForm({
   const input = useRef<HTMLInputElement>();
   const text = useRef<HTMLSpanElement>(null!);
   const list = useRef<HTMLUListElement>(null!);
+  const respond = useRef<HTMLSpanElement>(null!);
+
+  const prepare = useCallback(async () => {
+    // prepare
+    // title
+    gsap.killTweensOf(text.current);
+    gsap.set(text.current, { text: "", opacity: 0 });
+    // list
+    const q = gsap.utils.selector(list.current);
+    const items = q(".list-item");
+    gsap.killTweensOf(items);
+    gsap.set(items, { display: "none", opacity: 0 });
+    // respond
+    gsap.killTweensOf(respond.current);
+    gsap.set(respond.current, { text: "", opacity: 0 });
+    return { items };
+  }, []);
 
   useEffect(() => {
     const animate = async () => {
-      // prepare
-      gsap.killTweensOf(text.current);
-      gsap.set(text.current, { text: "", opacity: 0 });
-      const q = gsap.utils.selector(list.current);
-      const items = q(".list-item");
-      gsap.killTweensOf(items);
-      gsap.set(items, { display: "none", opacity: 0 });
-      // animate
+      if (error) return;
+      const { items } = await prepare();
       gsap.to(text.current, { opacity: 1, delay: 0.5, duration: 1 });
       await gsap.to(text.current, {
         text: title,
         delay: 0.5,
-        duration: 2,
+        duration: title.length / 80,
         ease: "none",
       });
-      gsap.from(items, { text: "", duration: 1, stagger: 1, ease: "none" });
-      await gsap.to(items, { display: "list-item", opacity: 1, stagger: 1, ease: "none" });
+      gsap.to(items, { display: "list-item", opacity: 1, stagger: 1, ease: "none" });
+      await gsap.from(items, { duration: 1, stagger: 1, ease: "none" });
     };
     animate();
-  }, [title]);
+  }, [error, prepare, title]);
+
+  useEffect(() => {
+    const animate = async () => {
+      if (!error) return;
+      await prepare();
+      gsap.to(respond.current, { opacity: 1, delay: 0.5, duration: 1 });
+      await gsap.to(respond.current, {
+        text: error,
+        delay: 0.5,
+        duration: error.length / 80,
+        ease: "none",
+      });
+    };
+    animate();
+  }, [error, prepare]);
 
   return (
     <Stack p={2} flex={1}>
@@ -135,18 +161,15 @@ function AiForm({
           </ListItem>
         ))}
       </List>
+      <Typography ref={respond} variant="body1" sx={{ color: "#fff6" }} />
       <Box flex="1 0 1rem" />
       <TextField
         inputRef={input}
-        error={!!error}
-        helperText={error ?? "..."}
-        onFocus={() => setError(undefined)}
         defaultValue={cache}
         multiline
         rows={7}
         sx={{ py: 1, px: 2.5 }}
         placeholder={placeholder}
-        FormHelperTextProps={{ style: { color: error ? "yellow" : "transparent" } }}
       />
       <Box flex={{ xs: "0 0 1rem", sm: "0 0 2rem" }} />
       <Button
@@ -156,7 +179,7 @@ function AiForm({
         sx={{ height: 44, pointerEvents: !loading ? "auto" : "none" }}
         onClick={() => {
           const text = input.current?.value;
-          if (!text) return setError("Please fill this field!");
+          if (!text) return setError("Please fill the field below!");
           handleSubmit(text);
         }}>
         {buttonTitle}
