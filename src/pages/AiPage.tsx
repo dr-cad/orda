@@ -144,6 +144,7 @@ function AiForm({
         defaultValue={cache}
         multiline
         rows={8}
+        sx={{ py: 1, px: 2.5 }}
         placeholder={placeholder}
         FormHelperTextProps={{ style: { color: error ? "yellow" : "transparent" } }}
       />
