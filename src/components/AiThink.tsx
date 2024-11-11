@@ -8,6 +8,7 @@ const PROC_SPEED = 2;
 
 interface IProps {
   loading: boolean;
+  error: boolean;
 }
 
 export interface IAiThinkRef {
@@ -39,7 +40,7 @@ export interface BMEnterFrameEvent {
   type: "enterFrame";
 }
 
-const AiThink = forwardRef<IAiThinkRef, IProps>(function AiThink({ loading }, ref) {
+const AiThink = forwardRef<IAiThinkRef, IProps>(function AiThink({ loading, error }, ref) {
   const lottie = useRef<LottieRefCurrentProps>(null!);
 
   useImperativeHandle(ref, () => ({
@@ -58,13 +59,15 @@ const AiThink = forwardRef<IAiThinkRef, IProps>(function AiThink({ loading }, re
     else lottie.current.setSpeed(DEFAULT_SPEED);
   }, [loading]);
 
+  const hue = loading ? 100 : error ? 200 : 0;
+
   return (
     <Lottie
       lottieRef={lottie}
       loop
       animationData={aiThink}
       style={{
-        filter: !loading ? "hue-rotate(0deg)" : "hue-rotate(100deg)",
+        filter: `hue-rotate(${hue}deg)`,
         transition: "filter 2s ease",
       }}
     />

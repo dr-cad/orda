@@ -61,7 +61,7 @@ export default function AiPage() {
       <Stack mt={2} position="relative" alignItems="center" justifyContent="center">
         <Box width={{ xs: "25%", sm: "45%" }} sx={{ aspectRatio: 1 }}>
           <Suspense>
-            <AiThink ref={aiThink} loading={loading} />
+            <AiThink ref={aiThink} loading={loading} error={!!error} />
           </Suspense>
         </Box>
       </Stack>
@@ -118,10 +118,9 @@ function AiForm({
     return { items };
   }, []);
 
-  useEffect(() => {
-    const animate = async () => {
-      if (error) return;
-      const { items } = await prepare();
+  const animate = useCallback(async () => {
+    const { items } = await prepare();
+    if (!error) {
       gsap.to(text.current, { opacity: 1, delay: 0.5, duration: 1 });
       await gsap.to(text.current, {
         text: title,
@@ -131,14 +130,7 @@ function AiForm({
       });
       gsap.to(items, { display: "list-item", opacity: 1, stagger: 1, ease: "none" });
       await gsap.from(items, { duration: 1, stagger: 1, ease: "none" });
-    };
-    animate();
-  }, [error, prepare, title]);
-
-  useEffect(() => {
-    const animate = async () => {
-      if (!error) return;
-      await prepare();
+    } else {
       gsap.to(respond.current, { opacity: 1, delay: 0.5, duration: 1 });
       await gsap.to(respond.current, {
         text: error,
@@ -146,9 +138,12 @@ function AiForm({
         duration: error.length / 80,
         ease: "none",
       });
-    };
+    }
+  }, [error, prepare, title]);
+
+  useEffect(() => {
     animate();
-  }, [error, prepare]);
+  }, [animate]);
 
   return (
     <Stack p={2} flex={1}>
