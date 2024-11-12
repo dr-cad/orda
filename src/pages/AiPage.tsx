@@ -32,8 +32,7 @@ export default function AiPage() {
   const [token, setToken] = useState<string>();
 
   const handleSubmit = async (i: number, text: string) => {
-    if (loading) return;
-    if (!token) return; // TODO err
+    if (loading || !token) return;
     const newData = [...data];
     newData[i] = text;
     setData(newData); // cache
