@@ -1,4 +1,4 @@
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import gsap from "gsap";
@@ -30,10 +30,12 @@ export default function AiPage() {
   const aiThink = useRef<IAiThinkRef>(null!);
   const [error, setError] = useState<string | undefined>();
   const [token, setToken] = useState<string>();
+  const turnstile = useRef<TurnstileInstance>(null!);
 
   const setErrorAndResetToken = (message: string) => {
     setToken(undefined);
     setError(message);
+    turnstile.current.reset();
   };
 
   const handleSubmit = async (i: number, text: string) => {
@@ -80,6 +82,7 @@ export default function AiPage() {
         </Box>
       </Stack>
       <Turnstile
+        ref={turnstile}
         siteKey={siteKey}
         options={{
           appearance: "interaction-only",
