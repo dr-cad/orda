@@ -80,6 +80,7 @@ export default function AiPage() {
         onExpire={() => setToken(undefined)}
         style={{ alignSelf: "center" }}
         fixedSize
+        refreshExpired="auto"
       />
       <AiForm
         {...form}

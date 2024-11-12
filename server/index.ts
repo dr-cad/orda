@@ -69,13 +69,7 @@ app.post("/assistant", async (req, res) => {
     res.status(400).send({ error: "No message!" });
     return;
   }
-  const token = req.body.token;
-  const ip = req.headers["cf-connecting-ip"]; // NOTICE works only when client is on cloudflare
-  if (!token || typeof ip !== "string") {
-    res.status(401).send({ error: "Not verified!" });
-    return;
-  }
-  const success = await turnstileVerify(token, ip);
+  const success = await turnstileVerify(req);
   if (!success) {
     res.status(401).send({ error: "Invalid token!" });
     return;
