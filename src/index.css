@@ -213,4 +213,5 @@ img.desc-img {
   border-radius: inherit;
   box-shadow: 0 0 0 2px #fff1 inset;
   z-index: 99;
+  pointer-events: none;
 }
