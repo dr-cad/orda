@@ -1,9 +1,8 @@
-import { alpha, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { alpha, Button, IconButton, Stack, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { FcDataBackup, FcExternal, FcInternal, FcPlus, FcSurvey } from "react-icons/fc";
 import { RiRestartLine, RiRobot2Line } from "react-icons/ri";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { appName } from "../config/strings";
 import theme from "../config/theme";
 import useAI from "../hooks/ai";
 import useAppHistory from "../hooks/history";
@@ -83,14 +82,13 @@ export default function Header() {
           </Tooltip>
         )}
       </Stack>
-      <NavLink
-        to="/"
-        style={{ flex: "0 1 100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-        <Logo style={{ height: "2.5rem", width: "auto" }} />
-        <Typography fontWeight={600} color="text">
-          {appName}
-        </Typography>
-      </NavLink>
+      {!inAI && (
+        <NavLink
+          to="/"
+          style={{ flex: "0 1 100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <Logo style={{ height: "2.5rem", width: "auto" }} />
+        </NavLink>
+      )}
       <Stack flex="0 1 100%" gap={0.25} direction="row" justifyContent="flex-end" alignItems="center">
         {(inList || inResult || inAI) && (
           <NavLink to="/history">

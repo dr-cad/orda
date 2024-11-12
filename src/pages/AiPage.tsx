@@ -75,7 +75,7 @@ export default function AiPage() {
   return (
     <Stack aria-label="ai-page" flex={1} position="relative" p={2}>
       <Stack mt={2} position="relative" alignItems="center" justifyContent="center">
-        <Box width={{ xs: "25%", sm: "45%" }} sx={{ aspectRatio: 1 }}>
+        <Box width={{ xs: "35%", sm: "45%" }} sx={{ aspectRatio: 1, mt: -12, zIndex: 99 }}>
           <Suspense>
             <AiThink ref={aiThink} loading={loading} error={!!error} />
           </Suspense>
