@@ -91,7 +91,7 @@ export default function AiPage() {
         }}
         onSuccess={(token) => setToken(token)}
         onExpire={() => setToken(undefined)}
-        style={{ alignSelf: "center" }}
+        className="turnstile-round"
       />
       <AiForm
         {...form}

@@ -7,5 +7,5 @@ export const testSecrets = {
 };
 
 export const siteKey = import.meta.env.DEV //
-  ? testSecrets.passInvisible
+  ? testSecrets.forceChallenge
   : import.meta.env.VITE_TURNSTILE_KEY;
