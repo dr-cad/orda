@@ -31,6 +31,11 @@ export default function AiPage() {
   const [error, setError] = useState<string | undefined>();
   const [token, setToken] = useState<string>();
 
+  const setErrorAndResetToken = (message: string) => {
+    setToken(undefined);
+    setError(message);
+  };
+
   const handleSubmit = async (i: number, text: string) => {
     if (loading || !token) return;
     const newData = [...data];
@@ -48,15 +53,15 @@ export default function AiPage() {
     // api call
     try {
       const res = await axios.post(baseURL + "/assistant", { message, token });
-      if (!res.data.symptoms) return setError("Information is not enough!");
-      if (typeof res.data.symptoms === "string") return setError(res.data.symptoms);
+      if (!res.data.symptoms) return setErrorAndResetToken("Information is not enough!");
+      if (typeof res.data.symptoms === "string") return setErrorAndResetToken(res.data.symptoms);
       nav("/import?" + objectToUrlParams(res.data.symptoms)); // correct
     } catch (e) {
       if (e instanceof AxiosError) {
         const message = e.response?.data?.error;
-        if (message) return setError(message);
+        if (message) return setErrorAndResetToken(message);
       }
-      setError("Something went wrong! Please try again..");
+      setErrorAndResetToken("Something went wrong! Please try again..");
     } finally {
       setLoading(false);
     }
