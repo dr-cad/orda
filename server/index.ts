@@ -11,6 +11,7 @@ import { ISymptom } from "../src/types";
 import { extractSymptoms } from "./gpt";
 import { apiRules, privacy } from "./strings";
 import swagger from "./swagger";
+import turnstileVerify from "./turnstile";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -64,7 +65,21 @@ app.post("/process", (req, res) => {
 
 app.post("/assistant", async (req, res) => {
   const message = req.body.message;
-  if (!message) res.status(400).send({ error: "No message!" });
+  if (!message) {
+    res.status(400).send({ error: "No message!" });
+    return;
+  }
+  const token = req.body.token;
+  const ip = req.headers["cf-connecting-ip"]; // NOTICE works only when client is on cloudflare
+  if (!token || typeof ip !== "string") {
+    res.status(401).send({ error: "Not verified!" });
+    return;
+  }
+  const success = await turnstileVerify(token, ip);
+  if (!success) {
+    res.status(401).send({ error: "Invalid token!" });
+    return;
+  }
   const symptoms = await extractSymptoms(message);
   res.send({ symptoms });
 });

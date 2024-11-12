@@ -1,11 +1,14 @@
 import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import "react-turnstile";
+import Turnstile from "react-turnstile";
 import { IAiThinkRef } from "../components/AiThink";
 import { forms } from "../data/ai";
+import { siteKey } from "../lib/turnstile";
 import { objectToUrlParams } from "../lib/url";
 import { useBufferStore } from "../store";
 import { IAiForm } from "../types";
@@ -27,9 +30,12 @@ export default function AiPage() {
   const [loading, setLoading] = useState(false);
   const aiThink = useRef<IAiThinkRef>(null!);
   const [error, setError] = useState<string | undefined>();
+  // const turnstile = useTurnstile();
+  const [token, setToken] = useState<string>();
 
   const handleSubmit = async (i: number, text: string) => {
     if (loading) return;
+    if (!token) return; // TODO err
     const newData = [...data];
     newData[i] = text;
     setData(newData); // cache
@@ -44,12 +50,15 @@ export default function AiPage() {
     setLoading(true);
     // api call
     try {
-      const res = await axios.post(baseURL + "/assistant", { message });
+      const res = await axios.post(baseURL + "/assistant", { message, token });
       if (!res.data.symptoms) return setError("Information is not enough!");
       if (typeof res.data.symptoms === "string") return setError(res.data.symptoms);
-      console.log(res.data.symptoms);
-      nav("/import?" + objectToUrlParams(res.data.symptoms));
+      nav("/import?" + objectToUrlParams(res.data.symptoms)); // correct
     } catch (e) {
+      if (e instanceof AxiosError) {
+        const message = e.response?.data?.error;
+        if (message) return setError(message);
+      }
       setError("Something went wrong! Please try again..");
     } finally {
       setLoading(false);
@@ -65,6 +74,13 @@ export default function AiPage() {
           </Suspense>
         </Box>
       </Stack>
+      <Turnstile
+        sitekey={siteKey}
+        onVerify={(token) => setToken(token)}
+        onExpire={() => setToken(undefined)}
+        style={{ alignSelf: "center" }}
+        fixedSize
+      />
       <AiForm
         {...form}
         key={index}
