@@ -1,11 +1,10 @@
+import { Turnstile } from "@marsidev/react-turnstile";
 import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "react-turnstile";
-import Turnstile from "react-turnstile";
 import { IAiThinkRef } from "../components/AiThink";
 import { forms } from "../data/ai";
 import { siteKey } from "../lib/turnstile";
@@ -75,12 +74,15 @@ export default function AiPage() {
         </Box>
       </Stack>
       <Turnstile
-        sitekey={siteKey}
-        onVerify={(token) => setToken(token)}
+        siteKey={siteKey}
+        options={{
+          appearance: "interaction-only",
+          refreshExpired: "auto",
+          theme: "dark",
+        }}
+        onSuccess={(token) => setToken(token)}
         onExpire={() => setToken(undefined)}
         style={{ alignSelf: "center" }}
-        fixedSize
-        refreshExpired="auto"
       />
       <AiForm
         {...form}
