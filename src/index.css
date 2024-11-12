@@ -197,6 +197,7 @@ img.desc-img {
   border-radius: 12px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 0 20px #0002;
 }
 
 .turnstile-round div {
