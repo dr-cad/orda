@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
+import rateLimit from "express-rate-limit";
 import swaggerUi from "swagger-ui-express";
 import { getDiseases } from "../src/lib/get-diseases";
 import { getSymptoms } from "../src/lib/get-symptoms";
@@ -15,6 +16,13 @@ import turnstileVerify from "./turnstile";
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+const limiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  handler: (req, res, next, options) =>
+    res.status(options.statusCode).send({ error: `You can only make ${options.limit} requests every hour` }),
+});
 
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
@@ -63,7 +71,7 @@ app.post("/process", (req, res) => {
   res.send({ scores });
 });
 
-app.post("/assistant", async (req, res) => {
+app.post("/assistant", limiter, async (req, res) => {
   const message = req.body.message;
   if (!message) {
     res.status(400).send({ error: "No message!" });

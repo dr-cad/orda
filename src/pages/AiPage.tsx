@@ -29,7 +29,6 @@ export default function AiPage() {
   const [loading, setLoading] = useState(false);
   const aiThink = useRef<IAiThinkRef>(null!);
   const [error, setError] = useState<string | undefined>();
-  // const turnstile = useTurnstile();
   const [token, setToken] = useState<string>();
 
   const handleSubmit = async (i: number, text: string) => {
