@@ -63,6 +63,9 @@ export default function AiPage() {
     }
   };
 
+  const preparing = !token;
+  const buttonTitle = loading ? "Thinking..." : preparing ? "Preparing..." : !final ? "Confirm" : "Proceed";
+
   return (
     <Stack aria-label="ai-page" flex={1} position="relative" p={2}>
       <Stack mt={2} position="relative" alignItems="center" justifyContent="center">
@@ -88,9 +91,10 @@ export default function AiPage() {
         key={index}
         cache={data[index]}
         error={error}
+        preparing={preparing}
         setError={setError}
         loading={loading}
-        buttonTitle={!final ? "Confirm" : !loading ? "Proceed" : "Thinking..."}
+        buttonTitle={buttonTitle}
         handleSubmit={(text) => handleSubmit(index, text)}
       />
     </Stack>
@@ -103,6 +107,7 @@ function AiForm({
   placeholder,
   cache,
   loading,
+  preparing,
   error,
   setError,
   buttonTitle,
@@ -111,6 +116,7 @@ function AiForm({
   error: string | undefined;
   setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   loading: boolean;
+  preparing: boolean;
   cache: string;
   buttonTitle: string;
   handleSubmit: (text: string) => void;
@@ -187,7 +193,7 @@ function AiForm({
       <Box flex={{ xs: "0 0 1rem", sm: "0 0 2rem" }} />
       <Button
         variant="contained"
-        disabled={loading}
+        disabled={loading || preparing}
         color={!loading ? "primary" : "secondary"}
         sx={{ height: 44, pointerEvents: !loading ? "auto" : "none" }}
         onClick={() => {
