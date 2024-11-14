@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
-import { ISymptom } from "../src/types";
+import { Fields } from "../src/types";
 import { properties } from "./swagger";
 
 const required = ["pat_age", "pat_name", "pat_female", "pat_male"];
@@ -18,7 +18,6 @@ const client = new OpenAI({
 });
 
 type Run = OpenAI.Beta.Threads.Runs.Run;
-type Fields = { [k: string]: ISymptom["value"] };
 
 export async function extractSymptoms(messageContent: string): Promise<Fields | string | undefined> {
   // create an assistant

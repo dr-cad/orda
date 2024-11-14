@@ -6,11 +6,12 @@ import { TextPlugin } from "gsap/all";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IAiThinkRef } from "../components/AiThink";
+import errors from "../config/errors";
 import { forms } from "../data/ai";
 import { siteKey } from "../lib/turnstile";
 import { objectToUrlParams } from "../lib/url";
 import { useBufferStore } from "../store";
-import { IAiForm } from "../types";
+import { Fields, IAiForm } from "../types";
 
 gsap.registerPlugin(TextPlugin);
 
@@ -50,13 +51,15 @@ export default function AiPage() {
     }
     // final - process
     const message = newData.join("\n");
+    if (message.length < 50) {
+      return setErrorAndResetToken(errors.MESSAGE_LEN_SHORT);
+    }
     // play animation
     setLoading(true);
     // api call
     try {
-      const res = await axios.post(baseURL + "/assistant", { message, token });
+      const res = await axios.post<{ symptoms: Fields }>(baseURL + "/assistant", { message, token });
       if (!res.data.symptoms) return setErrorAndResetToken("Information is not enough!");
-      if (typeof res.data.symptoms === "string") return setErrorAndResetToken(res.data.symptoms);
       nav("/import?" + objectToUrlParams(res.data.symptoms)); // correct
     } catch (e) {
       if (e instanceof AxiosError) {

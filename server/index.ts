@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
+import errors from "../src/config/errors";
 import { getDiseases } from "../src/lib/get-diseases";
 import { getSymptoms } from "../src/lib/get-symptoms";
 import getScores from "../src/lib/scores";
@@ -68,8 +69,12 @@ app.post("/process", (req, res) => {
 
 app.post("/assistant", async (req, res, next) => {
   const message = req.body.message;
-  if (!message) {
+  if (typeof message !== "string") {
     res.status(400).send({ error: `No message!` });
+    return;
+  }
+  if (message.length < 50) {
+    res.status(400).send({ error: errors.MESSAGE_LEN_SHORT });
     return;
   }
   const success = await turnstileVerify(req);
@@ -80,6 +85,7 @@ app.post("/assistant", async (req, res, next) => {
   await aiLimiter(req, res, async (err) => {
     if (err) return next(err);
     const symptoms = await extractSymptoms(message);
+    if (typeof symptoms === "string") return next(symptoms);
     res.send({ symptoms });
   });
 });

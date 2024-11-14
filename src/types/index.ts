@@ -159,3 +159,7 @@ export interface IAiForm {
   questions: string[];
   placeholder: string;
 }
+
+export interface Fields {
+  [k: string]: ISymptom["value"];
+}
