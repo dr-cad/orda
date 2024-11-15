@@ -219,8 +219,10 @@ img.desc-img {
 
 .ai-error {
   white-space: pre-wrap;
+  color: #ffffff66;
 }
 
-.ai-error br + * {
-  color: #ffffff66;
+.ai-error span:first-of-type {
+  font-size: 1.25rem;
+  color: #ffffffff;
 }

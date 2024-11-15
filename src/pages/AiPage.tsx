@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Typed from "typed.js";
 import { IAiThinkRef } from "../components/AiThink";
 import errors from "../config/errors";
 import { forms } from "../data/ai";
@@ -132,23 +133,20 @@ function AiForm({
   const input = useRef<HTMLInputElement>();
   const respond = useRef<HTMLSpanElement>(null!);
 
-  const prepare = useCallback(async () => {
-    // respond
-    gsap.killTweensOf(respond.current);
-    gsap.set(respond.current, { text: "", opacity: 0 });
-  }, []);
-
   const animate = useCallback(async () => {
-    await prepare();
-    const text = (error || content)?.replace(/\n/g, "<br/>");
-    gsap.to(respond.current, { opacity: 1, delay: 0.5, duration: 1 });
-    await gsap.to(respond.current, {
-      text,
-      delay: 0.5,
-      duration: text.length / 80,
-      ease: "none",
+    const _err = error ? `<span>${error.split("\n").join("</span><br/><span>")}</span>` : undefined;
+    const text = (_err || content)?.replace(/\n/g, "<br/>");
+    const typed = new Typed(respond.current, {
+      strings: [text],
+      typeSpeed: 20,
+      backSpeed: 0,
+      showCursor: false,
+      fadeOut: true,
     });
-  }, [content, error, prepare]);
+    return () => {
+      typed.destroy();
+    };
+  }, [content, error]);
 
   useEffect(() => {
     animate();
