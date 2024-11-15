@@ -1,5 +1,5 @@
 import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
-import { Box, Button, List, ListItem, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
@@ -60,7 +60,6 @@ export default function AiPage() {
       // play animation
       // api call
       const res = await axios.post<{ symptoms: Fields }>(baseURL + "/assistant", { message, token });
-      console.log(res);
       if (!res.data.symptoms) throw "Information is not enough!";
       nav("/import?" + objectToUrlParams(res.data.symptoms)); // correct
     } catch (e) {
@@ -114,8 +113,7 @@ export default function AiPage() {
 }
 
 function AiForm({
-  title,
-  questions,
+  content,
   placeholder,
   cache,
   loading,
@@ -132,48 +130,25 @@ function AiForm({
   handleSubmit: (text?: string) => void;
 }) {
   const input = useRef<HTMLInputElement>();
-  const text = useRef<HTMLSpanElement>(null!);
-  const list = useRef<HTMLUListElement>(null!);
   const respond = useRef<HTMLSpanElement>(null!);
 
   const prepare = useCallback(async () => {
-    // prepare
-    // title
-    gsap.killTweensOf(text.current);
-    gsap.set(text.current, { text: "", opacity: 0 });
-    // list
-    const q = gsap.utils.selector(list.current);
-    const items = q(".list-item");
-    gsap.killTweensOf(items);
-    gsap.set(items, { display: "none", opacity: 0 });
     // respond
     gsap.killTweensOf(respond.current);
     gsap.set(respond.current, { text: "", opacity: 0 });
-    return { items };
   }, []);
 
   const animate = useCallback(async () => {
-    const { items } = await prepare();
-    if (!error) {
-      gsap.to(text.current, { opacity: 1, delay: 0.5, duration: 1 });
-      await gsap.to(text.current, {
-        text: title,
-        delay: 0.5,
-        duration: title.length / 80,
-        ease: "none",
-      });
-      gsap.to(items, { display: "list-item", opacity: 1, stagger: 1, ease: "none" });
-      await gsap.from(items, { duration: 1, stagger: 1, ease: "none" });
-    } else {
-      gsap.to(respond.current, { opacity: 1, delay: 0.5, duration: 1 });
-      await gsap.to(respond.current, {
-        text: error,
-        delay: 0.5,
-        duration: error.length / 80,
-        ease: "none",
-      });
-    }
-  }, [error, prepare, title]);
+    await prepare();
+    const text = (error || content)?.replace(/\n/g, "<br/>");
+    gsap.to(respond.current, { opacity: 1, delay: 0.5, duration: 1 });
+    await gsap.to(respond.current, {
+      text,
+      delay: 0.5,
+      duration: text.length / 80,
+      ease: "none",
+    });
+  }, [content, error, prepare]);
 
   useEffect(() => {
     animate();
@@ -182,15 +157,7 @@ function AiForm({
   return (
     <Stack p={2} flex={1}>
       <Box flex={{ xs: "0 0 1rem", sm: "0 0 2rem" }} />
-      <Typography ref={text} variant="h5" />
-      <List ref={list} sx={{ listStyle: "inside" }}>
-        {questions.map((s, i) => (
-          <ListItem className="list-item" key={i} sx={{ p: 0, display: "list-item", color: "#fff6" }}>
-            {s}
-          </ListItem>
-        ))}
-      </List>
-      <Typography ref={respond} variant="body1" sx={{ color: "#fff6", overflow: "hidden" }} className="ai-error" />
+      <Typography ref={respond} variant="body1" className="ai-error" />
       <Box flex="1 0 1rem" />
       <TextField
         inputRef={input}

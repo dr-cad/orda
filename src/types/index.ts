@@ -155,8 +155,7 @@ export interface ICImage {
 // ai
 
 export interface IAiForm {
-  title: string;
-  questions: string[];
+  content: string;
   placeholder: string;
 }
 

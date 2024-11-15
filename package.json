@@ -53,6 +53,7 @@
     "react-to-print": "^2.15.1",
     "react-virtualized-auto-sizer": "^1.0.24",
     "react-window": "^1.8.10",
+    "typed.js": "^2.1.0",
     "uuid4": "^2.0.3",
     "vite-plugin-svgr": "^4.2.0",
     "zustand": "^4.5.4"

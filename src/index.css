@@ -217,7 +217,10 @@ img.desc-img {
   pointer-events: none;
 }
 
-.ai-error pre {
+.ai-error {
   white-space: pre-wrap;
-  font-size: 0.85rem;
+}
+
+.ai-error br + * {
+  color: #ffffff66;
 }

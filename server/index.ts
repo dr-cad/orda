@@ -85,7 +85,9 @@ app.post("/assistant", async (req, res, next) => {
   await aiLimiter(req, res, async (err) => {
     if (err) return next(err);
     const symptoms = await extractSymptoms(message);
-    if (typeof symptoms === "string") return next(symptoms);
+    if (typeof symptoms === "string") {
+      return res.status(500).send({ error: symptoms });
+    }
     res.send({ symptoms });
   });
 });
