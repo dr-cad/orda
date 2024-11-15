@@ -39,33 +39,35 @@ export default function AiPage() {
     turnstile.current.reset();
   };
 
-  const handleSubmit = async (i: number, text: string) => {
-    if (loading || !token) return;
-    const newData = [...data];
-    newData[i] = text;
-    setData(newData); // cache
-    // next form
-    if (!final) {
-      aiThink.current.nextLoop();
-      return nav("/ai/" + (index + 2));
-    }
-    // final - process
-    const message = newData.join("\n");
-    if (message.length < 50) {
-      return setErrorAndResetToken(errors.MESSAGE_LEN_SHORT);
-    }
-    // play animation
-    setLoading(true);
-    // api call
+  const handleSubmit = async (i: number, text?: string) => {
     try {
+      setLoading(true);
+      if (!text) throw errors.MESSAGE_LEN_SHORT;
+      if (loading || !token) return;
+      const newData = [...data];
+      newData[i] = text;
+      setData(newData); // cache
+      // next form
+      if (!final) {
+        aiThink.current.nextLoop();
+        return nav("/ai/" + (index + 2));
+      }
+      // final - process
+      const message = newData.join("\n");
+      if (message.length < 50) {
+        throw errors.MESSAGE_LEN_SHORT;
+      }
+      // play animation
+      // api call
       const res = await axios.post<{ symptoms: Fields }>(baseURL + "/assistant", { message, token });
-      if (!res.data.symptoms) return setErrorAndResetToken("Information is not enough!");
+      if (!res.data.symptoms) throw "Information is not enough!";
       nav("/import?" + objectToUrlParams(res.data.symptoms)); // correct
     } catch (e) {
       if (e instanceof AxiosError) {
         const message = e.response?.data?.error;
         if (message) return setErrorAndResetToken(message);
       }
+      if (typeof e === "string") return setErrorAndResetToken(e);
       setErrorAndResetToken("Something went wrong! Please try again..");
     } finally {
       setLoading(false);
@@ -102,7 +104,6 @@ export default function AiPage() {
         cache={data[index]}
         error={error}
         preparing={preparing}
-        setError={setError}
         loading={loading}
         buttonTitle={buttonTitle}
         handleSubmit={(text) => handleSubmit(index, text)}
@@ -119,17 +120,15 @@ function AiForm({
   loading,
   preparing,
   error,
-  setError,
   buttonTitle,
   handleSubmit,
 }: IAiForm & {
   error: string | undefined;
-  setError: React.Dispatch<React.SetStateAction<string | undefined>>;
   loading: boolean;
   preparing: boolean;
   cache: string;
   buttonTitle: string;
-  handleSubmit: (text: string) => void;
+  handleSubmit: (text?: string) => void;
 }) {
   const input = useRef<HTMLInputElement>();
   const text = useRef<HTMLSpanElement>(null!);
@@ -206,11 +205,7 @@ function AiForm({
         disabled={loading || preparing}
         color={!loading ? "primary" : "secondary"}
         sx={{ height: 44, pointerEvents: !loading ? "auto" : "none" }}
-        onClick={() => {
-          const text = input.current?.value;
-          if (!text) return setError("Please fill the field below!");
-          handleSubmit(text);
-        }}>
+        onClick={() => handleSubmit(input.current?.value)}>
         {buttonTitle}
       </Button>
     </Stack>

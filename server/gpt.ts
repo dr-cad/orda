@@ -17,33 +17,38 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_KEY,
 });
 
+// create an assistant
+const instructions = readFileSync(__dirname + "/GPTTOOL.md", "utf-8");
+const assistant = await client.beta.assistants.create({
+  model: "gpt-4o-mini",
+  name: "Jaw Bone Lesion Detection Assistant",
+  temperature: 0,
+  top_p: 0,
+  instructions,
+  // response_format: {
+  //   type: "json_schema",
+  //   json_schema: {
+  //     name: "lesionClassification",
+  //     description: "This receives symptoms from the patient and returns as a response",
+  //     schema: { type: "object", properties, required },
+  //   },
+  // },
+  tools: [
+    {
+      type: "function",
+      function: {
+        name: "lesionClassification",
+        description:
+          "This function receives symptoms from the patient and returns the list of most relevant jaw bone lesion by percentage",
+        parameters: { type: "object", properties, required },
+      },
+    },
+  ],
+});
+
 type Run = OpenAI.Beta.Threads.Runs.Run;
 
 export async function extractSymptoms(messageContent: string): Promise<Fields | string | undefined> {
-  // create an assistant
-  const instructions = readFileSync(__dirname + "/GPTTOOL.md", "utf-8");
-  const assistant = await client.beta.assistants.create({
-    model: "gpt-4o-mini",
-    temperature: 0,
-    top_p: 0,
-    instructions,
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "lesionClassification",
-          description:
-            "This function receives symptoms from the patient and returns the list of most relevant jaw bone lesion by percentage",
-          parameters: {
-            type: "object",
-            properties,
-            required,
-          },
-        },
-      },
-    ],
-  });
-
   // create thread and add a message
   const thread = await client.beta.threads.create();
   await client.beta.threads.messages.create(thread.id, {
