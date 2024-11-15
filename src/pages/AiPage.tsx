@@ -60,11 +60,12 @@ export default function AiPage() {
       // play animation
       // api call
       const res = await axios.post<{ symptoms: Fields }>(baseURL + "/assistant", { message, token });
+      console.log(res);
       if (!res.data.symptoms) throw "Information is not enough!";
       nav("/import?" + objectToUrlParams(res.data.symptoms)); // correct
     } catch (e) {
       if (e instanceof AxiosError) {
-        const message = e.response?.data?.error;
+        const message = e.response?.data?.error || e.response?.data;
         if (message) return setErrorAndResetToken(message);
       }
       if (typeof e === "string") return setErrorAndResetToken(e);
@@ -189,7 +190,7 @@ function AiForm({
           </ListItem>
         ))}
       </List>
-      <Typography ref={respond} variant="body1" sx={{ color: "#fff6" }} />
+      <Typography ref={respond} variant="body1" sx={{ color: "#fff6", overflow: "hidden" }} className="ai-error" />
       <Box flex="1 0 1rem" />
       <TextField
         inputRef={input}
