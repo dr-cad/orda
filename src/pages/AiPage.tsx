@@ -151,7 +151,7 @@ function AiForm({
   return (
     <Stack p={2} flex={1}>
       <Box flex={{ xs: "0 0 1rem", sm: "0 0 2rem" }} />
-      <Typography ref={respond} variant="body1" className="ai-error" />
+      <Typography ref={respond} variant="body1" fontFamily="Roboto" className="ai-error" />
       <Box flex="1 0 1rem" />
       <TextField
         inputRef={input}
