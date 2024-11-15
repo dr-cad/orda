@@ -3,7 +3,7 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/all";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Typed from "typed.js";
 import { IAiThinkRef } from "../components/AiThink";
@@ -133,12 +133,12 @@ function AiForm({
   const input = useRef<HTMLInputElement>();
   const respond = useRef<HTMLSpanElement>(null!);
 
-  const animate = useCallback(async () => {
+  useEffect(() => {
     const _err = error ? `<span>${error.split("\n").join("</span><br/><span>")}</span>` : undefined;
     const text = (_err || content)?.replace(/\n/g, "<br/>");
     const typed = new Typed(respond.current, {
       strings: [text],
-      typeSpeed: 20,
+      typeSpeed: 10,
       backSpeed: 0,
       showCursor: false,
       fadeOut: true,
@@ -147,10 +147,6 @@ function AiForm({
       typed.destroy();
     };
   }, [content, error]);
-
-  useEffect(() => {
-    animate();
-  }, [animate]);
 
   return (
     <Stack p={2} flex={1}>
