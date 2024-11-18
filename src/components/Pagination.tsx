@@ -7,7 +7,7 @@ export default function Pagination() {
   const { show, pages, isResult, canGoForward, handleTo, handleResult, pageIndex } = usePageIndex();
 
   return !show ? null : (
-    <Stack direction="row" className="pagination sticky">
+    <Stack direction="row" className="pagination sticky" mb="env(safe-area-inset-bottom, 0px)">
       <MuiPagination
         count={pages.length}
         page={pageIndex + 1}
