@@ -3,6 +3,8 @@ import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css
 import "filepond/dist/filepond.min.css";
 import "../config/image-picker.css";
 
+// eslint-disable-next-line
+// @ts-ignore
 import FilePondPluginImageEditor from "@pqina/filepond-plugin-image-editor/dist/FilePondPluginImageEditor.js";
 import { ActualFileObject, FilePondFile } from "filepond";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
