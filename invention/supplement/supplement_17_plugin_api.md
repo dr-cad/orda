@@ -1,294 +1,655 @@
-# ضمیمه 17: سیستم تولید گزارش (Report Generation System)
+# ضمیمه 17: قرارداد API افزونه‌ها (Features/Extensions)
 
-**توجه**: در حال حاضر هیچ سیستم افزونه‌ای (Plugin API) در کد پیاده‌سازی نشده است. آنچه که وجود دارد، یک سیستم تولید گزارش ساده است که از علائم (symptoms) متن گزارش تولید می‌کند.
+سیستم افزونه‌ها در این پروژه به صورت **Features** یا **Extensions** پیاده‌سازی شده است. این سیستم امکان اضافه کردن کامپوننت‌های سفارشی به علائم (symptoms) را فراهم می‌کند.
 
-## 1. ساختار فعلی
+## 1. ساختار کلی
 
-سیستم تولید گزارش بر اساس یک الگوی ساده (template-based) کار می‌کند که از داده‌های علائم، متن گزارش را تولید می‌کند.
+### الف) تعریف Feature Enum در `src/types/index.ts`:
 
-### الف) تعریف Type در `src/types/index.ts`:
-
-```140:144:src/types/index.ts
-export interface IReport {
-  sid?: SId;
-  ranges?: (IRange & { text: string })[];
-  text?: string | string[];
+```39:43:src/types/index.ts
+export enum Feature {
+  DuplicateNameChecker = "dup-name-checker",
+  DentPicker = "dent-picker",
+  ImagePicker = "image-picker",
 }
 ```
 
-- `sid`: شناسه symptom (اختیاری) - اگر تعریف شده باشد، فقط زمانی که symptom مقدار داشته باشد نمایش داده می‌شود
-- `ranges`: آرایه‌ای از بازه‌ها برای تبدیل مقادیر Range به متن (اختیاری)
-- `text`: متن یا آرایه‌ای از متون برای انتخاب تصادفی (اختیاری)
+### ب) تعریف Desc Type:
 
-### ب) داده گزارش در `src/data/report.ts`:
-
-```1:89:src/data/report.ts
-import { IReport } from "../types";
-
-const report: IReport[] = [
-  {
-    text: [
-      // static
-      "Panoramic radiography revealed",
-      "Panoramic examination indicates",
-      "Panoramic findings illustrates",
-    ],
-  },
-
-  { sid: "unilateral", text: "unilateral," },
-  { sid: "bilateral", text: "bilateral," },
-
-  { sid: "solitary", text: "solitary," },
-  { sid: "multiple-separate", text: "multiple," },
-  { sid: "diffuse", text: "generalized diffuse," },
-
-  { sid: "unilocular", text: "unilocular radiolucent" },
-  { sid: "multilocular", text: "multilocular radiolucent" },
-  // { sid: "linear", text: "multilocular radiolucent with straight septa" },
-  // { sid: "curved", text: "multilocular radiolucent" },
-  { sid: "radiopaque", text: "radiopaque" },
-  { sid: "mixed", text: "mixed radiolucent and radiopaque" },
-  { sid: "rarefaction", text: "generalized rarefaction" },
-  { text: "lesion with" },
-
-  { sid: "round", text: "round," },
-  { sid: "scalloped", text: "scalloped," },
-  { sid: "irregular", text: "irregular," },
-
-  { sid: "well-defined", text: "well-defined" },
-  { sid: "non-corticated", text: ", and non-corticated border" },
-  { sid: "corticated", text: ", and corticated border" },
-  { sid: "sclerotic", text: ", and sclerotic border" },
-  { sid: "soft-capsule", text: "border with soft-capsule" },
-
-  { sid: "ill-defined", text: "ill-defined" },
-  { sid: "blending", text: ", and blending border" },
-  { sid: "invasive", text: ", and invasive border" },
-
-  { sid: "unilateral-right", text: "in Rt side" },
-  { sid: "unilateral-left", text: "in Lt side" },
-
-  { sid: "maxilla", text: "of maxilla" },
-  { sid: "mandible", text: "of mandible" },
-  { sid: "both", text: "of maxilla and mandible" },
-
-  { text: "at" },
-  {
-    sid: "maxilla",
-    ranges: [
-      { a: 3, b: 4, text: "tuberosity" },
-      { a: 4, b: 7, text: "molar" },
-      { a: 7, b: 9, text: "premolar" },
-      { a: 9, b: 10, text: "canine" },
-      { a: 10, b: 12, text: "incisors" },
-    ],
-  },
-  {
-    sid: "mandible",
-    ranges: [
-      { a: 1, b: 2, text: "condyle" },
-      { a: 2, b: 4, text: "ramus" },
-      { a: 4, b: 7, text: "molar" },
-      { a: 7, b: 9, text: "premolar" },
-      { a: 9, b: 10, text: "canine" },
-      { a: 10, b: 12, text: "incisors" },
-    ],
-  },
-  {
-    sid: "both",
-    ranges: [
-      { a: 1, b: 2, text: "condyle" },
-      { a: 2, b: 4, text: "ramus" },
-      { a: 4, b: 7, text: "molar" },
-      { a: 7, b: 9, text: "premolar" },
-      { a: 9, b: 10, text: "canine" },
-      { a: 10, b: 12, text: "incisors" },
-    ],
-  },
-  { sid: "sinus", text: "and sinus" },
-
-  { text: "region" },
-
-  { sid: "destruct-3", text: " with expansion and destruction of cortical bone" },
-  { sid: "extend", text: " with extension within bone without expand" },
-  { sid: "expand", text: " with expansion of cortical bone" },
-];
-```
-
-## 2. الگوریتم تولید گزارش
-
-### تابع اصلی در `src/hooks/report.ts`:
-
-```25:40:src/hooks/report.ts
-export default function useReportFindings(sypmtoms: ISymptom[]) {
-  return useMemo(() => {
-    let output = "";
-    for (const r of report) {
-      const spaceBefore = report.indexOf(r) === 0 ? "" : " ";
-      if (!r.sid) {
-        output += spaceBefore + pickText(r.text!);
-        continue;
-      }
-      const v = getSymptomValueById(sypmtoms, r.sid);
-      if (v && r.text) output += spaceBefore + pickText(r.text);
-      if (r.ranges && v) output += spaceBefore + pickFromRange(r.ranges, v as IRange);
-    }
-    return output + ".";
-  }, [sypmtoms]);
-}
-```
-
-### توابع کمکی:
-
-```7:23:src/hooks/report.ts
-const pickText = (text: string | string[]) => {
-  if (typeof text === "string") return text;
-  return _.sample(text);
+```47:52:src/types/index.ts
+export type Desc = {
+  title?: string;
+  image?: string;
+  feature?: Feature;
+  params?: any[]; // passed to feature component
 };
+```
 
-const pickFromRange = (ranges: IReport["ranges"], v: IRange) => {
-  let from = "";
-  let to = "";
+### ج) استفاده در ISymptomRaw:
 
-  for (const range of ranges!) {
-    if (!from && v.a < range.b) from = range.text; // yes it's correct
-    if (!to && v.b <= range.b) to = range.text;
+هر symptom می‌تواند یک `desc` با `feature` داشته باشد که مشخص می‌کند چه افزونه‌ای باید نمایش داده شود.
+
+## 2. Router Component (Features)
+
+کامپوننت `Features` به عنوان یک router/dispatcher عمل می‌کند که بر اساس مقدار `feature`، کامپوننت مناسب را بارگذاری و نمایش می‌دهد:
+
+```1:37:src/components/Features.tsx
+import { lazy, memo, Suspense } from "react";
+import { Feature, ISymptom } from "../types";
+import DupNameChecker from "./DupNameChecker";
+const DentPicker = lazy(() => import("./DentPicker"));
+const ImagePicker = lazy(() => import("./ImagePicker"));
+
+interface Props {
+  value: Feature | string;
+  symptom: ISymptom;
+  params?: any[];
+}
+
+export default memo(function Features({ value }: Props) {
+  switch (value) {
+    case Feature.DuplicateNameChecker:
+      return (
+        <Suspense>
+          <DupNameChecker />
+        </Suspense>
+      );
+    case Feature.DentPicker:
+      return (
+        <Suspense fallback={<p>Loading dent picker...</p>}>
+          <DentPicker />
+        </Suspense>
+      );
+    case Feature.ImagePicker:
+      return (
+        <Suspense fallback={<p>Loading image picker...</p>}>
+          <ImagePicker />
+        </Suspense>
+      );
+
+    default:
+      return <p>Feature not found!</p>;
+  }
+});
+```
+
+**نکات مهم**:
+- `DupNameChecker` به صورت synchronous import می‌شود
+- `DentPicker` و `ImagePicker` به صورت lazy-loaded هستند (code splitting)
+- `Suspense` برای نمایش loading state استفاده می‌شود
+- کامپوننت `memo` شده است برای جلوگیری از re-render غیرضروری
+
+## 3. نحوه استفاده در Symptoms
+
+### الف) در `src/data/symptoms.ts`:
+
+```11:20:src/data/symptoms.ts
+  {
+    id: "pat-name",
+    name: "Full Name",
+    desc: { feature: Feature.DuplicateNameChecker },
+    required: true,
+    type: SymptomType.String,
+    open: true,
+    omitHash: true,
+    gpt: false,
+    details: "patient name",
+  },
+```
+
+```47:56:src/data/symptoms.ts
+  {
+    id: "pat-images",
+    name: "Panaromic Images",
+    desc: { feature: Feature.ImagePicker },
+    type: SymptomType.String,
+    required: true,
+    open: true,
+    noInput: true,
+    gpt: false,
+  },
+```
+
+```427:436:src/data/symptoms.ts
+  {
+    id: "location",
+    name: "Location",
+    desc: {
+      title: "Pathologic extension",
+      feature: Feature.DentPicker,
+    },
+    value: true,
+    required: true,
+    options: ["ana-location", "side", "relation-tooth"],
+  },
+```
+
+### ب) در کامپوننت Symptom:
+
+```118:132:src/components/Symptom.tsx
+const Desc = (symptom: ISymptom) => {
+  if (!symptom.desc) return null;
+  if (!symptom.desc.title && !symptom.desc.image && !symptom.desc.feature) return null;
+  return (
+    <Stack p={2} pb={0}>
+      <Box display="flex" flexDirection="column" overflow="hidden" gap={1}>
+        {symptom.desc.title && <div>{symptom.desc.title}</div>}
+        {symptom.desc.image && <img alt={symptom.desc.title} src={symptom.desc.image} className="desc-img" />}
+        {symptom.desc.feature && (
+          <Features value={symptom.desc.feature} symptom={symptom} params={symptom.desc.params} />
+        )}
+      </Box>
+    </Stack>
+  );
+};
+```
+
+## 4. افزونه‌های موجود
+
+### الف) DuplicateNameChecker
+
+**هدف**: بررسی تکراری بودن نام بیمار
+
+**موقعیت**: `src/components/DupNameChecker.tsx`
+
+**عملکرد**:
+- نام وارد شده را در history جستجو می‌کند
+- اگر نام مشابه پیدا شود، لینکی نمایش می‌دهد
+- با کلیک روی لینک، رکورد قبلی در buffer بارگذاری می‌شود
+
+```7:35:src/components/DupNameChecker.tsx
+export default function DupNameChecker() {
+  const uuid = useBufferStore((s) => s.uuid);
+  const history = usePersistStore((s) => s.history);
+  const loadHistoryItem = useBufferStore((s) => s.loadHistoryItem);
+
+  const patName = useSymptomValue<string>("pat-name");
+  const index = useMemo(
+    () => history.findIndex((x) => getSymptomValueById<string>(x.symptoms, "pat-name") === patName),
+    [history, patName]
+  );
+
+  const load = async () => {
+    if (index < 0) return;
+    await loadHistoryItem(history[index], true);
+  };
+
+  if (!patName || index < 0 || patName.length < 3 || uuid === history[index].uuid) {
+    return <span>Please enter the full name</span>;
   }
 
-  if (from === to) return to + " ";
-  return from + " to " + to + " ";
-};
-```
-
-### منطق کار:
-
-1. **متن استاتیک**: اگر `sid` تعریف نشده باشد، متن مستقیماً به خروجی اضافه می‌شود
-2. **انتخاب تصادفی**: اگر `text` یک آرایه باشد، یکی از عناصر به صورت تصادفی انتخاب می‌شود
-3. **بررسی شرط**: اگر `sid` تعریف شده باشد، ابتدا مقدار symptom بررسی می‌شود
-4. **نمایش شرطی**: فقط در صورت وجود مقدار، متن نمایش داده می‌شود
-5. **تبدیل Range**: اگر `ranges` تعریف شده و مقدار از نوع `IRange` باشد، بازه به متن تبدیل می‌شود
-
-## 3. مثال عملی
-
-### ورودی (Symptoms):
-```json
-{
-  "unilateral": true,
-  "unilateral-left": true,
-  "solitary": true,
-  "radiolucent": true,
-  "uni1": true,
-  "round": true,
-  "well-defined": true,
-  "corticated": true,
-  "mandible": { "a": 4, "b": 7 },
-  "extend": true
+  return (
+    <span style={{ margin: 0 }}>
+      There's{" "}
+      <Link sx={{ cursor: "pointer" }} onClick={load}>
+        a patient with the same name
+      </Link>
+    </span>
+  );
 }
 ```
 
-### فرآیند تولید:
-1. `"Panoramic radiography revealed"` (انتخاب تصادفی از 3 گزینه)
-2. `"unilateral,"` (چون `unilateral === true`)
-3. `"solitary,"` (چون `solitary === true`)
-4. `"unilocular radiolucent"` (چون `radiolucent === true` و `uni1 === true`)
-5. `"lesion with"` (متن استاتیک)
-6. `"round,"` (چون `round === true`)
-7. `"well-defined"` (چون `well-defined === true`)
-8. `", and corticated border"` (چون `corticated === true`)
-9. `"in Lt side"` (چون `unilateral-left === true`)
-10. `"of mandible"` (چون `mandible` مقدار دارد)
-11. `"at"` (متن استاتیک)
-12. `"molar to molar"` (تبدیل `{a: 4, b: 7}` به متن بر اساس ranges)
-13. `"region"` (متن استاتیک)
-14. `" with extension within bone without expand"` (چون `extend === true`)
+**API استفاده شده**:
+- `useBufferStore`: دسترسی به buffer store
+- `usePersistStore`: دسترسی به history
+- `useSymptomValue`: خواندن مقدار symptom
+- `loadHistoryItem`: بارگذاری یک رکورد در buffer
 
-### خروجی نهایی:
-```
-Panoramic radiography revealed unilateral, solitary, unilocular radiolucent lesion with round, well-defined, and corticated border in Lt side of mandible at molar to molar region with extension within bone without expand.
-```
+### ب) DentPicker
 
-## 4. ویژگی‌ها و محدودیت‌ها
+**هدف**: انتخاب موقعیت آناتومیک ضایعه روی تصویر رادیوگرافی
 
-### ویژگی‌ها:
-- ✅ ساده و قابل فهم
-- ✅ عملکرد سریع (بدون پردازش پیچیده)
-- ✅ پشتیبانی از انتخاب تصادفی متن
-- ✅ تبدیل خودکار Range به متن
-- ✅ شرطی‌سازی بر اساس مقدار symptoms
+**موقعیت**: `src/components/DentPicker.tsx`
 
-### محدودیت‌ها:
-- ❌ ساختار ثابت و غیرقابل گسترش
-- ❌ عدم پشتیبانی از منطق پیچیده
-- ❌ عدم پشتیبانی از افزونه‌های خارجی
-- ❌ عدم امکان سفارشی‌سازی توسط کاربر
-- ❌ عدم پشتیبانی از قوانین تجاری پیچیده
+**عملکرد**:
+- نمایش تصویر آناتومیک با نقاط قابل کلیک
+- امکان انتخاب بازه (range) با کلیک روی دو نقطه
+- به‌روزرسانی خودکار `maxilla`, `mandible`, یا `both` بر اساس انتخاب
+- پشتیبانی از انتخاب در فک بالا، پایین، یا هر دو
 
-## 5. استفاده در UI
+```59:129:src/components/DentPicker.tsx
+export default function DentPicker() {
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
+  const toggleExpanded = useBufferStore((s) => s.toggleExpanded);
+  const { max, man, both } = useAnaLoc();
 
-### در کامپوننت ReportPage:
+  const [start, setStart] = useState<IPoint>(); // tmp cache
 
-```typescript
-// src/pages/ReportPage.tsx
-import useReportFindings from "../hooks/report";
+  const onSelect = (p: IPoint) => {
+    if (!start) return setStart(p);
 
-function ReportPageContent({ item }: { item: IHistoryItem }) {
-  const reportText = useReportFindings(item.symptoms);
-  
+    const _start = start.n < p.n ? start : p;
+    const _end = start.n < p.n ? p : start;
+
+    if (!(_start.j === JawType.Both || _start.j === _end.j)) return; // invalid
+
+    toggleExpanded(AnaLocation.Root, true);
+
+    // if end was both -> choose mandible
+    if (_end.j === JawType.Both) {
+      const range = { a: _start.n, b: _end.n };
+      toggleExpanded(AnaLocation.Mandible, true);
+      updateSymptom(AnaLocation.Mandible, range);
+    }
+
+    if (_end.j === JawType.Maxilla) {
+      if (man) {
+        const range = { a: Math.min(_start.n, man.a), b: Math.max(_end.n, man.b) };
+        toggleExpanded(AnaLocation.Both, true);
+        updateSymptom(AnaLocation.Both, range);
+      } else {
+        const range = { a: _start.n, b: _end.n };
+        toggleExpanded(AnaLocation.Maxilla, true);
+        updateSymptom(AnaLocation.Maxilla, range);
+      }
+    }
+
+    if (_end.j === JawType.Mandible) {
+      if (max) {
+        const range = { a: Math.min(_start.n, max.a), b: Math.max(_end.n, max.b) };
+        toggleExpanded(AnaLocation.Both, true);
+        updateSymptom(AnaLocation.Both, range);
+      } else {
+        const range = { a: _start.n, b: _end.n };
+        toggleExpanded(AnaLocation.Mandible, true);
+        updateSymptom(AnaLocation.Mandible, range);
+      }
+    }
+
+    setStart(undefined);
+  };
+
+  const onReset = () => {
+    setStart(undefined);
+    updateSymptom("ana-location", false);
+  };
+
   return (
-    <div>
-      <p>{reportText}</p>
+    <div className="dent-picker">
+      <img alt="Radiography Anatomic Location" src={AnaLocImage} />
+      {points.map((p, i) => (
+        <Point key={i} p={p} onSelect={onSelect} start={start} />
+      ))}
+      {(max || man || both || start) && (
+        <Tooltip title="Clear Selection">
+          <IconButton onClick={onReset} size="small" className="clear-btn">
+            <RestartAltRounded />
+          </IconButton>
+        </Tooltip>
+      )}
     </div>
   );
 }
 ```
 
-## 6. مقایسه با سیستم افزونه‌ای فرضی
+**API استفاده شده**:
+- `updateSymptom`: به‌روزرسانی مقدار symptom
+- `toggleExpanded`: باز/بسته کردن symptom
+- `useSymptomValue`: خواندن مقادیر `maxilla`, `mandible`, `both`
 
-### سیستم فعلی (Template-based):
-- ساختار داده‌ای ساده (`IReport[]`)
-- پردازش خطی و ترتیبی
-- بدون انعطاف‌پذیری
-- بدون ایزولاسیون
-- بدون سیستم ثبت و مدیریت
+**خروجی**: تنظیم `IRange` برای `maxilla`, `mandible`, یا `both`
 
-### سیستم افزونه‌ای فرضی (که وجود ندارد):
-- نیاز به رابط برنامه‌نویسی (API)
-- نیاز به سیستم ثبت (Registry)
-- نیاز به ایزولاسیون و امنیت
-- نیاز به مدیریت چرخه حیات
-- پیچیدگی بیشتر
+### ج) ImagePicker
 
-## 7. محل پیاده‌سازی
+**هدف**: آپلود و مدیریت تصاویر رادیوگرافی پانورامیک
 
-- **تعریف Type**: `src/types/index.ts` (خط ~140)
-- **داده گزارش**: `src/data/report.ts`
-- **هوک پردازش**: `src/hooks/report.ts`
-- **استفاده در UI**: `src/pages/ReportPage.tsx`
+**موقعیت**: `src/components/ImagePicker.tsx`
 
-## 8. قابلیت‌های پیشنهادی برای آینده
+**عملکرد**:
+- آپلود چندین تصویر (حداکثر 10 فایل)
+- اعتبارسنجی اندازه فایل (حداکثر 1.5MB)
+- Deduplication با استفاده از SHA-256 hash
+- آپلود به Cloudinary
+- نمایش پیشرفت آپلود
+- مدیریت حذف تصاویر
 
-اگر در آینده بخواهید یک سیستم افزونه‌ای واقعی پیاده‌سازی کنید، می‌توانید:
+```36:213:src/components/ImagePicker.tsx
+export default function ImagePicker() {
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
+  const imagesRaw: string | undefined = useSymptomValue(sid);
+  const imagesParsed = useMemo(() => parseImages(imagesRaw), [imagesRaw]);
 
-1. **ایجاد Plugin Interface**:
-   - تعریف قرارداد استاندارد برای افزونه‌ها
-   - پشتیبانی از ورودی و خروجی مشخص
+  const filepond = useRef<FilePond>(null);
+  const [files, setFiles] = useState<ActualFileObject[]>();
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string>();
+  const initialized = useRef(false);
+  const imagesSet = useRef(false); // makes sure images are loaded only once
 
-2. **Plugin Registry**:
-   - سیستم ثبت و مدیریت افزونه‌ها
-   - پشتیبانی از بارگذاری پویا
+  useEffect(() => {
+    if (imagesSet.current) return;
+    imagesSet.current = true;
 
-3. **ایزولاسیون**:
-   - اجرای افزونه‌ها در محیط محدود (sandbox)
-   - کنترل دسترسی به منابع سیستم
+    const setImagesOnInit = async () => {
+      try {
+        const list = await Promise.all(
+          imagesParsed.map(async (image) => {
+            const res = await fetch(image.url);
+            return new File([await res.blob()], image.hash, { type: "image/jpeg" });
+          })
+        );
 
-4. **Pipeline Processing**:
-   - امکان اتصال چند افزونه به صورت زنجیره‌ای
-   - مدیریت وابستگی‌ها
+        setFiles(list);
 
-5. **Extension Points**:
-   - نقاط گسترش مشخص برای افزودن قابلیت‌های جدید
-   - مثال: گزارش‌سازی، اعتبارسنجی، نمایش داده
+        setTimeout(() => {
+          initialized.current = true;
+        }, 500);
+      } catch (e) {
+        console.error(e);
+      }
+    };
 
-## 9. نتیجه‌گیری
+    setImagesOnInit();
+  }, [imagesParsed]);
 
-سیستم فعلی یک راه‌حل ساده و موثر برای تولید گزارش است، اما یک سیستم افزونه‌ای واقعی نیست. برای نیازهای پیچیده‌تر، نیاز به طراحی و پیاده‌سازی یک سیستم افزونه‌ای کامل وجود دارد.
+  // cloudinary + store
+
+  const updateImages = async () => {
+    const newImages: ICImage[] = [];
+
+    // remove removed images from cloudinary
+    for await (const image of imagesParsed) {
+      const removed = !files?.find((x) => x.name === image.hash);
+      if (removed) {
+        makeDeleteRequest({
+          token: image.deleteToken,
+          successCallback: () => {
+            console.log("cloud:delete", { image });
+          },
+          errorCallback: (error) => {
+            console.error("cloud:delete", { error });
+          },
+        });
+      }
+    }
+
+    // add new items - use existing if there is
+    for await (const file of files || []) {
+      const hash = await fileHash(file);
+      const existing = imagesParsed.find((x) => x.hash === hash);
+
+      // don't upload again just use previous
+      if (existing) {
+        newImages.push(existing);
+        continue;
+      }
+
+      // upload
+      await new Promise((resolve, reject) =>
+        makeUploadRequest({
+          file: file as File,
+          fieldName: file.name,
+          progressCallback: (_len, loaded, total) => {
+            const percent = (loaded / total) * 100;
+            setProgress(percent);
+          },
+          successCallback: (data) => {
+            console.log("here");
+            newImages.push({
+              hash,
+              url: data.url.replace("http://", "https://"),
+              deleteToken: data.delete_token,
+            });
+            console.log("cloud:upload", { data });
+            setProgress(0);
+            resolve(data);
+          },
+          errorCallback: (error) => {
+            console.error("cloud:upload", { error });
+            setError(error);
+            reject(error);
+          },
+        })
+      );
+    }
+
+    updateSymptom(sid, stringifyImages(newImages));
+  };
+
+  useEffect(() => {
+    // on-demand revalidation for upload - based on count and init
+    if (files && initialized.current) updateImages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [files?.length]);
+
+  const onFilesUpdate = async (newFiles: FilePondFile[]) => {
+    console.log("update", { newFiles });
+    const newFilesHashed = [];
+    for (const f of newFiles) {
+      const hash = await fileHash(f.file);
+      if (f.file.name === hash) newFilesHashed.push(f.file);
+      else newFilesHashed.push(new File([f.file], hash, { type: f.file.type }));
+    }
+    setFiles(newFilesHashed);
+  };
+
+  return (
+    <div className="image-picker">
+      <p style={{ marginTop: 0 }}>
+        Please upload your panaromic images.
+        <br />
+        for image compression go to{" "}
+        <Link to="https://tinypng.com" target="_blank" rel="noreferrer" style={{ color: "var(--theme-color)" }}>
+          TinyPng.com
+        </Link>
+        .
+        <br />
+        <span style={{ color: "#666" }}>(preferred formats are: jpeg, webp)</span>
+      </p>
+
+      {!!progress && (
+        <CircularProgress
+          size="1.5rem"
+          thickness={5}
+          value={progress}
+          variant={progress >= 100 ? "indeterminate" : "determinate"}
+          color={progress >= 100 ? "success" : "primary"}
+          sx={{ position: "fixed", top: "-1.5rem", right: "1rem" }}
+        />
+      )}
+
+      {!!imagesRaw && !progress && (
+        <TbCloudCheck //
+          size="1.5rem"
+          color="#4fe2a5"
+          style={{ position: "fixed", top: "-1.5rem", right: "1rem" }}
+        />
+      )}
+
+      {!!error && (
+        <Tooltip title={error}>
+          <div style={{ position: "fixed", top: "-1.5rem", right: "1rem" }}>
+            <TbCloudCancel size="1.5rem" color="#e24f5b" cursor="pointer" />
+          </div>
+        </Tooltip>
+      )}
+
+      <FilePond
+        ref={filepond}
+        files={files} // initial files
+        name="files" /* sets the file input name, it's filepond by default */
+        labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+        onupdatefiles={onFilesUpdate}
+        // allowReorder
+        allowMultiple
+        acceptedFileTypes={["image/jpeg"]} // FIXME not working
+        maxFiles={maxFiles}
+        maxFileSize={maxFileSize / 1024 + "KB"}
+        imagePreviewMaxHeight={150}
+        instantUpload={false}
+        server={{ revert: null }}
+      />
+    </div>
+  );
+}
+```
+
+**API استفاده شده**:
+- `updateSymptom`: ذخیره لیست تصاویر در symptom
+- `useSymptomValue`: خواندن تصاویر فعلی
+- `parseImages` / `stringifyImages`: تبدیل بین string و array
+- `makeUploadRequest` / `makeDeleteRequest`: ارتباط با Cloudinary
+
+**خروجی**: ذخیره لیست `ICImage[]` به صورت string در symptom
+
+## 5. قوانین و محدودیت‌ها
+
+### قوانین:
+
+1. **هر Feature یک React Component است**: باید یک کامپوننت React معتبر باشد
+2. **دسترسی به Store**: می‌توانند از hooks برای دسترسی به store استفاده کنند:
+   - `useBufferStore`: دسترسی به buffer (symptoms فعلی)
+   - `usePersistStore`: دسترسی به history (رکوردهای ذخیره شده)
+3. **خواندن/نوشتن Symptoms**: می‌توانند از `useSymptomValue` و `updateSymptom` استفاده کنند
+4. **Params**: می‌توانند از `params` از `desc.params` استفاده کنند (فعلاً استفاده نمی‌شود)
+
+### محدودیت‌ها:
+
+1. **ثبت دستی**: باید در `Features` component ثبت شوند (switch case)
+2. **بدون ایزولاسیون**: اجرا در همان context اصلی برنامه
+3. **بدون Sandbox**: دسترسی کامل به تمام منابع
+4. **بدون Plugin Registry**: سیستم registry برای افزونه‌های خارجی وجود ندارد
+
+## 6. راهنمای ساخت افزونه جدید
+
+### مراحل:
+
+1. **تعریف Feature Enum**:
+```typescript
+// src/types/index.ts
+export enum Feature {
+  // ... existing
+  MyNewFeature = "my-new-feature",
+}
+```
+
+2. **ساخت کامپوننت**:
+```typescript
+// src/components/MyNewFeature.tsx
+export default function MyNewFeature() {
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
+  const symptomValue = useSymptomValue<string>("my-symptom-id");
+  
+  // ... component logic
+  
+  return <div>My Feature Component</div>;
+}
+```
+
+3. **ثبت در Features**:
+```typescript
+// src/components/Features.tsx
+import MyNewFeature from "./MyNewFeature";
+
+// در switch:
+case Feature.MyNewFeature:
+  return <MyNewFeature />;
+```
+
+4. **استفاده در Symptom**:
+```typescript
+// src/data/symptoms.ts
+{
+  id: "my-symptom",
+  name: "My Symptom",
+  desc: { feature: Feature.MyNewFeature },
+  // ...
+}
+```
+
+## 7. API در دسترس برای افزونه‌ها
+
+### Store Hooks:
+
+- `useBufferStore()`: دسترسی به buffer store
+  - `symptoms`: لیست symptoms فعلی
+  - `updateSymptom(id, value)`: به‌روزرسانی symptom
+  - `loadHistoryItem(item, overwrite)`: بارگذاری رکورد از history
+  - `toggleExpanded(id, open)`: باز/بسته کردن symptom
+
+- `usePersistStore()`: دسترسی به persist store
+  - `history`: لیست رکوردهای ذخیره شده
+
+### Utility Hooks:
+
+- `useSymptomValue<T>(id)`: خواندن مقدار یک symptom
+- `getSymptomValueById<T>(symptoms, id)`: خواندن مقدار از لیست symptoms
+
+### Types:
+
+- `ISymptom`: نوع symptom
+- `IHistoryItem`: نوع رکورد history
+- `IRange`: نوع بازه (برای موقعیت)
+- `ICImage`: نوع تصویر
+
+## 8. مثال عملی: افزونه جدید
+
+فرض کنید می‌خواهید یک افزونه برای انتخاب تاریخ اضافه کنید:
+
+```typescript
+// 1. اضافه به Feature enum
+export enum Feature {
+  // ...
+  DatePicker = "date-picker",
+}
+
+// 2. ساخت کامپوننت
+export default function DatePicker() {
+  const updateSymptom = useBufferStore((s) => s.updateSymptom);
+  const date = useSymptomValue<string>("visit-date");
+  
+  return (
+    <input
+      type="date"
+      value={date || ""}
+      onChange={(e) => updateSymptom("visit-date", e.target.value)}
+    />
+  );
+}
+
+// 3. ثبت در Features
+case Feature.DatePicker:
+  return <DatePicker />;
+
+// 4. استفاده در symptom
+{
+  id: "visit-date",
+  name: "Visit Date",
+  desc: { feature: Feature.DatePicker },
+  type: SymptomType.String,
+}
+```
+
+## 9. محل تعریف در کد
+
+- **Feature Enum**: `src/types/index.ts` (خط ~39)
+- **Desc Type**: `src/types/index.ts` (خط ~47)
+- **Features Router**: `src/components/Features.tsx`
+- **DuplicateNameChecker**: `src/components/DupNameChecker.tsx`
+- **DentPicker**: `src/components/DentPicker.tsx`
+- **ImagePicker**: `src/components/ImagePicker.tsx`
+- **استفاده در Symptom**: `src/components/Symptom.tsx` (خط ~118)
+- **تعریف در Symptoms**: `src/data/symptoms.ts`
+
+## 10. مقایسه با Plugin API کامل
+
+### سیستم فعلی:
+- ✅ ساده و مستقیم
+- ✅ عملکرد سریع (بدون overhead)
+- ✅ دسترسی مستقیم به store
+- ❌ نیاز به ثبت دستی
+- ❌ بدون ایزولاسیون
+- ❌ بدون سیستم مدیریت چرخه حیات
+- ❌ عدم پشتیبانی از افزونه‌های خارجی
+
+### Plugin API کامل (فرضی):
+- ✅ سیستم ثبت خودکار
+- ✅ ایزولاسیون و امنیت
+- ✅ مدیریت چرخه حیات
+- ✅ پشتیبانی از افزونه‌های خارجی
+- ❌ پیچیدگی بیشتر
+- ❌ overhead بیشتر
+
+## 11. نتیجه‌گیری
+
+سیستم فعلی یک راه‌حل ساده و موثر برای افزودن قابلیت‌های سفارشی به علائم است. این سیستم برای افزونه‌های داخلی که توسط تیم توسعه ساخته می‌شوند مناسب است. برای نیاز به افزونه‌های خارجی یا ایزولاسیون کامل، نیاز به طراحی یک Plugin API کامل‌تر وجود دارد.
