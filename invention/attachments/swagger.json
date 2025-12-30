@@ -1,0 +1,469 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Jaw bone lesion detection app",
+    "summary": "A jaw bone lesion detection program.",
+    "description": "This is an app that classifies jaw bone lesions.",
+    "version": "1.0.2"
+  },
+  "servers": [
+    { "url": "https://orda-api.dr-cad.ir", "description": "API root endpoint", "variables": {} },
+    {
+      "url": "https://orda.onrender.com",
+      "description": "Alternative API root endpoint on Render cloud",
+      "variables": {}
+    }
+  ],
+  "paths": {
+    "/process": {
+      "post": {
+        "operationId": "lesionClassification",
+        "summary": "Find jaw bone lesions based on patient symptoms",
+        "description": "This endpoint receives symptoms from the patient and returns the list of most relevant jaw bone lesion by percentage",
+        "requestBody": {
+          "summary": "Symptoms and their values",
+          "description": "Request body contains the value for each symptom given by the user",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Symptoms" },
+              "examples": {
+                "Alexis": { "$ref": "#/components/examples/Alexis" },
+                "Barbara": { "$ref": "#/components/examples/Barbara" }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "summary": "List of lesions",
+            "description": "Lesions list generated!",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Scores" },
+                "examples": { "Dentigerous_Cyst": { "$ref": "#/components/examples/Dentigerous_Cyst" } }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Symptoms": {
+        "type": "object",
+        "properties": {
+          "pat_age": { "title": "Age", "description": "patient age", "type": "integer", "format": "int32" },
+          "pat_male": { "title": "Male", "description": "patient gender = male", "type": "boolean" },
+          "pat_female": { "title": "Female", "description": "patient gender = female", "type": "boolean" },
+          "fever_illness": {
+            "title": "Fever and Illness",
+            "description": "fever or sickness or illness",
+            "type": "boolean"
+          },
+          "paresth_anes": {
+            "title": "Paresthesia and anesthesia",
+            "description": "parasthesia or anesthesia of skin",
+            "type": "boolean"
+          },
+          "bleeding": { "title": "Gingival bleeding", "description": "gingiva bleeding", "type": "boolean" },
+          "purulent": { "title": "Purulent (pus) drainage", "description": "pus drainage", "type": "boolean" },
+          "swelling": { "title": "Swelling", "description": "swelling or asymmetry of face", "type": "boolean" },
+          "pain_0": { "title": "Pain", "description": "pain (facial or tooth or general pain)", "type": "boolean" },
+          "trismus": {
+            "title": "Trismus",
+            "description": "muscle trismus or limitation of mouth opening",
+            "type": "boolean"
+          },
+          "lymph": {
+            "title": "Lymph nodes involvement",
+            "description": "lymph nodes growth or involvement",
+            "type": "boolean"
+          },
+          "impact": {
+            "title": "Impacted, unerupted or supernumerary tooth",
+            "description": "impacted or unerupted tooth at lesion site",
+            "type": "boolean"
+          },
+          "history_of_surgery": {
+            "title": "History of surgery, trauma or tooth extraction",
+            "description": "history of surgery, trauma or tooth extraction",
+            "type": "boolean"
+          },
+          "hist_radio": {
+            "title": "History of radiotherapy and chemotherapy",
+            "description": "history of radiotherapy and chemotherapy",
+            "type": "boolean"
+          },
+          "slow_0": {
+            "title": "Slow (Months to years)",
+            "description": "slow growth of lesion (lesion has appeared or existed for months or even years)",
+            "type": "boolean"
+          },
+          "moderate_0": {
+            "title": "Moderate (weeks to about 2months)",
+            "description": "moderate growth of lesion (lesion has appeared or existed less than two months but more than a week)",
+            "type": "boolean"
+          },
+          "rapid_0": {
+            "title": "Rapid (Hours to days)",
+            "description": "rapid growth of lesion (lesion has appeared or existed within afew hours or days )",
+            "type": "boolean"
+          },
+          "hemorrhage": {
+            "title": "Hemorrhage",
+            "description": "hemorrheage or bleeding from lesion site or soft tissue lesion",
+            "type": "boolean"
+          },
+          "soft_tissue": { "title": "Soft tissue lesion", "description": "soft tissue lesion", "type": "boolean" },
+          "nonvital": {
+            "title": "Nonvital tooth",
+            "description": "nonvital tooth or negative tooth vitality test",
+            "type": "boolean"
+          },
+          "mobile_teeth": { "title": "Tooth mobility", "description": "tooth has mobility", "type": "boolean" },
+          "pain_1": {
+            "title": "Pain",
+            "description": "tooth is sensetive to percussion or tooth has pain on percussion",
+            "type": "boolean"
+          },
+          "pump": {
+            "title": "Pumping tooth",
+            "description": "pumping tooth or tooth pumps-up on percussion or pressure",
+            "type": "boolean"
+          },
+          "negative": { "title": "Negative", "description": "negative aspiration", "type": "boolean" },
+          "blood": { "title": "Blood", "description": "posetive blood aspiration", "type": "boolean" },
+          "serosanguinous": {
+            "title": "Serosanguinous",
+            "description": "posetive serum and blood (serosanguinous) aspiration",
+            "type": "boolean"
+          },
+          "serum": { "title": "Serum like fluid", "description": "posetive serum aspiration", "type": "boolean" },
+          "cheesy_mat": {
+            "title": "Cheesy material",
+            "description": "posetive cheesy material aspiration",
+            "type": "boolean"
+          },
+          "pus": { "title": "Pus", "description": "posetive pus aspiration", "type": "boolean" },
+          "auscultation": {
+            "title": "Auscultation",
+            "description": "posetive ausculation test or lesion has throbbing sound",
+            "type": "boolean"
+          },
+          "soft": { "title": "Soft", "description": "lesion has soft consistancy on palpation", "type": "boolean" },
+          "rubbery": {
+            "title": "Rubbery",
+            "description": "lesion has rubbery consistancy on palpation",
+            "type": "boolean"
+          },
+          "firm": { "title": "Firm", "description": "lesion has firm consistancy on palpation", "type": "boolean" },
+          "bony_hard": {
+            "title": "Bony-hard",
+            "description": "lesion has bony-hard consistancy on palpation",
+            "type": "boolean"
+          },
+          "size": { "title": "Size", "type": "integer", "format": "int32" },
+          "round": { "title": "Round, Ovoid or Regular", "description": "lesion has round shape", "type": "boolean" },
+          "scalloped": {
+            "title": "Scalloped",
+            "description": "lesion has scalloped shape or border",
+            "type": "boolean"
+          },
+          "irregular": { "title": "Irregular", "description": "lesion has irregular shape", "type": "boolean" },
+          "non_corticated": {
+            "title": "Non corticated",
+            "description": "lesion has well-defined and non-corticated border",
+            "type": "boolean"
+          },
+          "corticated": {
+            "title": "Corticated",
+            "description": "lesion has well-defined and corticated border",
+            "type": "boolean"
+          },
+          "sclerotic": {
+            "title": "Sclerotic",
+            "description": "lesion has well-defined and sclerotic border",
+            "type": "boolean"
+          },
+          "soft_capsule": {
+            "title": "Radiolucent rim (Soft capsule)",
+            "description": "lesion has well-defined border with radiolucent rim (soft capsule)",
+            "type": "boolean"
+          },
+          "blending": {
+            "title": "Blending border",
+            "description": "lesion has ill-defined and blending border",
+            "type": "boolean"
+          },
+          "invasive": {
+            "title": "Invasive and Destructive border",
+            "description": "lesion has ill-defined and invasive border",
+            "type": "boolean"
+          },
+          "maxilla": {
+            "title": "Maxilla",
+            "description": "Maxilla: tuberosity (from 3 to 4) - third molar or tooth number 8 (from 4 to 5) - second molar or tooth number 7 (from 5 to 6) - first molar or tooth number 6 (from 6 to 7) - molars region (from 4 to 7) - second premolar or tooth number 5 (from 7 to 8) - first premolar or tooth number 4 (from 8 to 9) - canine or tooth number 3 (from 9 to 10) - lateral or tooth number 2 (from 10 to 11) - central or tooth number 1 (from 11 to 12) - incisors (from 10 to 12)",
+            "type": "object",
+            "properties": {
+              "a": {
+                "type": "integer",
+                "title": "from",
+                "description": "From: Starting point number of the specific region"
+              },
+              "b": {
+                "type": "integer",
+                "title": "to",
+                "description": "To: Finishing point number of the specific region"
+              }
+            },
+            "minimum": 1,
+            "maximum": 12
+          },
+          "mandible": {
+            "title": "Mandible",
+            "description": "Mandible: condyle (from 1 to 2) - beginning of ramus (from 3 to 4) - ramus (from 2 to 4) - third molar or tooth number 8 (from 4 to 5) - second molar or tooth number 7 (from 5 to 6) - first molar or tooth number 6 (from 6 to 7) - molars region (from 4 to 7) - second premolar or tooth number 5 (from 7 to 8) - first premolar or tooth number 4 (from 8 to 9) - canine or tooth number 3 (from 9 to 10) - lateral or tooth number 2 (from 10 to 11) - central or tooth number 1 (from 11 to 12) - incisors (from 10 to 12)",
+            "type": "object",
+            "properties": {
+              "a": {
+                "type": "integer",
+                "title": "from",
+                "description": "From: Starting point number of the specific region"
+              },
+              "b": {
+                "type": "integer",
+                "title": "to",
+                "description": "To: Finishing point number of the specific region"
+              }
+            },
+            "minimum": 1,
+            "maximum": 12
+          },
+          "both": {
+            "title": "Both",
+            "description": "On both regions (maxilla and mandible) selected: condyle (from 1 to 2) - beginning of ramus (from 3 to 4) - ramus (from 2 to 4) - third molar or tooth number 8 (from 4 to 5) - second molar or tooth number 7 (from 5 to 6) - first molar or tooth number 6 (from 6 to 7) - molars region (from 4 to 7) - second premolar or tooth number 5 (from 7 to 8) - first premolar or tooth number 4 (from 8 to 9) - canine or tooth number 3 (from 9 to 10) - lateral or tooth number 2 (from 10 to 11) - central or tooth number 1 (from 11 to 12) - incisors (from 10 to 12)",
+            "type": "object",
+            "properties": {
+              "a": {
+                "type": "integer",
+                "title": "from",
+                "description": "From: Starting point number of the specific region"
+              },
+              "b": {
+                "type": "integer",
+                "title": "to",
+                "description": "To: Finishing point number of the specific region"
+              }
+            },
+            "minimum": 1,
+            "maximum": 12
+          },
+          "unilateral_right": {
+            "title": "Right",
+            "description": "Unilateral lesion at right side of mandible or maxilla",
+            "type": "boolean"
+          },
+          "unilateral_left": {
+            "title": "Left",
+            "description": "Unilateral lesion at left side of mandible or maxilla",
+            "type": "boolean"
+          },
+          "bilateral": {
+            "title": "Bilateral",
+            "description": "Bilateral lesion at both sides of mandible or maxilla",
+            "type": "boolean"
+          },
+          "pericoronal": {
+            "title": "Pericoronal (Coronal to CEJ)",
+            "description": "Epicenter of lesion is in pericoronal position to tooth (lesion is coronal to CEJ)",
+            "type": "boolean"
+          },
+          "interradicular": {
+            "title": "Root (Interradicular, Midroot or whole root)",
+            "description": "Epicenter of lesion is around whole root or mid root or between roots",
+            "type": "boolean"
+          },
+          "periapical": {
+            "title": "Periapical (Only apex area)",
+            "description": "Epicenter of lesion is around the apex of tooth (periapical)",
+            "type": "boolean"
+          },
+          "related": {
+            "title": "Not related to tooth",
+            "description": "Epicenter of lesion is non-odontogenic",
+            "type": "boolean"
+          },
+          "solitary": {
+            "title": "Solitary",
+            "description": "There is only one lesion or lesion type is solitary",
+            "type": "boolean"
+          },
+          "multiple_separate": {
+            "title": "Multiple seprate",
+            "description": "There are multiple seperate lesion or lesion type is multipe seprate",
+            "type": "boolean"
+          },
+          "radiopaue_zone": {
+            "title": "With radiolucent zone",
+            "description": "radiopaque internal strcuture with radioclucent zone within it (radiolucent rim)",
+            "type": "boolean"
+          },
+          "radiopaque_nozone": {
+            "title": "No specific zone",
+            "description": "radiopaque or completely radiopaque internal structure",
+            "type": "boolean"
+          },
+          "uni1": {
+            "title": "Completely radiolucent",
+            "description": "completely radiolucent internal structure",
+            "type": "boolean"
+          },
+          "uni2": {
+            "title": "Radiolucent with flecks",
+            "description": "radiolucent internal structure with flecks (radiopaque zone) within it",
+            "type": "boolean"
+          },
+          "wispy1": {
+            "title": "Wispy or Thin",
+            "description": "multilocular internal structure with linear wispy septa",
+            "type": "boolean"
+          },
+          "coarse1": {
+            "title": "Coarse or Thick",
+            "description": "multilocular internal structure with linear coarse septa",
+            "type": "boolean"
+          },
+          "wispy2": {
+            "title": "Wispy or Thin",
+            "description": "multilocular internal structure with curved wispy septa",
+            "type": "boolean"
+          },
+          "coarse2": {
+            "title": "Coarse or Thick",
+            "description": "multilocular internal structure with curved coarse septa",
+            "type": "boolean"
+          },
+          "mixed": {
+            "title": "Radiopaque and Radiolucent (Mixed)",
+            "description": "Radiopaque and Radiolucent (Mixed) internal structure",
+            "type": "boolean"
+          },
+          "eruption": { "title": "Early (froced) eruption", "description": "tooth forced eruption", "type": "boolean" },
+          "displace_0": { "title": "Displacement", "description": "tooth or root displacement", "type": "boolean" },
+          "resorp_1": { "title": "Root resorption", "description": "root resorption", "type": "boolean" },
+          "dura": {
+            "title": "Loss of lamina dura (without root resorption)",
+            "description": "lamina dura is lost or destructed",
+            "type": "boolean"
+          },
+          "wide_0": { "title": "PDL space widening", "description": "pdl space widening", "type": "boolean" },
+          "displace_1": { "title": "Displacement", "description": "IAN canal displacement", "type": "boolean" },
+          "enlarge": { "title": "Enlargment", "description": "IAN canal enlargment", "type": "boolean" },
+          "destruct_0": { "title": "Destruction", "description": "IAN canal destruction", "type": "boolean" },
+          "sinus": {
+            "title": "Invagination to sinus space",
+            "description": "invagination of lesion to sinus space",
+            "type": "boolean"
+          },
+          "expand": {
+            "title": "Expansion or displacement without destruction or perforation",
+            "description": "Only Expansion or displacement of cortical bone without destruction or perforation",
+            "type": "boolean"
+          },
+          "destruct_3": {
+            "title": "Expansion or displacement with destruction or perforation",
+            "description": "Expansion and Destruction or perforation of cortical bone",
+            "type": "boolean"
+          },
+          "extend": {
+            "title": "Extension within bone without expansion or destruction",
+            "description": "Extension within bone without expansion or destruction of cortical bone",
+            "type": "boolean"
+          },
+          "sequestrum": {
+            "title": "Sequestrum (Bone island)",
+            "description": "sequestrum (Bone island)",
+            "type": "boolean"
+          },
+          "fracture": { "title": "Pathologic fracture", "description": "pathologic fracture", "type": "boolean" },
+          "single": { "title": "Single layer", "description": "single layer periosteal reaction", "type": "boolean" },
+          "onion": {
+            "title": "Mulitlayered(Onion skin)",
+            "description": "mulitlayered (onion skin) periosteal reaction",
+            "type": "boolean"
+          },
+          "codman": {
+            "title": "codman triangle",
+            "description": "codman triangle periosteal reaction",
+            "type": "boolean"
+          },
+          "spiculated": {
+            "title": "Spiculated or Sunburst",
+            "description": "spiculated or sunburst periosteal reaction",
+            "type": "boolean"
+          }
+        }
+      },
+      "Scores": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string", "description": "Name of the lesion" },
+            "probablity": { "type": "integer", "format": "int32", "description": "Probablity score of the lesion" }
+          }
+        }
+      }
+    },
+    "examples": {
+      "Alexis": {
+        "summary": "Alexis",
+        "description": "A 32-year old female, with no systematic disease or pain, was incidentally diagnosed with a lesion in the left mandible about two month ago after taking a radiograph. On the panoramic image, A well-defined corticated radiolucent lesion is observed on the left side of the mandible, associated with the peri coronal region of third molar. The lesion shows bone extension but has not caused any bony expansion.",
+        "value": {
+          "pat_age": 32,
+          "pat_female": true,
+          "moderate_0": true,
+          "corticated": true,
+          "mandible": { "a": 4, "b": 5 },
+          "unilateral_left": true,
+          "pericoronal": true,
+          "extend": true,
+          "uni1": true
+        }
+      },
+      "Barbara": {
+        "summary": "Barbara",
+        "description": "24 old female with report of swelling or pain which she reported gradually increased in 2years. The lesion was hard on palpation.Panoramic findings illustrates unilateral, solitary, mixed radiolucent and radiopaque non-odontogenic lesion with irregular, ill-defined , and blending border in Rt side of mandible at ramus to incisors region with expansion of cortical bone and loss of lamina dura.",
+        "value": {
+          "pat_age": 24,
+          "pat_female": true,
+          "swelling": true,
+          "pain_0": true,
+          "slow_0": true,
+          "bony_hard": true,
+          "mandible": { "a": 2, "b": 12 },
+          "unilateral_right": true,
+          "solitary": true,
+          "mixed": true,
+          "irregular": true,
+          "blending": true,
+          "related": true,
+          "expand": true,
+          "dura": true
+        }
+      },
+      "Dentigerous_Cyst": {
+        "summary": "Dentigerous Cyst",
+        "description": "Dentigerous Cyst and 2 more lesions detected by the api",
+        "value": {
+          "scores": [
+            { "id": "dentigerous", "name": "Dentigerous Cyst", "probablity": 75 },
+            { "id": "myxoma", "name": "Odontogenic Myxoma", "probablity": 11 },
+            { "id": "okc", "name": "Odontogenic keratocyst", "probablity": 7 }
+          ]
+        }
+      }
+    }
+  }
+}
