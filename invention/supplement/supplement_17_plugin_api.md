@@ -4,652 +4,296 @@
 
 ## 1. ساختار کلی
 
-### الف) تعریف Feature Enum در `src/types/index.ts`:
+سیستم افزونه‌ها بر اساس یک الگوی ساده و مستقیم کار می‌کند:
 
-```39:43:src/types/index.ts
-export enum Feature {
-  DuplicateNameChecker = "dup-name-checker",
-  DentPicker = "dent-picker",
-  ImagePicker = "image-picker",
-}
-```
+1. **تعریف Feature**: هر افزونه یک شناسه یکتا در enum `Feature` دارد
+2. **ثبت در Router**: کامپوننت `Features` به عنوان router عمل می‌کند
+3. **ارتباط با Symptom**: از طریق `desc.feature` در تعریف symptom
+4. **اجرای کامپوننت**: کامپوننت مربوطه render می‌شود
 
-### ب) تعریف Desc Type:
+### فایل‌های مرتبط:
+- `src/types/index.ts`: تعریف `Feature` enum و `Desc` type
+- `src/components/Features.tsx`: کامپوننت router/dispatcher
+- `src/components/Symptom.tsx`: استفاده از Features در render symptom
+- `src/data/symptoms.ts`: تعریف symptoms با feature
 
-```47:52:src/types/index.ts
-export type Desc = {
-  title?: string;
-  image?: string;
-  feature?: Feature;
-  params?: any[]; // passed to feature component
-};
-```
+## 2. نحوه کار Router
 
-### ج) استفاده در ISymptomRaw:
+کامپوننت `Features` در `src/components/Features.tsx` به صورت یک switch statement عمل می‌کند. این کامپوننت:
+- مقدار `feature` را از props دریافت می‌کند
+- بر اساس مقدار، کامپوننت مناسب را load و render می‌کند
+- برای افزونه‌های بزرگ (DentPicker, ImagePicker) از lazy loading استفاده می‌کند
+- برای نمایش loading state از React Suspense استفاده می‌کند
+- با `memo` بهینه‌سازی شده تا از re-render غیرضروری جلوگیری کند
 
-هر symptom می‌تواند یک `desc` با `feature` داشته باشد که مشخص می‌کند چه افزونه‌ای باید نمایش داده شود.
-
-## 2. Router Component (Features)
-
-کامپوننت `Features` به عنوان یک router/dispatcher عمل می‌کند که بر اساس مقدار `feature`، کامپوننت مناسب را بارگذاری و نمایش می‌دهد:
-
-```1:37:src/components/Features.tsx
-import { lazy, memo, Suspense } from "react";
-import { Feature, ISymptom } from "../types";
-import DupNameChecker from "./DupNameChecker";
-const DentPicker = lazy(() => import("./DentPicker"));
-const ImagePicker = lazy(() => import("./ImagePicker"));
-
-interface Props {
-  value: Feature | string;
-  symptom: ISymptom;
-  params?: any[];
-}
-
-export default memo(function Features({ value }: Props) {
-  switch (value) {
-    case Feature.DuplicateNameChecker:
-      return (
-        <Suspense>
-          <DupNameChecker />
-        </Suspense>
-      );
-    case Feature.DentPicker:
-      return (
-        <Suspense fallback={<p>Loading dent picker...</p>}>
-          <DentPicker />
-        </Suspense>
-      );
-    case Feature.ImagePicker:
-      return (
-        <Suspense fallback={<p>Loading image picker...</p>}>
-          <ImagePicker />
-        </Suspense>
-      );
-
-    default:
-      return <p>Feature not found!</p>;
-  }
-});
-```
-
-**نکات مهم**:
-- `DupNameChecker` به صورت synchronous import می‌شود
-- `DentPicker` و `ImagePicker` به صورت lazy-loaded هستند (code splitting)
-- `Suspense` برای نمایش loading state استفاده می‌شود
-- کامپوننت `memo` شده است برای جلوگیری از re-render غیرضروری
+### الگوی بارگذاری:
+- افزونه‌های کوچک (مثل DuplicateNameChecker) به صورت synchronous import می‌شوند
+- افزونه‌های بزرگ به صورت lazy-loaded هستند تا bundle size کاهش یابد
 
 ## 3. نحوه استفاده در Symptoms
 
-### الف) در `src/data/symptoms.ts`:
+برای استفاده از یک افزونه در یک symptom، باید:
 
-```11:20:src/data/symptoms.ts
-  {
-    id: "pat-name",
-    name: "Full Name",
-    desc: { feature: Feature.DuplicateNameChecker },
-    required: true,
-    type: SymptomType.String,
-    open: true,
-    omitHash: true,
-    gpt: false,
-    details: "patient name",
-  },
-```
+1. در `src/data/symptoms.ts`، فیلد `desc` را با `feature` تنظیم کنید
+2. می‌توانید `title` و `image` را هم اضافه کنید
+3. `params` برای پاس دادن پارامترهای اضافی وجود دارد (فعلاً استفاده نمی‌شود)
 
-```47:56:src/data/symptoms.ts
-  {
-    id: "pat-images",
-    name: "Panaromic Images",
-    desc: { feature: Feature.ImagePicker },
-    type: SymptomType.String,
-    required: true,
-    open: true,
-    noInput: true,
-    gpt: false,
-  },
-```
-
-```427:436:src/data/symptoms.ts
-  {
-    id: "location",
-    name: "Location",
-    desc: {
-      title: "Pathologic extension",
-      feature: Feature.DentPicker,
-    },
-    value: true,
-    required: true,
-    options: ["ana-location", "side", "relation-tooth"],
-  },
-```
-
-### ب) در کامپوننت Symptom:
-
-```118:132:src/components/Symptom.tsx
-const Desc = (symptom: ISymptom) => {
-  if (!symptom.desc) return null;
-  if (!symptom.desc.title && !symptom.desc.image && !symptom.desc.feature) return null;
-  return (
-    <Stack p={2} pb={0}>
-      <Box display="flex" flexDirection="column" overflow="hidden" gap={1}>
-        {symptom.desc.title && <div>{symptom.desc.title}</div>}
-        {symptom.desc.image && <img alt={symptom.desc.title} src={symptom.desc.image} className="desc-img" />}
-        {symptom.desc.feature && (
-          <Features value={symptom.desc.feature} symptom={symptom} params={symptom.desc.params} />
-        )}
-      </Box>
-    </Stack>
-  );
-};
-```
+هنگام render کردن symptom در `src/components/Symptom.tsx`، اگر `desc.feature` وجود داشته باشد، کامپوننت `Features` فراخوانی می‌شود و افزونه مربوطه نمایش داده می‌شود.
 
 ## 4. افزونه‌های موجود
 
 ### الف) DuplicateNameChecker
 
-**هدف**: بررسی تکراری بودن نام بیمار
+**مسیر**: `src/components/DupNameChecker.tsx`
 
-**موقعیت**: `src/components/DupNameChecker.tsx`
-
-**عملکرد**:
+**عملکرد**: این افزونه برای فیلد نام بیمار استفاده می‌شود و:
 - نام وارد شده را در history جستجو می‌کند
-- اگر نام مشابه پیدا شود، لینکی نمایش می‌دهد
-- با کلیک روی لینک، رکورد قبلی در buffer بارگذاری می‌شود
+- اگر نام مشابهی پیدا شود (حداقل 3 کاراکتر)، لینکی نمایش می‌دهد
+- با کلیک روی لینک، رکورد قبلی با همان نام در buffer بارگذاری می‌شود
+- اگر نام کمتر از 3 کاراکتر باشد یا هیچ رکوردی پیدا نشود، پیام راهنما نمایش می‌دهد
 
-```7:35:src/components/DupNameChecker.tsx
-export default function DupNameChecker() {
-  const uuid = useBufferStore((s) => s.uuid);
-  const history = usePersistStore((s) => s.history);
-  const loadHistoryItem = useBufferStore((s) => s.loadHistoryItem);
-
-  const patName = useSymptomValue<string>("pat-name");
-  const index = useMemo(
-    () => history.findIndex((x) => getSymptomValueById<string>(x.symptoms, "pat-name") === patName),
-    [history, patName]
-  );
-
-  const load = async () => {
-    if (index < 0) return;
-    await loadHistoryItem(history[index], true);
-  };
-
-  if (!patName || index < 0 || patName.length < 3 || uuid === history[index].uuid) {
-    return <span>Please enter the full name</span>;
-  }
-
-  return (
-    <span style={{ margin: 0 }}>
-      There's{" "}
-      <Link sx={{ cursor: "pointer" }} onClick={load}>
-        a patient with the same name
-      </Link>
-    </span>
-  );
-}
-```
+**استفاده در**: `pat-name` symptom
 
 **API استفاده شده**:
-- `useBufferStore`: دسترسی به buffer store
-- `usePersistStore`: دسترسی به history
-- `useSymptomValue`: خواندن مقدار symptom
-- `loadHistoryItem`: بارگذاری یک رکورد در buffer
+- `useBufferStore`: برای دسترسی به buffer و `loadHistoryItem`
+- `usePersistStore`: برای دسترسی به history
+- `useSymptomValue`: برای خواندن مقدار `pat-name`
 
 ### ب) DentPicker
 
-**هدف**: انتخاب موقعیت آناتومیک ضایعه روی تصویر رادیوگرافی
+**مسیر**: `src/components/DentPicker.tsx`
 
-**موقعیت**: `src/components/DentPicker.tsx`
+**عملکرد**: این افزونه یک رابط گرافیکی برای انتخاب موقعیت آناتومیک ضایعه ارائه می‌دهد:
+- یک تصویر رادیوگرافی پانورامیک نمایش می‌دهد با نقاط قابل کلیک
+- کاربر با کلیک روی دو نقطه، یک بازه (range) انتخاب می‌کند
+- بر اساس فک انتخاب شده (maxilla, mandible, یا both) و موقعیت قبلی:
+  - اگر فقط یک فک انتخاب شده باشد → مقدار آن فک به‌روزرسانی می‌شود
+  - اگر قبلاً فک دیگری انتخاب شده باشد → به `both` تبدیل می‌شود
+- با دکمه reset می‌توان انتخاب را پاک کرد
+- نقاط انتخاب شده به صورت visual highlight می‌شوند
 
-**عملکرد**:
-- نمایش تصویر آناتومیک با نقاط قابل کلیک
-- امکان انتخاب بازه (range) با کلیک روی دو نقطه
-- به‌روزرسانی خودکار `maxilla`, `mandible`, یا `both` بر اساس انتخاب
-- پشتیبانی از انتخاب در فک بالا، پایین، یا هر دو
-
-```59:129:src/components/DentPicker.tsx
-export default function DentPicker() {
-  const updateSymptom = useBufferStore((s) => s.updateSymptom);
-  const toggleExpanded = useBufferStore((s) => s.toggleExpanded);
-  const { max, man, both } = useAnaLoc();
-
-  const [start, setStart] = useState<IPoint>(); // tmp cache
-
-  const onSelect = (p: IPoint) => {
-    if (!start) return setStart(p);
-
-    const _start = start.n < p.n ? start : p;
-    const _end = start.n < p.n ? p : start;
-
-    if (!(_start.j === JawType.Both || _start.j === _end.j)) return; // invalid
-
-    toggleExpanded(AnaLocation.Root, true);
-
-    // if end was both -> choose mandible
-    if (_end.j === JawType.Both) {
-      const range = { a: _start.n, b: _end.n };
-      toggleExpanded(AnaLocation.Mandible, true);
-      updateSymptom(AnaLocation.Mandible, range);
-    }
-
-    if (_end.j === JawType.Maxilla) {
-      if (man) {
-        const range = { a: Math.min(_start.n, man.a), b: Math.max(_end.n, man.b) };
-        toggleExpanded(AnaLocation.Both, true);
-        updateSymptom(AnaLocation.Both, range);
-      } else {
-        const range = { a: _start.n, b: _end.n };
-        toggleExpanded(AnaLocation.Maxilla, true);
-        updateSymptom(AnaLocation.Maxilla, range);
-      }
-    }
-
-    if (_end.j === JawType.Mandible) {
-      if (max) {
-        const range = { a: Math.min(_start.n, max.a), b: Math.max(_end.n, max.b) };
-        toggleExpanded(AnaLocation.Both, true);
-        updateSymptom(AnaLocation.Both, range);
-      } else {
-        const range = { a: _start.n, b: _end.n };
-        toggleExpanded(AnaLocation.Mandible, true);
-        updateSymptom(AnaLocation.Mandible, range);
-      }
-    }
-
-    setStart(undefined);
-  };
-
-  const onReset = () => {
-    setStart(undefined);
-    updateSymptom("ana-location", false);
-  };
-
-  return (
-    <div className="dent-picker">
-      <img alt="Radiography Anatomic Location" src={AnaLocImage} />
-      {points.map((p, i) => (
-        <Point key={i} p={p} onSelect={onSelect} start={start} />
-      ))}
-      {(max || man || both || start) && (
-        <Tooltip title="Clear Selection">
-          <IconButton onClick={onReset} size="small" className="clear-btn">
-            <RestartAltRounded />
-          </IconButton>
-        </Tooltip>
-      )}
-    </div>
-  );
-}
-```
+**استفاده در**: `location` symptom (با عنوان "Pathologic extension")
 
 **API استفاده شده**:
-- `updateSymptom`: به‌روزرسانی مقدار symptom
-- `toggleExpanded`: باز/بسته کردن symptom
-- `useSymptomValue`: خواندن مقادیر `maxilla`, `mandible`, `both`
+- `useBufferStore`: برای `updateSymptom` و `toggleExpanded`
+- `useSymptomValue`: برای خواندن مقادیر `maxilla`, `mandible`, `both`
 
-**خروجی**: تنظیم `IRange` برای `maxilla`, `mandible`, یا `both`
+**خروجی**: به‌روزرسانی `IRange` برای `maxilla`, `mandible`, یا `both` symptoms
 
 ### ج) ImagePicker
 
-**هدف**: آپلود و مدیریت تصاویر رادیوگرافی پانورامیک
+**مسیر**: `src/components/ImagePicker.tsx`
 
-**موقعیت**: `src/components/ImagePicker.tsx`
+**عملکرد**: این افزونه سیستم آپلود و مدیریت تصاویر را فراهم می‌کند:
+- از کتابخانه FilePond برای drag-and-drop استفاده می‌کند
+- حداکثر 10 فایل را پشتیبانی می‌کند
+- اندازه هر فایل حداکثر 1.5MB است (محدودیت Cloudinary)
+- Deduplication: قبل از آپلود، hash SHA-256 محاسبه می‌شود
+  - اگر تصویری با همان hash قبلاً آپلود شده باشد، دوباره آپلود نمی‌شود
+- آپلود به Cloudinary با نمایش progress bar
+- مدیریت حذف: اگر تصویری حذف شود، از Cloudinary هم حذف می‌شود
+- نمایش وضعیت: success (✓) یا error (✗) با آیکون‌های visual
+- پشتیبانی از فرمت JPEG
 
-**عملکرد**:
-- آپلود چندین تصویر (حداکثر 10 فایل)
-- اعتبارسنجی اندازه فایل (حداکثر 1.5MB)
-- Deduplication با استفاده از SHA-256 hash
-- آپلود به Cloudinary
-- نمایش پیشرفت آپلود
-- مدیریت حذف تصاویر
-
-```36:213:src/components/ImagePicker.tsx
-export default function ImagePicker() {
-  const updateSymptom = useBufferStore((s) => s.updateSymptom);
-  const imagesRaw: string | undefined = useSymptomValue(sid);
-  const imagesParsed = useMemo(() => parseImages(imagesRaw), [imagesRaw]);
-
-  const filepond = useRef<FilePond>(null);
-  const [files, setFiles] = useState<ActualFileObject[]>();
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<string>();
-  const initialized = useRef(false);
-  const imagesSet = useRef(false); // makes sure images are loaded only once
-
-  useEffect(() => {
-    if (imagesSet.current) return;
-    imagesSet.current = true;
-
-    const setImagesOnInit = async () => {
-      try {
-        const list = await Promise.all(
-          imagesParsed.map(async (image) => {
-            const res = await fetch(image.url);
-            return new File([await res.blob()], image.hash, { type: "image/jpeg" });
-          })
-        );
-
-        setFiles(list);
-
-        setTimeout(() => {
-          initialized.current = true;
-        }, 500);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    setImagesOnInit();
-  }, [imagesParsed]);
-
-  // cloudinary + store
-
-  const updateImages = async () => {
-    const newImages: ICImage[] = [];
-
-    // remove removed images from cloudinary
-    for await (const image of imagesParsed) {
-      const removed = !files?.find((x) => x.name === image.hash);
-      if (removed) {
-        makeDeleteRequest({
-          token: image.deleteToken,
-          successCallback: () => {
-            console.log("cloud:delete", { image });
-          },
-          errorCallback: (error) => {
-            console.error("cloud:delete", { error });
-          },
-        });
-      }
-    }
-
-    // add new items - use existing if there is
-    for await (const file of files || []) {
-      const hash = await fileHash(file);
-      const existing = imagesParsed.find((x) => x.hash === hash);
-
-      // don't upload again just use previous
-      if (existing) {
-        newImages.push(existing);
-        continue;
-      }
-
-      // upload
-      await new Promise((resolve, reject) =>
-        makeUploadRequest({
-          file: file as File,
-          fieldName: file.name,
-          progressCallback: (_len, loaded, total) => {
-            const percent = (loaded / total) * 100;
-            setProgress(percent);
-          },
-          successCallback: (data) => {
-            console.log("here");
-            newImages.push({
-              hash,
-              url: data.url.replace("http://", "https://"),
-              deleteToken: data.delete_token,
-            });
-            console.log("cloud:upload", { data });
-            setProgress(0);
-            resolve(data);
-          },
-          errorCallback: (error) => {
-            console.error("cloud:upload", { error });
-            setError(error);
-            reject(error);
-          },
-        })
-      );
-    }
-
-    updateSymptom(sid, stringifyImages(newImages));
-  };
-
-  useEffect(() => {
-    // on-demand revalidation for upload - based on count and init
-    if (files && initialized.current) updateImages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [files?.length]);
-
-  const onFilesUpdate = async (newFiles: FilePondFile[]) => {
-    console.log("update", { newFiles });
-    const newFilesHashed = [];
-    for (const f of newFiles) {
-      const hash = await fileHash(f.file);
-      if (f.file.name === hash) newFilesHashed.push(f.file);
-      else newFilesHashed.push(new File([f.file], hash, { type: f.file.type }));
-    }
-    setFiles(newFilesHashed);
-  };
-
-  return (
-    <div className="image-picker">
-      <p style={{ marginTop: 0 }}>
-        Please upload your panaromic images.
-        <br />
-        for image compression go to{" "}
-        <Link to="https://tinypng.com" target="_blank" rel="noreferrer" style={{ color: "var(--theme-color)" }}>
-          TinyPng.com
-        </Link>
-        .
-        <br />
-        <span style={{ color: "#666" }}>(preferred formats are: jpeg, webp)</span>
-      </p>
-
-      {!!progress && (
-        <CircularProgress
-          size="1.5rem"
-          thickness={5}
-          value={progress}
-          variant={progress >= 100 ? "indeterminate" : "determinate"}
-          color={progress >= 100 ? "success" : "primary"}
-          sx={{ position: "fixed", top: "-1.5rem", right: "1rem" }}
-        />
-      )}
-
-      {!!imagesRaw && !progress && (
-        <TbCloudCheck //
-          size="1.5rem"
-          color="#4fe2a5"
-          style={{ position: "fixed", top: "-1.5rem", right: "1rem" }}
-        />
-      )}
-
-      {!!error && (
-        <Tooltip title={error}>
-          <div style={{ position: "fixed", top: "-1.5rem", right: "1rem" }}>
-            <TbCloudCancel size="1.5rem" color="#e24f5b" cursor="pointer" />
-          </div>
-        </Tooltip>
-      )}
-
-      <FilePond
-        ref={filepond}
-        files={files} // initial files
-        name="files" /* sets the file input name, it's filepond by default */
-        labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
-        onupdatefiles={onFilesUpdate}
-        // allowReorder
-        allowMultiple
-        acceptedFileTypes={["image/jpeg"]} // FIXME not working
-        maxFiles={maxFiles}
-        maxFileSize={maxFileSize / 1024 + "KB"}
-        imagePreviewMaxHeight={150}
-        instantUpload={false}
-        server={{ revert: null }}
-      />
-    </div>
-  );
-}
-```
+**استفاده در**: `pat-images` symptom
 
 **API استفاده شده**:
-- `updateSymptom`: ذخیره لیست تصاویر در symptom
-- `useSymptomValue`: خواندن تصاویر فعلی
-- `parseImages` / `stringifyImages`: تبدیل بین string و array
-- `makeUploadRequest` / `makeDeleteRequest`: ارتباط با Cloudinary
+- `useBufferStore`: برای `updateSymptom`
+- `useSymptomValue`: برای خواندن تصاویر فعلی
+- `parseImages` / `stringifyImages`: تبدیل بین string و array (از `src/lib/image.ts`)
+- `makeUploadRequest` / `makeDeleteRequest`: ارتباط با Cloudinary (از `src/lib/cloudinary.ts`)
 
-**خروجی**: ذخیره لیست `ICImage[]` به صورت string در symptom
+**خروجی**: ذخیره لیست `ICImage[]` به صورت JSON string در symptom
+
+**کتابخانه‌های استفاده شده**:
+- `react-filepond`: کامپوننت آپلود فایل
+- `@pqina/filepond-plugin-image-editor`: ویرایشگر تصویر
+- `filepond-plugin-image-preview`: پیش‌نمایش تصویر
+- `filepond-plugin-file-validate-size`: اعتبارسنجی اندازه
 
 ## 5. قوانین و محدودیت‌ها
 
 ### قوانین:
 
-1. **هر Feature یک React Component است**: باید یک کامپوننت React معتبر باشد
-2. **دسترسی به Store**: می‌توانند از hooks برای دسترسی به store استفاده کنند:
-   - `useBufferStore`: دسترسی به buffer (symptoms فعلی)
-   - `usePersistStore`: دسترسی به history (رکوردهای ذخیره شده)
-3. **خواندن/نوشتن Symptoms**: می‌توانند از `useSymptomValue` و `updateSymptom` استفاده کنند
-4. **Params**: می‌توانند از `params` از `desc.params` استفاده کنند (فعلاً استفاده نمی‌شود)
+1. **هر Feature یک React Component است**: باید یک کامپوننت React معتبر باشد که به صورت default export شود
+2. **دسترسی به Store**: افزونه‌ها می‌توانند از hooks برای دسترسی به store استفاده کنند
+3. **خواندن/نوشتن Symptoms**: افزونه‌ها می‌توانند مقادیر symptoms را بخوانند و بنویسند
+4. **Params (آینده)**: ساختار برای پاس دادن params وجود دارد اما فعلاً استفاده نمی‌شود
 
 ### محدودیت‌ها:
 
-1. **ثبت دستی**: باید در `Features` component ثبت شوند (switch case)
-2. **بدون ایزولاسیون**: اجرا در همان context اصلی برنامه
-3. **بدون Sandbox**: دسترسی کامل به تمام منابع
-4. **بدون Plugin Registry**: سیستم registry برای افزونه‌های خارجی وجود ندارد
+1. **ثبت دستی**: برای هر افزونه جدید باید در `Features.tsx` یک case جدید اضافه شود
+2. **بدون ایزولاسیون**: افزونه‌ها در همان context اصلی برنامه اجرا می‌شوند و دسترسی کامل دارند
+3. **بدون Sandbox**: هیچ مکانیزمی برای محدود کردن دسترسی افزونه‌ها وجود ندارد
+4. **بدون Plugin Registry**: سیستم registry برای افزونه‌های خارجی یا dynamic loading وجود ندارد
+5. **بدون مدیریت چرخه حیات**: lifecycle hooks یا cleanup mechanisms وجود ندارد
 
 ## 6. راهنمای ساخت افزونه جدید
 
-### مراحل:
+برای ساخت یک افزونه جدید:
 
-1. **تعریف Feature Enum**:
-```typescript
-// src/types/index.ts
-export enum Feature {
-  // ... existing
-  MyNewFeature = "my-new-feature",
-}
-```
+1. **تعریف Feature Enum**: در `src/types/index.ts`، یک شناسه جدید به `Feature` enum اضافه کنید
 
-2. **ساخت کامپوننت**:
-```typescript
-// src/components/MyNewFeature.tsx
-export default function MyNewFeature() {
-  const updateSymptom = useBufferStore((s) => s.updateSymptom);
-  const symptomValue = useSymptomValue<string>("my-symptom-id");
-  
-  // ... component logic
-  
-  return <div>My Feature Component</div>;
-}
-```
+2. **ساخت کامپوننت**: در `src/components/` یک کامپوننت React بسازید
+   - باید به صورت default export باشد
+   - می‌تواند از hooks برای دسترسی به store استفاده کند
+   - می‌تواند از `useSymptomValue` برای خواندن و `updateSymptom` برای نوشتن استفاده کند
 
-3. **ثبت در Features**:
-```typescript
-// src/components/Features.tsx
-import MyNewFeature from "./MyNewFeature";
+3. **ثبت در Features Router**: در `src/components/Features.tsx`:
+   - import کامپوننت جدید
+   - یک case جدید در switch statement اضافه کنید
 
-// در switch:
-case Feature.MyNewFeature:
-  return <MyNewFeature />;
-```
+4. **استفاده در Symptom**: در `src/data/symptoms.ts`:
+   - در فیلد `desc`، `feature` را تنظیم کنید
 
-4. **استفاده در Symptom**:
-```typescript
-// src/data/symptoms.ts
-{
-  id: "my-symptom",
-  name: "My Symptom",
-  desc: { feature: Feature.MyNewFeature },
-  // ...
-}
-```
+### مثال مفهومی:
+
+فرض کنید می‌خواهید یک DatePicker اضافه کنید:
+- در `Feature` enum: `DatePicker = "date-picker"`
+- کامپوننت: `DatePicker.tsx` که یک input type="date" render می‌کند و با `updateSymptom` مقدار را ذخیره می‌کند
+- در `Features.tsx`: case برای `Feature.DatePicker`
+- در `symptoms.ts`: یک symptom با `desc: { feature: Feature.DatePicker }`
 
 ## 7. API در دسترس برای افزونه‌ها
 
-### Store Hooks:
+### Store Hooks (از `src/store/`):
 
-- `useBufferStore()`: دسترسی به buffer store
-  - `symptoms`: لیست symptoms فعلی
-  - `updateSymptom(id, value)`: به‌روزرسانی symptom
-  - `loadHistoryItem(item, overwrite)`: بارگذاری رکورد از history
-  - `toggleExpanded(id, open)`: باز/بسته کردن symptom
+**`useBufferStore()`**: دسترسی به buffer store که شامل:
+- `symptoms`: لیست symptoms فعلی (ISymptom[])
+- `updateSymptom(id, value)`: به‌روزرسانی مقدار یک symptom
+- `loadHistoryItem(item, overwrite)`: بارگذاری یک رکورد از history به buffer
+- `toggleExpanded(id, open)`: باز یا بسته کردن یک symptom در UI
+- `uuid`: شناسه یکتای رکورد فعلی
 
-- `usePersistStore()`: دسترسی به persist store
-  - `history`: لیست رکوردهای ذخیره شده
+**`usePersistStore()`**: دسترسی به persist store که شامل:
+- `history`: لیست تمام رکوردهای ذخیره شده (IHistoryItem[])
+- `addHistory(items)`: اضافه کردن رکوردهای جدید
+- `removeHistory(uuid)`: حذف یک رکورد
 
-### Utility Hooks:
+### Utility Hooks (از `src/hooks/`):
 
-- `useSymptomValue<T>(id)`: خواندن مقدار یک symptom
-- `getSymptomValueById<T>(symptoms, id)`: خواندن مقدار از لیست symptoms
+- **`useSymptomValue<T>(id)`**: خواندن مقدار یک symptom با type safety
+- **`getSymptomValueById<T>(symptoms, id)`**: خواندن مقدار از یک لیست symptoms
 
-### Types:
+### Utility Functions (از `src/lib/`):
 
-- `ISymptom`: نوع symptom
-- `IHistoryItem`: نوع رکورد history
-- `IRange`: نوع بازه (برای موقعیت)
-- `ICImage`: نوع تصویر
+- **`parseImages` / `stringifyImages`** (از `src/lib/image.ts`): تبدیل بین string و array برای تصاویر
+- **`makeUploadRequest` / `makeDeleteRequest`** (از `src/lib/cloudinary.ts`): ارتباط با Cloudinary API
 
-## 8. مثال عملی: افزونه جدید
+### Types (از `src/types/index.ts`):
 
-فرض کنید می‌خواهید یک افزونه برای انتخاب تاریخ اضافه کنید:
+- `ISymptom`: ساختار یک symptom
+- `IHistoryItem`: ساختار یک رکورد history
+- `IRange`: ساختار بازه (برای موقعیت‌ها)
+- `ICImage`: ساختار تصویر (url, hash, deleteToken)
+- `Value`: نوع مقدار symptom (string | number | IRange | boolean)
 
-```typescript
-// 1. اضافه به Feature enum
-export enum Feature {
-  // ...
-  DatePicker = "date-picker",
-}
+## 8. ساختار فایل‌ها
 
-// 2. ساخت کامپوننت
-export default function DatePicker() {
-  const updateSymptom = useBufferStore((s) => s.updateSymptom);
-  const date = useSymptomValue<string>("visit-date");
-  
-  return (
-    <input
-      type="date"
-      value={date || ""}
-      onChange={(e) => updateSymptom("visit-date", e.target.value)}
-    />
-  );
-}
-
-// 3. ثبت در Features
-case Feature.DatePicker:
-  return <DatePicker />;
-
-// 4. استفاده در symptom
-{
-  id: "visit-date",
-  name: "Visit Date",
-  desc: { feature: Feature.DatePicker },
-  type: SymptomType.String,
-}
+```
+src/
+├── types/
+│   └── index.ts                    # Feature enum و Desc type
+├── components/
+│   ├── Features.tsx                # Router component
+│   ├── DupNameChecker.tsx          # افزونه بررسی نام تکراری
+│   ├── DentPicker.tsx              # افزونه انتخاب موقعیت
+│   ├── ImagePicker.tsx             # افزونه آپلود تصویر
+│   └── Symptom.tsx                 # استفاده از Features
+├── data/
+│   └── symptoms.ts                 # تعریف symptoms با feature
+├── store/
+│   ├── buffer.ts                   # BufferStore (useBufferStore)
+│   └── history.ts                  # PersistStore (usePersistStore)
+├── hooks/
+│   └── symptom.ts                  # useSymptomValue hook
+└── lib/
+    ├── image.ts                    # parseImages, stringifyImages
+    └── cloudinary.ts               # makeUploadRequest, makeDeleteRequest
 ```
 
-## 9. محل تعریف در کد
+## 9. جریان کار (Workflow)
+
+### برای افزونه‌های خواندن (Read-only):
+1. کاربر symptom را expand می‌کند
+2. کامپوننت `Symptom` render می‌شود
+3. اگر `desc.feature` وجود داشته باشد، `Features` فراخوانی می‌شود
+4. `Features` کامپوننت افزونه را render می‌کند
+5. افزونه با `useSymptomValue` یا `usePersistStore` داده می‌خواند
+6. اطلاعات را به کاربر نمایش می‌دهد
+
+### برای افزونه‌های نوشتن (Write):
+1. کاربر با افزونه تعامل می‌کند
+2. افزونه از `useBufferStore` برای دسترسی به `updateSymptom` استفاده می‌کند
+3. `updateSymptom` مقدار symptom را به‌روزرسانی می‌کند
+4. تغییرات در store reflect می‌شود
+5. UI به صورت خودکار به‌روز می‌شود (به دلیل reactive nature Zustand)
+
+## 10. مثال‌های استفاده
+
+### مثال 1: DuplicateNameChecker
+- کاربر نام را در فیلد `pat-name` وارد می‌کند
+- افزونه به صورت real-time در history جستجو می‌کند
+- اگر نام مشابه پیدا شود، لینک نمایش داده می‌شود
+- با کلیک، رکورد قبلی load می‌شود
+
+### مثال 2: DentPicker
+- کاربر روی symptom "Location" کلیک می‌کند
+- افزونه DentPicker نمایش داده می‌شود
+- کاربر روی دو نقطه در تصویر کلیک می‌کند
+- بازه انتخاب شده به صورت خودکار در `maxilla`، `mandible`، یا `both` ذخیره می‌شود
+- سایر symptoms مرتبط (مثل `side`) هم به‌روزرسانی می‌شوند
+
+### مثال 3: ImagePicker
+- کاربر روی "Panoramic Images" کلیک می‌کند
+- افزونه ImagePicker با drag-and-drop interface نمایش داده می‌شود
+- کاربر فایل‌ها را آپلود می‌کند
+- پیشرفت آپلود نمایش داده می‌شود
+- پس از آپلود، تصاویر در symptom ذخیره می‌شوند
+- اگر تصویری حذف شود، از Cloudinary هم حذف می‌شود
+
+## 11. مقایسه با Plugin API کامل
+
+### سیستم فعلی (Feature-based):
+**مزایا**:
+- ساده و مستقیم
+- عملکرد سریع بدون overhead
+- دسترسی مستقیم به store و APIs
+- مناسب برای افزونه‌های داخلی
+
+**معایب**:
+- نیاز به ثبت دستی
+- بدون ایزولاسیون
+- بدون سیستم مدیریت چرخه حیات
+- عدم پشتیبانی از افزونه‌های خارجی
+- عدم امکان dynamic loading
+
+### Plugin API کامل (فرضی):
+**مزایا**:
+- سیستم ثبت خودکار
+- ایزولاسیون و امنیت
+- مدیریت چرخه حیات
+- پشتیبانی از افزونه‌های خارجی
+- Dynamic loading
+- Version management
+
+**معایب**:
+- پیچیدگی بیشتر
+- Overhead بیشتر
+- نیاز به infrastructure بیشتر
+
+## 12. نتیجه‌گیری
+
+سیستم فعلی یک راه‌حل ساده و موثر برای افزودن قابلیت‌های سفارشی به علائم است. این سیستم برای افزونه‌های داخلی که توسط تیم توسعه ساخته می‌شوند و نیاز به دسترسی مستقیم به store دارند، مناسب است. 
+
+برای نیازهای آینده که شامل افزونه‌های خارجی، ایزولاسیون کامل، یا dynamic loading باشد، نیاز به طراحی یک Plugin API کامل‌تر با ساختار registry، sandbox execution، و lifecycle management وجود دارد.
+
+## 13. مراجع
 
 - **Feature Enum**: `src/types/index.ts` (خط ~39)
-- **Desc Type**: `src/types/index.ts` (خط ~47)
-- **Features Router**: `src/components/Features.tsx`
+- **Router Component**: `src/components/Features.tsx`
 - **DuplicateNameChecker**: `src/components/DupNameChecker.tsx`
 - **DentPicker**: `src/components/DentPicker.tsx`
 - **ImagePicker**: `src/components/ImagePicker.tsx`
 - **استفاده در Symptom**: `src/components/Symptom.tsx` (خط ~118)
 - **تعریف در Symptoms**: `src/data/symptoms.ts`
-
-## 10. مقایسه با Plugin API کامل
-
-### سیستم فعلی:
-- ✅ ساده و مستقیم
-- ✅ عملکرد سریع (بدون overhead)
-- ✅ دسترسی مستقیم به store
-- ❌ نیاز به ثبت دستی
-- ❌ بدون ایزولاسیون
-- ❌ بدون سیستم مدیریت چرخه حیات
-- ❌ عدم پشتیبانی از افزونه‌های خارجی
-
-### Plugin API کامل (فرضی):
-- ✅ سیستم ثبت خودکار
-- ✅ ایزولاسیون و امنیت
-- ✅ مدیریت چرخه حیات
-- ✅ پشتیبانی از افزونه‌های خارجی
-- ❌ پیچیدگی بیشتر
-- ❌ overhead بیشتر
-
-## 11. نتیجه‌گیری
-
-سیستم فعلی یک راه‌حل ساده و موثر برای افزودن قابلیت‌های سفارشی به علائم است. این سیستم برای افزونه‌های داخلی که توسط تیم توسعه ساخته می‌شوند مناسب است. برای نیاز به افزونه‌های خارجی یا ایزولاسیون کامل، نیاز به طراحی یک Plugin API کامل‌تر وجود دارد.
